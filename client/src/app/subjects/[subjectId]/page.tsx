@@ -1,7 +1,6 @@
 "use client";
 
 import SubHeader from "@/components/SubHeader";
-import TeacherCard from "@/app/teachers/TeacherCard";
 import { useSearchParams } from "next/navigation";
 import { Axios } from "@/axios/Axios";
 import { useEffect, useState } from "react";

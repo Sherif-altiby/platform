@@ -10,6 +10,8 @@ import adminRouter from "./routes/adminRoutes.js";
 import teacherRouter from "./routes/teacherRoutes.js";
 import path from "path"
 import { fileURLToPath } from 'url';
+import rateLimit from 'express-rate-limit';
+
 
 dotenv.config();
 
@@ -29,6 +31,19 @@ app.use(morgan('combined'))
 app.use(helmet({
     crossOriginResourcePolicy: false,
 }));   
+
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // limit each IP to 100 requests per windowMs
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Apply to all requests
+app.use(limiter);
+
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 

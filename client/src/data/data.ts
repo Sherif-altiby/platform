@@ -10,7 +10,7 @@ export const navLinks = [
     },
     {
         link: "المدرسين",
-        path: "/teachers"
+        path: "/get-teachers"
     },
     {
         link: "المواد الدراسية",

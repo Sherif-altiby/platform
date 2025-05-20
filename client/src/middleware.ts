@@ -33,16 +33,14 @@ export async function middleware(request: NextRequest) {
 
   const decoded = await verifyJWT(token)
 
-  console.log("decode: ", decoded)
-
   // Role-based protection
   if (pathname.startsWith('/admin') && decoded?.role !== 'admin') {
     return NextResponse.redirect(`${origin}/`)
   }
 
-  // if (pathname.startsWith('/teacher') && decoded?.role !== 'teacher') {
-  //   return NextResponse.redirect(`${origin}/`)
-  // }
+  if (pathname.startsWith('/teacher') && decoded?.role !== 'teacher') {
+    return NextResponse.redirect(`${origin}/`)
+  }
 
   return NextResponse.next()
 }
