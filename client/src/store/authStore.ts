@@ -24,7 +24,9 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
           
           set(() => ({
             user: res.data.user
-          }))        
+          }))      
+          
+          console.log(res)
 
           const user = {
             name: res.data.user.name,
@@ -92,6 +94,8 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
           });
 
           toast.success(res.data.message)
+
+          return res.data
             
         } catch (error: any) {
             toast.error(error.response.data.message)

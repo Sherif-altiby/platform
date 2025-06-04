@@ -39,12 +39,12 @@ const Page = () => {
           <div className="flex flex-col items-center animate-fadeIn">
             {/* Subject Image */}
             <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-blue-200 shadow-md transition-transform duration-500 hover:scale-105">
-              <Image
-                src={`${process.env.NEXT_PUBLIC_IMAGES_URL}/${subject.image}`}
+             {subject.image?.startsWith("http") &&  <Image
+                src={subject.image}
                 alt={subject.name}
                 fill
                 className="object-cover"
-              />
+              />}
             </div>
 
             {/* Subject Name */}
@@ -72,7 +72,7 @@ const Page = () => {
                         <img
                           src={
                             t.avatar
-                              ? `${process.env.NEXT_PUBLIC_IMAGES_URL}/${t.avatar}`
+                              ? `${t.avatar}`
                               : "/default-avatar.png"
                           }
                           alt={t.name}

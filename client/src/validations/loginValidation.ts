@@ -13,7 +13,7 @@ export const loginSchema = z.object({
     .string()
     .min(8, "يرجى ادخال كلمة مرور صحيحة")
     .regex(
-      /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+      /[A-Za-z\d]{8,}$/,
       "يرجى ادخال كلمة مرور صحيحة"
     ),
 });

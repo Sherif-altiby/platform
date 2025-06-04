@@ -4,12 +4,10 @@ import { Axios } from "@/axios/Axios";
 import Spiner from "@/components/Spiner";
 import { useAuthUser } from "@/store/authStore";
 import { NoteType } from "@/types/Types";
-import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
-import { IoEyeOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 
 const NotesPage = () => {
@@ -100,7 +98,7 @@ const NotesPage = () => {
                 <span className="font-medium text-gray-700">{note.level}</span>
               </p>
               <a
-                href={`${process.env.NEXT_PUBLIC_IMAGES_URL}${note.pdf}`}
+                href={note.pdf}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm text-blue-600 mb-4 block underline"

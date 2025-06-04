@@ -9,29 +9,6 @@ import { SubjectTypes } from "@/types/Types";
 
 const Footer = () => {
   const date = new Date();
-  // const { teachers, getTeachers } = useTeacherStore();
-
-  // const [subjects, setSubjects] = useState<SubjectTypes[]>([]);
-  //   const [loading, setLoading] = useState(false);
-
-  //   const getSubjects = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const res = await Axios.get(`user/get-subjects`);
-
-  //       setSubjects(res.data.data);
-  //       console.log(res.data.data);
-  //     } catch (error) {
-  //       console.log(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     getSubjects();
-  //     getTeachers()
-  // }, [])
 
   return (
     <>

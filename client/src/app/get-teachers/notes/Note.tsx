@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 
-const IMAGEURL = process.env.NEXT_PUBLIC_IMAGES_URL
 
 
 const Note = ( {name, pdf}: {name: string, pdf: string} ) => {
@@ -18,7 +17,7 @@ const Note = ( {name, pdf}: {name: string, pdf: string} ) => {
       <p className="text-canter text-lg text-gray-400 mt-2"> {name} </p>
 
       <Link 
-         href={`${IMAGEURL}/${pdf}`} 
+         href={`${pdf}`} 
          target="_blank"
          className="w-full mx-auto md:w-[90%] rounded-[5px] bg-primary1 text-white text-lg p-1 mt-3 transition-all duration-300 hover:bg-blue-800" > 
          عرض المذكرة  

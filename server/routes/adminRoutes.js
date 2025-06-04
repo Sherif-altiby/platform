@@ -15,30 +15,9 @@ import {
     deleteComment, 
     showComment } from "../controller/adminController.js";
 import isAdmin from "../middlewares/isAdmin.js";
-import multer from "multer";
+import upload from "../middlewares/multer.js";
+import uploadImageClodinary from "../utils/uploadImages.js";
 
-const diskStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads')
-    },
-    filename: function (req, file, cb){
-        const ext = file.mimetype.split("/")[1];
-        const fileName = `teacher-${Date.now()}.${ext}`
-        cb(null, fileName)
-    }
-})
-
-const fileFilter = (req, file, cb) => {
-     const imageType = file.mimetype.split("/")[0];
-
-     if(imageType === "image"){
-        return cb(null, true)
-     } else {
-        return cb('File must be image', false)
-     }
-}
-
-const upload = multer({storage: diskStorage, fileFilter: fileFilter})
 
 const adminRouter = Router();
 

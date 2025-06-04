@@ -16,29 +16,8 @@ import {
         } from "../controller/teacherController.js";
 import { uploadQuizValidation, uploadVideoValidation } from "../validations/ApiValidations.js";
 import isTeacher from "../middlewares/isTeacher.js";
-import multer from "multer";
+import uploadPdfMid from "../middlewares/pdfMulter.js";
 
-const diskStorage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads')
-    },
-    filename: function (req, file, cb){
-        const ext = file.mimetype.split("/")[1];
-        const fileName = `teacher-${Date.now()}.${ext}`
-        cb(null, fileName)
-    }
-})
-
-const fileFilter = (req, file, cb) => {
-    const allowedMimeTypes = ["application/pdf"];
-    if (allowedMimeTypes.includes(file.mimetype)) {
-      cb(null, true); 
-    } else {
-      cb(new Error("Invalid file type. Only PDF files are allowed!"), false); 
-    }
-}
- 
-const upload = multer({storage: diskStorage, fileFilter: fileFilter})
 
 const teacherRouter = Router();
 
@@ -52,7 +31,7 @@ teacherRouter.post('/get-quiz-by-level', auth, getTeacherQuizzesByLevel);
 teacherRouter.get('/get-quiz-by-id/:id', auth, getQuizeById);
 teacherRouter.delete('/delete-quiz', auth, isTeacher, deleteQuize);
 
-teacherRouter.post('/upload-pdf', auth, isTeacher, upload.single('pdf'), uploadPdf);
+teacherRouter.post('/upload-pdf', auth, isTeacher, uploadPdfMid.single('pdf'), uploadPdf);
 teacherRouter.post('/get-pdf-by-level', auth, getPdfByLevel);
 teacherRouter.delete('/delete-pdf', auth, isTeacher, deletePdf);
 

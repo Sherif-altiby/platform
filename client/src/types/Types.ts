@@ -115,7 +115,7 @@ export interface useAuthInterface {
     password: string,
     level: string,
     phone: string
-  ) => Promise<void>;
+  ) => Promise<any>;
   userForgotPassword: (email: string) => Promise<void>;
   userVerifyCode: (email: string, code: number) => Promise<void>;
 }

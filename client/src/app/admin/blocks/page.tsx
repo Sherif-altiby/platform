@@ -1,152 +1,154 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
-import { TeacherTypes, UserTypes } from "@/types/Types";
+import { UserTypes } from "@/types/Types";
 import { BsPersonCircle } from "react-icons/bs";
 import { Axios } from "@/axios/Axios";
 import { toast } from "react-toastify";
-import { useTeacherStore } from "@/store/teacherStore";
 import Spiner from "@/components/Spiner";
 
-const SERVER_IMAGE_URL = process.env.NEXT_PUBLIC_IMAGES_URL;
-
 const BlocksPage = () => {
-  const [view, setView] = useState<"teachers" | "users">("teachers");
-  const [blockedUsers, setBlockedUsers] = useState<UserTypes[]>([]);
+  const [allUsers, setAllUsers] = useState<UserTypes[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [view, setView] = useState<"blocked" | "active">("blocked");
 
-  const { getTeachers, isFetchingTeachers, teachers } = useTeacherStore();
-
-  useEffect(() => {
-    getTeachers();
-  }, []);
-
-  const fetchBlockedUsers = async () => {
+  const fetchUsers = async () => {
     try {
+      setIsLoading(true);
       const response = await Axios.get("user/get-users");
-      const users: UserTypes[] = response.data.data;
-      const blocked = users.filter(user => !user.isBlocked);
-      setBlockedUsers(blocked);
+      setAllUsers(response.data.data || []);
     } catch (error) {
-      toast.error("فشل في جلب المستخدمين المحظورين.");
-    }
-  };
-  useEffect(() => {
-    fetchBlockedUsers();
-  }, []);
-
-  const handleUnBlockTeacher = async (id: string) => {
-    try {
-      const res = await Axios.post("admin/unblock-teacher", { teacherId: id });
-      await getTeachers();
-      toast.success(res.data.message);
-    } catch (error) {
-      console.error(error);
-      toast.error("حدث خطأ أثناء محاولة فك الحظر.");
+      toast.error("فشل في جلب المستخدمين.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleUnBlockUser = async (id: string) => {
+  const handleUnblockUser = async (id: string) => {
     try {
       const res = await Axios.post("admin/unblock-user", { userId: id });
-      await fetchBlockedUsers();
       toast.success(res.data.message);
+      fetchUsers();
     } catch (error) {
-      console.error(error);
       toast.error("حدث خطأ أثناء محاولة فك الحظر.");
     }
   };
 
-  return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800 text-center">المحظورون</h2>
+  const handleBlockUser = async (id: string) => {
+    try {
+      const res = await Axios.post("admin/block-user", { userId: id });
+      toast.success(res.data.message);
+      fetchUsers();
+    } catch (error) {
+      toast.error("حدث خطأ أثناء محاولة حظر المستخدم.");
+    }
+  };
 
-      {/* Toggle */}
-      <div className="flex justify-center mb-6">
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const filteredUsers =
+    view === "blocked"
+      ? allUsers.filter((user) => user.isBlocked)
+      : allUsers.filter((user) => !user.isBlocked);
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 py-8">
+      <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+        إدارة المستخدمين
+      </h2>
+
+      {/* Toggle Buttons */}
+      <div className="flex justify-center mb-8 gap-4">
         <button
-          onClick={() => setView("teachers")}
-          className={`px-4 py-2 rounded-l-full border border-gray-300 ${
-            view === "teachers" ? "bg-blue-600 text-white" : "bg-white text-gray-600"
+          onClick={() => setView("blocked")}
+          className={`px-4 py-2 rounded-full border ${
+            view === "blocked"
+              ? "bg-red-600 text-white"
+              : "bg-white text-gray-700 border-gray-300"
           }`}
         >
-          المعلمون
+          المستخدمون المحظورون
         </button>
         <button
-          onClick={() => setView("users")}
-          className={`px-4 py-2 rounded-r-full border border-gray-300 ${
-            view === "users" ? "bg-blue-600 text-white" : "bg-white text-gray-600"
+          onClick={() => setView("active")}
+          className={`px-4 py-2 rounded-full border ${
+            view === "active"
+              ? "bg-green-600 text-white"
+              : "bg-white text-gray-700 border-gray-300"
           }`}
         >
-          المستخدمون
+          المستخدمون المفعلون
         </button>
       </div>
 
-      {/* List */}
-      <div className="grid grid-cols-1 gap-4">
-        {view === "teachers" ?
-         ( isFetchingTeachers ? ( <div> <Spiner /> </div> ) : (
-            teachers && (
-                teachers
-            .filter((teacher) => teacher.isBlocked)
-            .map((teacher) => (
-              <div
-                key={teacher._id}
-                className="flex items-center justify-between bg-white p-4 rounded-xl shadow border"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
-                    {teacher.avatar ? (
-                      <Image
-                        src={`${SERVER_IMAGE_URL}/${teacher.avatar}`}
-                        alt={teacher.name}
-                        width={48}
-                        height={48}
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <BsPersonCircle className="w-full h-full text-gray-400" />
-                    )}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-800">{teacher.name}</p>
-                    <p className="text-sm text-gray-500">
-                      {teacher.subjects?.[0]?.name ?? "بدون مادة"}
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() => handleUnBlockTeacher(teacher._id)}
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm"
-                >
-                  فك الحظر
-                </button>
-              </div>
-            ))
-            )
-          )) : (null)
-        }
-
-        {view === "users" &&
-          blockedUsers.map((user) => (
+      {/* Loading */}
+      {isLoading ? (
+        <div className="flex justify-center items-center">
+          <Spiner />
+        </div>
+      ) : filteredUsers.length === 0 ? (
+        <p className="text-center text-gray-500">
+          {view === "blocked"
+            ? "لا يوجد مستخدمون محظورون."
+            : "لا يوجد مستخدمون مفعلون."}
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredUsers.map((user) => (
             <div
               key={user._id}
-              className="flex items-center justify-between bg-white p-4 rounded-xl shadow border"
+              className="bg-white p-6 rounded-xl shadow border flex flex-col gap-4"
             >
+              {/* User Info */}
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full overflow-hidden border border-gray-300">
-                    <BsPersonCircle className="w-full h-full text-gray-400" />
+                <div className="w-14 h-14 rounded-full overflow-hidden border border-gray-300 bg-gray-100 flex justify-center items-center">
+                  <BsPersonCircle className="w-10 h-10 text-gray-400" />
                 </div>
-                <p className="font-medium text-gray-800">{user.name}</p>
+                <div>
+                  <p className="font-semibold text-gray-800">{user.name}</p>
+                  <p className="text-sm text-gray-500">
+                    {user.email || "لا يوجد بريد إلكتروني"}
+                  </p>
+                </div>
               </div>
-              <button
-                  onClick={() => handleUnBlockUser(user._id)}
-                  className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 text-sm"
-                >
-                  فك الحظر
-                </button>
+
+              {/* Actions */}
+              <div className="flex flex-wrap gap-2 mt-2">
+                {/* WhatsApp */}
+                {user.phone && (
+                  <a
+                    href={`https://wa.me/${user.phone}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-green-500 hover:bg-green-600 text-white text-sm px-4 py-1.5 rounded transition"
+                  >
+                    واتساب
+                  </a>
+                )}
+
+                {/* Block / Unblock */}
+                {user.isBlocked ? (
+                  <button
+                    onClick={() => handleUnblockUser(user._id)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white text-sm px-4 py-1.5 rounded transition"
+                  >
+                    فك الحظر
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => handleBlockUser(user._id)}
+                    className="bg-red-500 hover:bg-red-600 text-white text-sm px-4 py-1.5 rounded transition"
+                  >
+                    حظر المستخدم
+                  </button>
+                )}
+              </div>
             </div>
           ))}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

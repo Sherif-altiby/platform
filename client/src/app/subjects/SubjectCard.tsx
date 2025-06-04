@@ -9,7 +9,6 @@ interface SubjectCardProps {
 }
 
 const SubjectCard = ({ link, name, length, avatar }: SubjectCardProps) => {
-  const imageUrl = `${process.env.NEXT_PUBLIC_IMAGES_URL}/${avatar}`;
 
   return (
     <Link href={link}>
@@ -27,7 +26,7 @@ const SubjectCard = ({ link, name, length, avatar }: SubjectCardProps) => {
         <div className="flex flex-col items-center">
           <div className="w-24 h-24 rounded-full border-4 border-blue-200 overflow-hidden shadow-lg transform group-hover:scale-110 transition duration-500">
             <Image
-              src={imageUrl}
+              src={avatar}
               alt={`${name} subject`}
               fill
               className="object-cover"

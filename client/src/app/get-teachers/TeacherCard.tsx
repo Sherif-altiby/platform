@@ -3,24 +3,24 @@ import Image from "next/image";
 import Link from "next/link";
 import { FaChalkboardTeacher } from "react-icons/fa";
 
-const SERVER_IMAGE_URL = process.env.NEXT_PUBLIC_IMAGES_URL;
 
 const TeacherCard = ({ teacher }: { teacher: TeacherTypes }) => {
   return (
     <Link
-      href={`/teachers/${teacher._id}?name=${teacher.name}`}
+      href={`/get-teachers/${teacher._id}?name=${teacher.name}`}
       className="group bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl p-6 w-full hover:shadow-xl transition-all duration-500 transform hover:scale-105 hover:rotate-3"
     >
       <div className="flex items-center gap-6">
         {/* Teacher Image */}
         <div className="w-24 h-24 rounded-full overflow-hidden border-4 border-white shadow-xl group-hover:scale-110 transition-transform duration-500 ease-in-out relative">
-          <Image
-            src={`${SERVER_IMAGE_URL}/${teacher.avatar}`}
+          { teacher.avatar?.startsWith("http") &&  <Image
+            src={teacher.avatar}
             alt={`صورة ${teacher.name}`}
             width={96}
             height={96}
             className="object-cover group-hover:scale-105 transition-transform duration-300 ease-in-out"
-          />
+          />}
+          
           <div className="absolute bottom-0 left-0 right-0 p-2 text-white bg-black bg-opacity-40 text-sm rounded-b-full text-center">
             <span className="font-semibold">{teacher.name.split(" ")[0]}</span>
           </div>

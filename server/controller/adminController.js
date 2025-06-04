@@ -4,12 +4,12 @@ import { Comment } from "../models/commentsModel.js";
 import { Teacher } from "../models/teacherModel.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import mongoose from "mongoose";
+import uploadImageClodinary from "../utils/uploadImages.js";
 
 export const createSubject = async (req, res) => {
     try {
 
         const { subjectName } = req.body;
-        const avatar = req.file.filename;
 
         if(!subjectName){
             return res.status(500).json({
@@ -28,9 +28,12 @@ export const createSubject = async (req, res) => {
             });
         }
 
+       const uploaded = await uploadImageClodinary(req.file.buffer)
+
+
         const newUbject = new Subject({
             name: subjectName,
-            image: avatar
+            image: uploaded.secure_url 
         })
         await newUbject.save();
 
@@ -279,7 +282,6 @@ export const createTeacher = async (req, res) => {
     try {
 
         const { name, email, password, phone, subId, about} = req.body;
-        const avatar = req.file.filename;
 
         if(!subId){
             return res.status(400).json({
@@ -318,11 +320,13 @@ export const createTeacher = async (req, res) => {
 
         const hashedPass = await hashPassword(password)
 
+        const uploaded = await uploadImageClodinary(req.file.buffer)
+
         const teacher = new Teacher({
             name,
             email,
             phone,
-            avatar: avatar,
+            avatar: uploaded.secure_url ,
             password: hashedPass,
             subjects: [subject._id],
             about

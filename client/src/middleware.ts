@@ -17,11 +17,12 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('refreshToken')?.value
   const { pathname, origin } = request.nextUrl
 
-  // Allow access to public routes
+  // Public routes without auth
   if (
-    pathname === '/' ||
     pathname.startsWith('/login') ||
-    pathname.startsWith('/api/auth')
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/verification-code') 
   ) {
     return NextResponse.next()
   }
@@ -33,22 +34,34 @@ export async function middleware(request: NextRequest) {
 
   const decoded = await verifyJWT(token)
 
-  // Role-based protection
-  if (pathname.startsWith('/admin') && decoded?.role !== 'admin') {
-    return NextResponse.redirect(`${origin}/`)
+  if (!decoded) {
+    return redirectToLogin(request)
   }
 
-  if (pathname.startsWith('/teacher') && decoded?.role !== 'teacher') {
-    return NextResponse.redirect(`${origin}/`)
+  // Redirect based on role if path is root
+  if (pathname === '/') {
+    if (decoded.role === 'admin') {
+      return NextResponse.redirect(new URL('/admin', origin))
+    }
+    if (decoded.role === 'teacher') {
+      return NextResponse.redirect(new URL('/teacher', origin))
+    }
+  }
+
+  // Role-based protection
+  if (pathname.startsWith('/admin') && decoded.role !== 'admin') {
+    return NextResponse.redirect(new URL('/', origin))
+  }
+
+  if (pathname.startsWith('/teacher') && decoded.role !== 'teacher') {
+    return NextResponse.redirect(new URL('/', origin))
   }
 
   return NextResponse.next()
 }
 
 function redirectToLogin(request: NextRequest) {
-  const loginUrl = new URL('/login', request.nextUrl.origin)
-  loginUrl.searchParams.set('from', request.nextUrl.pathname)
-  return NextResponse.redirect(loginUrl)
+  return NextResponse.redirect(new URL('/register', request.nextUrl.origin))
 }
 
 export const config = {

@@ -3,6 +3,7 @@ import { Teacher } from "../models/teacherModel.js";
 import { PdfModel } from "../models/pdfModel.js";
 import { VideoModel } from "../models/videoModel.js";
 import { Quizz } from "../models/quizzModel.js";
+import uploadPdfToCloudinary from "../utils/uploadPdf.js";
 
 export const getTeacherById = async (req, res) => {
     try {
@@ -253,7 +254,6 @@ export const teacherUploadQuiz = async (req, res) => {
     }
 };
 
-
 export const getTeacherQuizzesByLevel = async (req, res) => {
     try {
         
@@ -365,55 +365,72 @@ export const deleteQuize = async (req, res) => {
     }
 }   
 
+
 export const uploadPdf = async (req, res) => {
-    try {
+  try {
+    const { level, title } = req.body;
+    const teacherId = req.userId;
 
-        const { level , title} = req.body;
-        const teacherId = req.userId;
-
-        if(!level || !title){
-            return res.status(400).json({
-                message: "Complete all data",
-                error: true,
-                status: false,
-            });
-        }
-
-        const pdf = req.file.filename
-
-        const isPdfExist = await PdfModel.findOne({title});
-        if(isPdfExist){
-            return res.status(400).json({
-                message: "Pdf is already exist",
-                error: true,
-                status: false,
-            });
-        }
-        
-        const newPdf = new PdfModel({
-            teacher: teacherId,
-            title,
-            level,
-            pdf
-        })
-        await newPdf.save()
-
-        return res.status(200).json({
-            message: "Pdf uploaded successfully",
-            error: false,
-            status: true,
-            data: newPdf
-        });
-
-
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
+    // Validate input
+    if (!level || !title) {
+      return res.status(400).json({
+        success: false,
+        message: "Level and title are required",
+      });
     }
-}   
+
+    // Check for existing PDF
+    const existingPdf = await PdfModel.findOne({ title });
+    if (existingPdf) {
+      return res.status(409).json({
+        success: false,
+        message: "PDF with this title already exists",
+      });
+    }
+
+    // Validate file upload
+    if (!req.file?.buffer) {
+      return res.status(400).json({
+        success: false,
+        message: "No PDF file uploaded",
+      });
+    }
+
+    // Upload to Cloudinary
+    const uploaded = await uploadPdfToCloudinary(req.file.buffer);
+    
+    // Create new PDF record
+    const newPdf = new PdfModel({
+      teacher: teacherId,
+      title,
+      level,
+      pdf: uploaded.secure_url,
+      cloudinaryId: uploaded.public_id,
+      pdfDirectUrl: uploaded.directUrl
+    });
+
+    await newPdf.save();
+
+    return res.status(201).json({
+      success: true,
+      message: "PDF uploaded successfully",
+      data: {
+        id: newPdf._id,
+        title: newPdf.title,
+        level: newPdf.level,
+        url: newPdf.pdf,
+        directUrl: newPdf.pdfDirectUrl,
+        createdAt: newPdf.createdAt
+      }
+    });
+  } catch (error) {
+    console.error("PDF upload error:", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal server error",
+    });
+  }
+};
 
 export const getPdfByLevel = async (req, res) => {
     try {

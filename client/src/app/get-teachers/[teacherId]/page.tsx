@@ -33,13 +33,13 @@ const Page = () => {
           <>
             <div className="flex flex-col md:flex-row items-center gap-10 max-w-3xl mx-auto mt-10 p-6 rounded-xl bg-white shadow-xl opacity-0 animate-fadeInUp">
               <div className="w-[200px]">
-                <Image
-                  src={`${process.env.NEXT_PUBLIC_IMAGES_URL}${teacher?.avatar}`}
+                { teacher?.avatar?.startsWith("http") &&  <Image
+                  src={teacher?.avatar}
                   alt="Teacher Image"
                   height={200}
                   width={200}
                   className="w-[150px] h-[150px] rounded-full border-4 border-gradient-to-r from-blue-500 to-green-400 object-cover shadow-xl transition-all duration-500 ease-in-out transform hover:scale-110"
-                />
+                />}
               </div>
               <div className="flex-1">
                 <p className="text-gray-700 text-lg text-justify">{teacher?.about}</p>
@@ -48,7 +48,7 @@ const Page = () => {
 
             <div className="max-w-3xl mx-auto mt-16 mb-10 grid sm:grid-cols-3 gap-6">
               <Link
-                href={`/teachers/videos?teacherName=${name}&teacherId=${teacherId}`}
+                href={`/get-teachers/videos?teacherName=${name}&teacherId=${teacherId}`}
                 className="flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white text-center h-[120px] rounded-xl p-4 transform hover:scale-105 transition-all duration-300 ease-in-out shadow-xl hover:shadow-2xl opacity-0 animate-fadeInLeft"
               >
                 <div>
@@ -60,7 +60,7 @@ const Page = () => {
               </Link>
 
               <Link
-                href={`/teachers/notes?teacherName=${name}&teacherId=${teacherId}`}
+                href={`/get-teachers/notes?teacherName=${name}&teacherId=${teacherId}`}
                 className="flex items-center justify-center bg-gradient-to-r from-yellow-500 to-orange-400 text-white text-center h-[120px] rounded-xl p-4 transform hover:scale-105 transition-all duration-300 ease-in-out shadow-xl hover:shadow-2xl opacity-0 animate-fadeInUp"
               >
                 <div>
@@ -72,7 +72,7 @@ const Page = () => {
               </Link>
 
               <Link
-                href={`/teachers/quizzes?teacherName=${name}&teacherId=${teacherId}`}
+                href={`/get-teachers/quizzes?teacherName=${name}&teacherId=${teacherId}`}
                 className="flex items-center justify-center bg-gradient-to-r from-green-500 to-teal-400 text-white text-center h-[120px] rounded-xl p-4 transform hover:scale-105 transition-all duration-300 ease-in-out shadow-xl hover:shadow-2xl opacity-0 animate-fadeInRight"
               >
                 <div>
