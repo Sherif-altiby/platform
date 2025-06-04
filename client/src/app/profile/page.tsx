@@ -51,7 +51,7 @@ const Page = () => {
 
              toast.success(res.data.message)
         } catch (error) {
-             console.log(error)
+             error &&  toast.error("حدث خطأ")
         } finally{
             setLoading(false)
         }

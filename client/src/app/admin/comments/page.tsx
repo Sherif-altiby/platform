@@ -6,6 +6,7 @@ import Heading from "@/components/Heading";
 import Spiner from "@/components/Spiner";
 import { CommentType } from "@/types/Types";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 
 const Page = () => {
   const [loading, setLoading] = useState(false);
@@ -19,7 +20,7 @@ const Page = () => {
       const res = await Axios.get("admin/get-all-comments");
       setComments(res.data.data);
     } catch (error) {
-      console.log(error);
+      error &&  toast.error("حدث خطأ")
     } finally {
       setLoading(false);
     }

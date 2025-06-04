@@ -4,7 +4,7 @@ import SubHeader from "@/components/SubHeader";
 import VideoPlayer from "@/components/VideoPlayer";
 import { useSearchParams } from "next/navigation"
 
-const page = () => {
+const Page = () => {
  
     const searchParams = useSearchParams();
 
@@ -23,4 +23,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

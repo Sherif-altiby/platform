@@ -22,7 +22,7 @@ const Page = () => {
       const res = await Axios.post("user/get-subject-details", { subId });
       setSubject(res.data.data);
     } catch (error) {
-      toast.error("فشل في جلب بيانات المادة");
+      error && toast.error("فشل في جلب بيانات المادة");
     }
   };
 

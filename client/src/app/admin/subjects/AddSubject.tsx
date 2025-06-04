@@ -26,8 +26,6 @@ const AddSubject = ({ closeModal }: { closeModal: Dispatch<SetStateAction<boolea
       formData.append("subjectName", data.subjectName);
       formData.append("avatar", data.avatar[0]);
 
-    console.log(data)
-
     try {
       const res = await Axios.post('admin/add-subject', formData,{
         headers: {

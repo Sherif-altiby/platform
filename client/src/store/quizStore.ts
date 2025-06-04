@@ -1,5 +1,6 @@
 import { Axios } from '@/axios/Axios'
 import { useQuizInterface } from '@/types/Types';
+import { toast } from 'react-toastify';
 import { create } from 'zustand'
 
 export const useQuizStore = create<useQuizInterface>((set) => ({
@@ -21,7 +22,7 @@ export const useQuizStore = create<useQuizInterface>((set) => ({
                 quizzes: res.data.data
             }))
         } catch (error) {
-            console.log(error)
+            error &&  toast.error("حدث خطأ")
         } finally {
             set(() => ({
                 isFetchingQuize: false

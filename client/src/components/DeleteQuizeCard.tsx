@@ -27,8 +27,7 @@ const DeleteQuizeCard = ({ quizId, setShow, level, teacherId }: DeleteQuizeCardP
       await getQuizzes(level, teacherId);
       toast.success(res.data.message);
     } catch (error) {
-      console.error(error);
-      toast.error("حدث خطأ أثناء حذف الاختبار");
+      error && toast.error("حدث خطأ أثناء حذف الاختبار");
     } finally {
       setIsDeleting(false);
       setShow(false);

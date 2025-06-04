@@ -19,7 +19,6 @@ const EditLesson = ({ video,  closeEdit, updateLessonFn}: EditLessonProps) => {
   });
 
   const onSubmit = async (data: Video) => {
-    console.log("Updated Video:", data);
     updateLessonFn({...data, videoId: data._id})
   };
 

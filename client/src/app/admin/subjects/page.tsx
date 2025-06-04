@@ -8,6 +8,7 @@ import SubjectCard from "./SubjectCard ";
 import { Axios } from "@/axios/Axios";
 import { SubjectTypes } from "@/types/Types";
 import Spiner from "@/components/Spiner";
+import { toast } from "react-toastify";
 
 
 
@@ -24,9 +25,8 @@ const Page = () => {
         const res = await Axios.get(`user/get-subjects`);
   
         setSubjects(res.data.data);
-        console.log(res.data.data);
       } catch (error) {
-        console.log(error);
+        error &&  toast.error("حدث خطأ")
       } finally {
         setLoading(false);
       }

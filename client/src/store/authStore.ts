@@ -26,8 +26,6 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
             user: res.data.user
           }))      
           
-          console.log(res)
-
           const user = {
             name: res.data.user.name,
             isBlocked: res.data.user.isBlocked,
@@ -37,6 +35,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
 
           localStorage.setItem("user", JSON.stringify(user))
        } catch (error) {
+         error &&  toast.error("حدث خطأ")
           set(() => ({
             user: null
           }))
@@ -68,7 +67,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
             
         } catch (error) {
             if (error instanceof AxiosError) {
-                toast.error(error?.response?.data.message);  
+                error && toast.error(error?.response?.data.message);  
             } else {
                 toast.error("البريد الالكتروني او كلمة المرور خطأ");
             }
@@ -98,7 +97,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
           return res.data
             
         } catch (error: any) {
-            toast.error(error.response.data.message)
+           error &&  toast.error(error.response.data.message)
         } finally {
             set(() => ({
                 isRegister: false
@@ -118,7 +117,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
             toast.success(res.data.message);
             
          } catch (error) {
-            toast.error("هذا الحساب ليس موجودا")
+            error && toast.error("هذا الحساب ليس موجودا")
          } finally {
                 set(() => ({
                     isForgetting: false
@@ -138,7 +137,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
             window.location.replace(`/`);
             
         } catch (error) {
-            console.log(error)
+            error &&  toast.error("حدث خطأ")
         } finally {
             set(() => ({
                 isVerifingCode: false

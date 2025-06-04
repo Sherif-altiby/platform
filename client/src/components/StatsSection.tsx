@@ -1,6 +1,7 @@
 import { Axios } from '@/axios/Axios';
 import React, { useEffect, useState } from 'react';
 import { FaUsers, FaChalkboardTeacher, FaBook } from 'react-icons/fa';
+import { toast } from 'react-toastify';
 
 const StatsSection: React.FC = () => {
 
@@ -18,7 +19,7 @@ const StatsSection: React.FC = () => {
         setLessons(res.data.data.lessons)
       
     } catch (error) {
-      console.log(error)
+      error &&  toast.error("حدث خطأ")
     }
   }
 

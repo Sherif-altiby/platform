@@ -7,6 +7,7 @@ import MainButton from "@/components/MainButton";
 import { useTeacherStore } from "@/store/teacherStore";
 import { SubjectTypes } from "@/types/Types";
 import { Axios } from "@/axios/Axios";
+import { toast } from "react-toastify";
 
  type AddTeacherTypes = {
     name: string;
@@ -22,7 +23,7 @@ const AddTeacher = ( {closeModal}: {closeModal: Dispatch<SetStateAction<boolean>
 
     const { addTeacher} = useTeacherStore()
 
-    const { register, handleSubmit, formState: { errors }, reset} = useForm<AddTeacherTypes>({
+    const { register, handleSubmit, reset} = useForm<AddTeacherTypes>({
         mode: "onBlur",
     })
 
@@ -32,20 +33,15 @@ const AddTeacher = ( {closeModal}: {closeModal: Dispatch<SetStateAction<boolean>
     }
 
     const [subjects, setSubjects] = useState<SubjectTypes[]>([]);
-      const [loading, setLoading] = useState(false);
     
       const getSubjects = async () => {
-        setLoading(true);
         try {
           const res = await Axios.get(`user/get-subjects`);
     
           setSubjects(res.data.data);
-          console.log(res.data.data);
         } catch (error) {
-          console.log(error);
-        } finally {
-          setLoading(false);
-        }
+          error &&  toast.error("حدث خطأ")
+        }  
       };
     
       useEffect(() => {

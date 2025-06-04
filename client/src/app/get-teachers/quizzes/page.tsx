@@ -8,6 +8,7 @@ import { Quize } from "@/types/Types";
 import { useAuthUser } from "@/store/authStore";
 import Quiz from "./Quiz";
 import Spiner from "@/components/Spiner";
+import { toast } from "react-toastify";
 
 const Pages = () => {
   const searchParams = useSearchParams();
@@ -31,10 +32,8 @@ const Pages = () => {
       });
 
       setQuizzes(res.data.data);
-      console.log(res.data.data);
     } catch (error) {
-      console.log(error);
-    } finally {
+      error &&  toast.error("حدث خطأ")    } finally {
       setLoading(false);
     }
   };

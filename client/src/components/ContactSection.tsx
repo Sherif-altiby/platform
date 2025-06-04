@@ -26,7 +26,6 @@ const Contact = () => {
 
     // Simulate form submission logic
     setTimeout(() => {
-      console.log(formData); // You can replace this with your actual form submission API call
       router.push("/thank-you");
       setIsSubmitting(false);
     }, 2000);

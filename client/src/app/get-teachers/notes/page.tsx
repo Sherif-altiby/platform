@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { NoteType } from "@/types/Types";
 import { useAuthUser } from "@/store/authStore";
 import Spiner from "@/components/Spiner";
+import { toast } from "react-toastify";
 
 const Pages = () => {
   const searchParams = useSearchParams();
@@ -29,9 +30,8 @@ const Pages = () => {
       });
 
       setNotes(res.data.data);
-      console.log(res.data.data);
     } catch (error) {
-      console.log(error);
+      error &&  toast.error("حدث خطأ")
     } finally {
       setLoading(false);
     }

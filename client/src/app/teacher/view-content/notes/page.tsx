@@ -41,7 +41,7 @@ const NotesPage = () => {
 
         setNotes(res.data.data);
       } catch (error) {
-        console.error("Error loading notes", error);
+        error &&  toast.error("حدث خطأ")
       } finally {
         setLoading(false);
       }
@@ -67,7 +67,7 @@ const NotesPage = () => {
       });
       setNotes(updated.data.data);
     } catch (error) {
-      toast.error("حدث خطأ أثناء حذف المذكرة.");
+      error && toast.error("حدث خطأ أثناء حذف المذكرة.");
     } finally {
       setIsDeleting(false);
     }

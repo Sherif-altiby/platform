@@ -41,7 +41,7 @@ const Page = () => {
       }
       reset();
     } catch (error) {
-      toast.error("حاول مرة اخري");
+      error && toast.error("حاول مرة اخري");
     }
   };
 

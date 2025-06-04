@@ -87,8 +87,6 @@ const VerificationInput = () => {
 			const code = Number(data.join(''));
 
 			const res = await userVerifyCode(email, code)
-
-			console.log(res)
 		}
 	}
 

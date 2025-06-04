@@ -22,7 +22,6 @@ const Page = () => {
       )
     }
 
-    console.log(teacherStatics)
 
   return (
     <div>

@@ -6,6 +6,7 @@ import SubjectCard from "./SubjectCard";
 import { SubjectTypes } from "@/types/Types";
 import { Axios } from "@/axios/Axios";
 import Spiner from "@/components/Spiner";
+import { toast } from "react-toastify";
 
 const Page = () => {
   const [subjects, setSubjects] = useState<SubjectTypes[]>([]);
@@ -17,9 +18,8 @@ const Page = () => {
       const res = await Axios.get(`user/get-subjects`);
 
       setSubjects(res.data.data);
-      console.log(res.data.data);
     } catch (error) {
-      console.log(error);
+      error &&  toast.error("حدث خطأ")
     } finally {
       setLoading(false);
     }

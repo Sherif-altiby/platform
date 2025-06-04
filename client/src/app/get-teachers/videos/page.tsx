@@ -8,6 +8,7 @@ import { Video } from "@/types/Types";
 import { Axios } from "@/axios/Axios";
 import { useAuthUser } from "@/store/authStore";
 import Spiner from "@/components/Spiner";
+import { toast } from "react-toastify";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -31,8 +32,8 @@ const Page = () => {
 
         setVideos(res.data.data);
 
-      console.log(res.data.data);
     } catch (error) {
+      error &&  toast.error("حدث خطأ")
     } finally {
       setLoading(false);
     }
@@ -42,7 +43,6 @@ const Page = () => {
     getVideos();
   }, [teacherId, user?.level]); // Refetch if teacher or level changes
 
-  console.log(videos)
 
 
   return (

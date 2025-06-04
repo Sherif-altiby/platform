@@ -6,6 +6,7 @@ import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { QuizTypes } from "@/types/Types";
 import Spiner from "@/components/Spiner";
+import { toast } from "react-toastify";
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -22,7 +23,7 @@ const Page = () => {
       const res = await Axios.get(`teacher/get-quiz-by-id/${quizId}`);
       setQuiz(res.data.data);
     } catch (error) {
-      console.log(error);
+      error &&  toast.error("حدث خطأ")
     } finally {
       setLoading(false);
     }
@@ -45,9 +46,8 @@ const Page = () => {
         answers,
       });
       setResult(res.data.results);
-      console.log("Result:", res.data.results);
     } catch (error) {
-      console.log(error);
+      error &&  toast.error("حدث خطأ");
     }
   };
 
