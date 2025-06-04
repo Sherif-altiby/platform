@@ -11,7 +11,7 @@ import { CiEdit } from "react-icons/ci";
 import { toast } from "react-toastify";
 import EditLesson from "./EditLesson";
 
-const page = () => {
+const Page = () => {
   const params = useSearchParams();
   const level = params.get("level");
 
@@ -200,4 +200,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

@@ -9,7 +9,7 @@ import { useAuthUser } from "@/store/authStore";
 import Quiz from "./Quiz";
 import Spiner from "@/components/Spiner";
 
-const pages = () => {
+const Pages = () => {
   const searchParams = useSearchParams();
   const name = searchParams.get("teacherName");
   const teacherId = searchParams.get("teacherId");
@@ -67,4 +67,4 @@ const pages = () => {
   );
 };
 
-export default pages;
+export default Pages;

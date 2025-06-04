@@ -10,7 +10,7 @@ import { toast } from "react-toastify"
 import ChangePassword from "./ChangePassword"
 import AddComment from "@/components/addComment"
 
-const page = () => {
+const Page = () => {
 
     const  { user, checkUser } = useAuthUser()
 
@@ -128,4 +128,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

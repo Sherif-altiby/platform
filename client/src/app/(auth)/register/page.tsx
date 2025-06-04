@@ -12,7 +12,7 @@ import ButtonLoader from "@/components/ButtonLoader";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   const { userRegister, isRegister } = useAuthUser();
 
@@ -216,4 +216,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
