@@ -16,7 +16,7 @@ import {
         } from "../controller/teacherController.js";
 import { uploadQuizValidation, uploadVideoValidation } from "../validations/ApiValidations.js";
 import isTeacher from "../middlewares/isTeacher.js";
-import uploadPdfMid from "../middlewares/pdfMulter.js";
+import uploadPdfMulter from "../middlewares/pdfMulter.js";
 
 
 const teacherRouter = Router();
@@ -31,7 +31,7 @@ teacherRouter.post('/get-quiz-by-level', auth, getTeacherQuizzesByLevel);
 teacherRouter.get('/get-quiz-by-id/:id', auth, getQuizeById);
 teacherRouter.delete('/delete-quiz', auth, isTeacher, deleteQuize);
 
-teacherRouter.post('/upload-pdf', auth, isTeacher, uploadPdfMid.single('pdf'), uploadPdf);
+teacherRouter.post('/upload-pdf', auth, isTeacher, uploadPdfMulter.single('pdf'), uploadPdf);
 teacherRouter.post('/get-pdf-by-level', auth, getPdfByLevel);
 teacherRouter.delete('/delete-pdf', auth, isTeacher, deletePdf);
 

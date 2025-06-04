@@ -82,12 +82,7 @@ const Nav = () => {
                   >
                     <CiUser />
                   </Link>
-                  {user.role === "teacher" && (
-                    <Link
-                      href={"/teacher"}
-                      className="w-9 h-8 text-xl lg:text-3xl lg:w-[40px] lg:h-[40px] border border-hoverLinkColor flex items-center justify-center rounded-lg text-hoverLinkColor transition-all duration-300 hover:bg-hoverLinkColor hover:text-white"
-                    ></Link>
-                  )}
+                  
                 </div>
               )}
 

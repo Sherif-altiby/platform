@@ -25,14 +25,14 @@ const SubjectCard = ({ link, name, length, avatar }: SubjectCardProps) => {
 
         <div className="flex flex-col items-center">
           <div className="w-24 h-24 rounded-full border-4 border-blue-200 overflow-hidden shadow-lg transform group-hover:scale-110 transition duration-500">
-            <Image
+            { avatar.startsWith("http") && <Image
               src={avatar}
               alt={`${name} subject`}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 96px, 96px"
               loading="lazy"
-            />
+            />}
           </div>
 
           <h3 className="mt-4 text-xl font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">

@@ -62,7 +62,7 @@ const Page = () => {
               <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full">
                 {subject.teachers.map((t) => (
                   <Link
-                    href={`/teachers/${t._id}?name=${t.name}`}
+                    href={`/get-teachers/${t._id}?name=${t.name}`}
                     key={t._id}
                     className="group bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
                   >
