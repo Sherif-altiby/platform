@@ -3,7 +3,6 @@
 import MainButton from "@/components/MainButton";
 import { useAuthUser } from "@/store/authStore";
 import { useSearchParams } from "next/navigation";
-import { useRouter } from "next/router";
 import { useRef, useState, useEffect } from "react";
 
 const VerificationInput = () => {

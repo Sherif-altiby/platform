@@ -5,7 +5,7 @@ import StaticsSkeleton from "../../skeletons/StaticsSkeleton"
 import { useTeacherStore } from "@/store/teacherStore"
 import { useEffect } from "react"
 
-const page = () => {
+const Page = () => {
  
     const { getTeacherStatics, teacherStatics, isFetchingTeacherStatics } = useTeacherStore();
 
@@ -70,4 +70,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

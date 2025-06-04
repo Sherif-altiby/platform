@@ -7,7 +7,7 @@ import Spiner from "@/components/Spiner";
 import { CommentType } from "@/types/Types";
 import React, { useEffect, useState } from "react";
 
-const page = () => {
+const Page = () => {
   const [loading, setLoading] = useState(false);
   const [comments, setComments] = useState<CommentType[]>([]);
   const [show, setShow] = useState(true); // true = visible comments
@@ -76,4 +76,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

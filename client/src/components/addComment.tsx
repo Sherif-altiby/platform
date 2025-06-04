@@ -19,7 +19,7 @@ const AddComment = () => {
 
     setLoading(true);
     try {
-      const res = await Axios.post('user/add-comment', {
+        await Axios.post('user/add-comment', {
         comment,
         rate: rating,
       });

@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 const Login = () => {
 
       const router = useRouter()
-      const { isLogin, isRegister, userLogin } = useAuthUser()
+      const { isLogin, userLogin } = useAuthUser()
 
       const { register, handleSubmit, formState: { errors },} = useForm<LoginInputs>({
         mode: "onBlur",

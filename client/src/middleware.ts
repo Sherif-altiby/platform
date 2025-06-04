@@ -9,6 +9,7 @@ async function verifyJWT(token: string) {
     const { payload } = await jwtVerify(token, secret)
     return payload as { id: string; role: 'admin' | 'teacher' | 'user' }
   } catch (error) {
+    console.log(error)
     return null
   }
 }

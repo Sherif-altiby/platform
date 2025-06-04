@@ -1,8 +1,8 @@
 import SubHeader from "@/components/SubHeader"
-import { IoCloseSharp } from "react-icons/io5";
-import { MdNotificationsActive } from "react-icons/md";
+// import { IoCloseSharp } from "react-icons/io5";
+// import { MdNotificationsActive } from "react-icons/md";
 
-const page = () => {
+const Page = () => {
   return (
     <div className="ctm-height" >
           <SubHeader currentTitle="الاشعارات" />
@@ -20,4 +20,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

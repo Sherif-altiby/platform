@@ -11,7 +11,7 @@ import Spiner from "@/components/Spiner";
 
 
 
-const page = () => {
+const Page = () => {
 
   const [showModal, setShowModal] = useState(false);
 
@@ -78,4 +78,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

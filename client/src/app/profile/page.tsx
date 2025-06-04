@@ -1,7 +1,6 @@
 "use client"
 
 import { Axios } from "@/axios/Axios"
-import ButtonLoader from "@/components/ButtonLoader"
 import MainButton from "@/components/MainButton"
 import SubHeader from "@/components/SubHeader"
 import { useAuthUser } from "@/store/authStore"

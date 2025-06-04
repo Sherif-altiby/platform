@@ -1,8 +1,5 @@
-import { Axios } from "@/axios/Axios";
 import { TeacherTypes } from "@/types/Types";
 import Image from "next/image";
-import { toast } from "react-toastify";
-import { HiOutlineBan, HiOutlineTrash } from "react-icons/hi";
 import { BsPersonCircle } from "react-icons/bs";
 import { FaLock, FaUnlock } from "react-icons/fa6";
 

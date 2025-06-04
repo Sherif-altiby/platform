@@ -8,7 +8,7 @@ type EmailT = {
     email: string
 }
 
-const page = () => {
+const Page = () => {
 
       const { isForgetting, userForgotPassword} = useAuthUser();
 
@@ -48,4 +48,4 @@ const page = () => {
   )
 }
 
-export default page
+export default Page

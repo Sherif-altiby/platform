@@ -1,11 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
-import { useTeacherStore } from "@/store/teacherStore";
-import { useEffect, useState } from "react";
-import { Axios } from "@/axios/Axios";
-import { SubjectTypes } from "@/types/Types";
+
 
 const Footer = () => {
   const date = new Date();
@@ -180,59 +176,7 @@ const Footer = () => {
           </div>
         </div>
       </footer>
-      {/* <footer className="pt-5 pb-5 shadow-main-shadow bg-black text-white" >
-            <div className="container">
-                 
-                     <div className="flex items-start justify-between flex-wrap flex-col md:flex-row" >
-      
-                               <Link href={'/'} >
-                                   <Image 
-                                        src={'/logo_2.svg'}
-                                        width={100}
-                                        height={100}
-                                        alt="Logo image"
-                                        className=""
-                                   />
-                               </Link>
-   
-                               <div className="flex flex-col" >
-                                     <div className="text-2xl font-semibold mb-3" > المدرسين </div>
-                                        {teachers?.map((teacher) => (
-                                        <Link 
-                                          className="text-lg mb-2 transition-all duration-300 hover:text-hoverLinkColor"
-                                          href={'/'} 
-                                          key={teacher._id}
-                                        > 
-                                              أ/ {teacher.name} 
-                                        </Link>
-                                        ))}
-                               </div>
-   
-                               <div className="flex flex-col" >
-                                     <div className="text-2xl font-semibold mb-3" > المواد الدراسية </div>
-                                     {subjects.map((s) => (
-                                        <Link 
-                                             className="text-lg mb-2 transition-all duration-300 hover:text-hoverLinkColor" 
-                                             href={'/'} 
-                                             key={s._id}
-                                        > 
-                                             {s.name} 
-                                        </Link>
-                                     ))}
-                               </div>
-   
-                               <div className="w-full lg:w-[250px] text-lg text-justify" >
-                               منصة Scholarly التعليمية تهدف إلى تبسيط العملية التعليمية من خلال تقديم دروس تفاعلية وأدوات مبتكرة لتطوير مهارات الطلاب في مختلف المواد الدراسية.انضم إلينا، ودعونا نساعدك على تحقيق أهدافك التعليمية 
-                               </div>
-   
-                     </div>
-   
-                     <div className="text-center py-4 border-t border-white mt-10" >
-                       جميع الحقوق محفوظة @ {date.getFullYear()} تنفيذ و تطوير <a href="https://www.linkedin.com/in/sherif-altiby-38b350229/" target="_blank" className="underline transition-all duration-200 hover:text-hoverLinkColor" > Sherif Altiby </a>
-                     </div>
-   
-            </div>
-       </footer> */}
+       
     </>
   );
 };

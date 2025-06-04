@@ -4,10 +4,9 @@ import React, { useEffect } from "react";
 import SubHeader from "../../components/SubHeader";
 import TeacherCard from "./TeacherCard";
 import { useTeacherStore } from "@/store/teacherStore";
-import TeacherSkeleton from "../../skeletons/TeacherSkeleton";
 import Spiner from "@/components/Spiner";
 
-const page = () => {
+const Page = () => {
   const { teachers, getTeachers, isFetchingTeachers } = useTeacherStore();
 
   useEffect(() => {
@@ -34,4 +33,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
