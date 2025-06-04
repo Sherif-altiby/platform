@@ -19,7 +19,7 @@ const Page = () => {
 
       setSubjects(res.data.data);
     } catch (error) {
-      error &&  toast.error("حدث خطأ")
+        toast.error("حدث خطأ")
     } finally {
       setLoading(false);
     }

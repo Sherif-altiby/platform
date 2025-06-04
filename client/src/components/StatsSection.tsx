@@ -19,7 +19,7 @@ const StatsSection: React.FC = () => {
         setLessons(res.data.data.lessons)
       
     } catch (error) {
-      error &&  toast.error("حدث خطأ")
+        toast.error("حدث خطأ")
     }
   }
 

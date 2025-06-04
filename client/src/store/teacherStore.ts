@@ -26,7 +26,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
             }))
             
         } catch (error) {
-           error &&  toast.error("حدث خطأ")
+             toast.error("حدث خطأ")
         } finally {
             set(() => ({
                 isFetchingTeachers: false
@@ -44,7 +44,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
                 teacher: res.data.data
              }))
         } catch (error) {
-            error &&  toast.error("حدث خطأ")
+              toast.error("حدث خطأ")
         } finally {
             set(() => ({
                 isFetchingTeacher: false
@@ -64,7 +64,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
             }))
             
         } catch (error) {
-            error &&  toast.error("حدث خطأ")
+              toast.error("حدث خطأ")
         } finally {
             set(() => ({
                 isFetchingTeacherStatics: false
@@ -92,7 +92,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
 
             toast.success(res.data.message)
          } catch (error) {
-          error &&   toast.error("Errorrr")
+             toast.error("Errorrr")
          }
      }
      

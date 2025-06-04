@@ -12,7 +12,7 @@ const Page = () => {
 
       const { isForgetting, userForgotPassword} = useAuthUser();
 
-      const { register, handleSubmit, formState: { errors },} = useForm<EmailT>()    
+      const { register, handleSubmit} = useForm<EmailT>()    
       const onSubmit: SubmitHandler<EmailT> = async (data) => {
           if(data.email){
              await  userForgotPassword(data.email);

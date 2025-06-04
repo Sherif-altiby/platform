@@ -2,7 +2,7 @@ import React from "react";
 
 type SubjectProps = {
   name: string;
-  image: any;
+  image: string;
 };
 
 

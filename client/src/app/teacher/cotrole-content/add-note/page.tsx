@@ -40,7 +40,7 @@ const UploadPage = () => {
       toast.success(res.data.message)
       reset();  
     } catch (error) {
-      error &&  toast.error("حدث خطأ")
+        toast.error("حدث خطأ")
     } finally {
       setLoading(false);
     }

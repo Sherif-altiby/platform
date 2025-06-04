@@ -20,7 +20,7 @@ const Page = () => {
       const res = await Axios.get('user/get-users')
       setUsers(res.data.data)
     } catch (error) {
-     error &&  toast.error('Error fetching users')
+       toast.error('Error fetching users')
     } finally {
       setLoading(false)
     }
@@ -40,7 +40,7 @@ const Page = () => {
         }
       getUsers()
     } catch (error) {
-     error &&  toast.error('Error updating block status')
+       toast.error('Error updating block status')
     } finally {
       setBlockLoading(false)
     }

@@ -40,7 +40,7 @@ const AddTeacher = ( {closeModal}: {closeModal: Dispatch<SetStateAction<boolean>
     
           setSubjects(res.data.data);
         } catch (error) {
-          error &&  toast.error("حدث خطأ")
+            toast.error("حدث خطأ")
         }  
       };
     

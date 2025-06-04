@@ -22,7 +22,7 @@ export const useQuizStore = create<useQuizInterface>((set) => ({
                 quizzes: res.data.data
             }))
         } catch (error) {
-            error &&  toast.error("حدث خطأ")
+              toast.error("حدث خطأ")
         } finally {
             set(() => ({
                 isFetchingQuize: false

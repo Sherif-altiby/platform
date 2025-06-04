@@ -33,7 +33,7 @@ const CommentCard: React.FC<Props> = ({
 
       toast.success(res.data.message);
     } catch (error) {
-      error &&  toast.error("حدث خطأ")
+        toast.error("حدث خطأ")
     }
   };
 
@@ -45,7 +45,7 @@ const CommentCard: React.FC<Props> = ({
   
       toast.success(res.data.message);
     } catch (error) {
-      error && toast.error("حدث خطأ أثناء حذف التعليق");
+       toast.error("حدث خطأ أثناء حذف التعليق");
      }
   };
   

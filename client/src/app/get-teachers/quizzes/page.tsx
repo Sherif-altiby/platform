@@ -33,7 +33,7 @@ const Pages = () => {
 
       setQuizzes(res.data.data);
     } catch (error) {
-      error &&  toast.error("حدث خطأ")    } finally {
+        toast.error("حدث خطأ")    } finally {
       setLoading(false);
     }
   };

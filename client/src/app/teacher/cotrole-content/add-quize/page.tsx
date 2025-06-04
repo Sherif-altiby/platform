@@ -58,7 +58,7 @@ const Page = () => {
       setLevel("first");
       setQuestions([]);
     } catch (error: any) {
-     error &&  toast.error(error?.response?.data?.message || "حدث خطأ ما");
+       toast.error(error?.response?.data?.message || "حدث خطأ ما");
     } finally {
       setLoading(false);
     }
