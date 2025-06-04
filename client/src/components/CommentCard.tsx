@@ -32,7 +32,7 @@ const CommentCard: React.FC<Props> = ({
       const res = await Axios.put("admin/show-comment", { commentId });
 
       toast.success(res.data.message);
-    } catch (error) {
+    } catch  {
         toast.error("حدث خطأ")
     }
   };
@@ -44,7 +44,7 @@ const CommentCard: React.FC<Props> = ({
       });
   
       toast.success(res.data.message);
-    } catch (error) {
+    } catch  {
        toast.error("حدث خطأ أثناء حذف التعليق");
      }
   };

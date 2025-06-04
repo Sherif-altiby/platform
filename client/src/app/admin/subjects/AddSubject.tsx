@@ -36,8 +36,8 @@ const AddSubject = ({ closeModal }: { closeModal: Dispatch<SetStateAction<boolea
       toast.success(res.data.message)
       reset();
       closeModal(false);
-    } catch (error) {
-      console.error("Error:", error);
+    } catch  {
+      console.error("Error");
     }
   };
 

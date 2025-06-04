@@ -25,7 +25,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
                 teachers: res.data.data
             }))
             
-        } catch (error) {
+        } catch  {
              toast.error("حدث خطأ")
         } finally {
             set(() => ({
@@ -43,7 +43,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
              set(() => ({
                 teacher: res.data.data
              }))
-        } catch (error) {
+        } catch {
               toast.error("حدث خطأ")
         } finally {
             set(() => ({
@@ -63,7 +63,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
                 teacherStatics: res.data.data
             }))
             
-        } catch (error) {
+        } catch  {
               toast.error("حدث خطأ")
         } finally {
             set(() => ({
@@ -91,7 +91,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
             } )
 
             toast.success(res.data.message)
-         } catch (error) {
+         } catch {
              toast.error("Errorrr")
          }
      }

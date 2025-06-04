@@ -26,8 +26,7 @@ const Page = () => {
       })
       await getTeachers()
       toast.success(res.data.message)
-    } catch (error) {
-      console.error(error)
+    } catch{
       toast.error("حدث خطأ أثناء محاولة الحظر.")
     }
   }
@@ -39,8 +38,7 @@ const Page = () => {
       })
       await getTeachers()
       toast.success(res.data.message)
-    } catch (error) {
-      console.error(error)
+    } catch{
       toast.error("حدث خطأ أثناء محاولة فك الحظر.")
     }
   }

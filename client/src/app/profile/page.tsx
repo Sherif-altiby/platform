@@ -50,7 +50,7 @@ const Page = () => {
              await  checkUser()
 
              toast.success(res.data.message)
-        } catch (error) {
+        } catch  {
                toast.error("حدث خطأ")
         } finally{
             setLoading(false)

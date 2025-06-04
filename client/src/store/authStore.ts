@@ -34,7 +34,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
           }
 
           localStorage.setItem("user", JSON.stringify(user))
-       } catch (error) {
+       } catch {
            toast.error("حدث خطأ")
           set(() => ({
             user: null
@@ -116,7 +116,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
             window.location.replace(`/verification-code?email=${email}`);
             toast.success(res.data.message);
             
-         } catch (error) {
+         } catch  {
              toast.error("هذا الحساب ليس موجودا")
          } finally {
                 set(() => ({
@@ -136,7 +136,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
             toast.success(res.data.message)
             window.location.replace(`/`);
             
-        } catch (error) {
+        } catch  {
               toast.error("حدث خطأ")
         } finally {
             set(() => ({

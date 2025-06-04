@@ -44,7 +44,7 @@ const Page = () => {
         });
 
         setVideos(res.data.data);
-      } catch (error) {
+      } catch  {
           toast.error("حدث خطأ")
       } finally {
         setLoading(false);
@@ -80,7 +80,7 @@ const Page = () => {
         });
 
         setVideos(res.data.data);
-      } catch (error) {
+      } catch  {
          toast.error("حدث خطأ")
       } finally {
         setLoading(false);
@@ -95,7 +95,7 @@ const Page = () => {
          await fetchData()
          toast.success(res.data.message)
          setShowEdit(false)
-       } catch (error) {
+       } catch  {
          toast.error("حاول مرة اخري !!")
        }
   }

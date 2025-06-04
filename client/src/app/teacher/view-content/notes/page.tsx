@@ -40,7 +40,7 @@ const NotesPage = () => {
         });
 
         setNotes(res.data.data);
-      } catch (error) {
+      } catch  {
           toast.error("حدث خطأ")
       } finally {
         setLoading(false);
@@ -66,7 +66,7 @@ const NotesPage = () => {
         teacherId: user?._id,
       });
       setNotes(updated.data.data);
-    } catch (error) {
+    } catch   {
        toast.error("حدث خطأ أثناء حذف المذكرة.");
     } finally {
       setIsDeleting(false);

@@ -40,7 +40,7 @@ const Page = () => {
         router.push("/login");
       }
       reset();
-    } catch (error) {
+    } catch {
        toast.error("حاول مرة اخري");
     }
   };

@@ -19,7 +19,7 @@ const Page = () => {
     try {
       const res = await Axios.get("admin/get-all-comments");
       setComments(res.data.data);
-    } catch (error) {
+    } catch {
         toast.error("حدث خطأ")
     } finally {
       setLoading(false);

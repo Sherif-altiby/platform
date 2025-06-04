@@ -22,7 +22,7 @@ const Page = () => {
     try {
       const res = await Axios.get(`teacher/get-quiz-by-id/${quizId}`);
       setQuiz(res.data.data);
-    } catch (error) {
+    } catch  {
         toast.error("حدث خطأ")
     } finally {
       setLoading(false);
@@ -46,7 +46,7 @@ const Page = () => {
         answers,
       });
       setResult(res.data.results);
-    } catch (error) {
+    } catch {
         toast.error("حدث خطأ");
     }
   };

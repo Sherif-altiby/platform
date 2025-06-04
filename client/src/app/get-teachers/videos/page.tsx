@@ -32,7 +32,7 @@ const Page = () => {
 
         setVideos(res.data.data);
 
-    } catch (error) {
+    } catch {
         toast.error("حدث خطأ")
     } finally {
       setLoading(false);

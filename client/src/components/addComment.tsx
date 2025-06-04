@@ -27,8 +27,8 @@ const AddComment = () => {
       toast.success('تم إرسال تعليقك بنجاح');
       setComment('');
       setRating(null);
-    } catch (error: any) {
-       toast.error(error?.response?.data?.message || 'حدث خطأ ما');
+    } catch {
+       toast.error('حدث خطأ ما');
     } finally {
       setLoading(false);
     }

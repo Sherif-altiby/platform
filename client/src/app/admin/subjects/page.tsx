@@ -25,7 +25,7 @@ const Page = () => {
         const res = await Axios.get(`user/get-subjects`);
   
         setSubjects(res.data.data);
-      } catch (error) {
+      } catch  {
           toast.error("حدث خطأ")
       } finally {
         setLoading(false);

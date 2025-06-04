@@ -17,7 +17,7 @@ const BlocksPage = () => {
       setIsLoading(true);
       const response = await Axios.get("user/get-users");
       setAllUsers(response.data.data || []);
-    } catch (error) {
+    } catch  {
        toast.error("فشل في جلب المستخدمين.");
     } finally {
       setIsLoading(false);
@@ -29,7 +29,7 @@ const BlocksPage = () => {
       const res = await Axios.post("admin/unblock-user", { userId: id });
       toast.success(res.data.message);
       fetchUsers();
-    } catch (error) {
+    } catch  {
        toast.error("حدث خطأ أثناء محاولة فك الحظر.");
     }
   };
@@ -39,7 +39,7 @@ const BlocksPage = () => {
       const res = await Axios.post("admin/block-user", { userId: id });
       toast.success(res.data.message);
       fetchUsers();
-    } catch (error) {
+    } catch  {
        toast.error("حدث خطأ أثناء محاولة حظر المستخدم.");
     }
   };

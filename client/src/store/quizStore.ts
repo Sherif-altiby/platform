@@ -21,7 +21,7 @@ export const useQuizStore = create<useQuizInterface>((set) => ({
             set(() => ({
                 quizzes: res.data.data
             }))
-        } catch (error) {
+        } catch  {
               toast.error("حدث خطأ")
         } finally {
             set(() => ({
