@@ -4,8 +4,8 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'hebbkx1anhila5yf.public.blob.vercel-storage.com',
+        protocol: "https",
+        hostname: "hebbkx1anhila5yf.public.blob.vercel-storage.com",
       },
       {
         protocol: "http",
@@ -20,6 +20,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
+        pathname: "/**", // optional: restrict to specific path structure if needed
+      },
+      {
+        protocol: "https",
+        hostname: "undraw.co",
         pathname: "/**", // optional: restrict to specific path structure if needed
       },
     ],

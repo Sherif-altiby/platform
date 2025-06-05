@@ -93,7 +93,7 @@ export interface useTeacherInterface {
     email: string,
     password: string,
     subId: string,
-    avatar: any,
+    avatar: string,
     about: string
   ) => Promise<void>;
 }
@@ -107,7 +107,7 @@ export interface useAuthInterface {
   redirectUser: boolean;
   isVerifingCode: boolean;
 
-  userLogin: (email: string, password: string) => Promise<any>;
+  userLogin: (email: string, password: string) => Promise<UserTypes>;
   checkUser: () => Promise<void>;
   userRegister: (
     name: string,
@@ -115,7 +115,7 @@ export interface useAuthInterface {
     password: string,
     level: string,
     phone: string
-  ) => Promise<any>;
+  ) => Promise<UserTypes>;
   userForgotPassword: (email: string) => Promise<void>;
   userVerifyCode: (email: string, code: number) => Promise<void>;
 }

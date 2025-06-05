@@ -72,7 +72,7 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
         }
      },
 
-     addTeacher: async (name: string, phone: string, email: string, password: string, subId: string, avatar: any, about: string) => {
+     addTeacher: async (name: string, phone: string, email: string, password: string, subId: string, avatar: string, about: string) => {
 
          const formData = new FormData();
          formData.append('name', name)
