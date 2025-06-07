@@ -34,7 +34,6 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
 
       localStorage.setItem("user", JSON.stringify(user));
     } catch {
-      toast.error("حدث خطأ");
       set(() => ({
         user: null,
       }));

@@ -14,12 +14,12 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/**", // optional: restrict to specific path structure if needed
+        pathname: "/**",  
       },
     ],
   },
   eslint: {
-    ignoreDuringBuilds: true, // ✅ This line disables ESLint check during build
+    ignoreDuringBuilds: true,  
   },
 };
 

@@ -13,13 +13,16 @@ const Login = () => {
       const router = useRouter()
       const { isLogin, userLogin } = useAuthUser()
 
-      const { register, handleSubmit, formState: { errors },} = useForm<LoginInputs>({
+      const { register, handleSubmit, formState: { errors },  reset} = useForm<LoginInputs>({
         mode: "onBlur",
         resolver: zodResolver(loginSchema)
       })
     
       const onSubmit: SubmitHandler<LoginInputs> = async (data) =>  {
         const res = await userLogin(data.email, data.password)
+
+
+        reset()
 
         if (res.status){
           router.push('/')

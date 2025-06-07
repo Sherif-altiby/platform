@@ -11,6 +11,7 @@ import { CiUser } from "react-icons/ci";
 import BlockedPage from "./blocked";
 import { UserTypes } from "@/types/Types";
 
+
 const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [user, setUser] = useState<UserTypes>();
@@ -33,15 +34,8 @@ const Nav = () => {
     <>
       <nav className="shadow-md sticky top-0 bg-white z-10">
         <div className="flex items-center justify-between h-[80px] container">
-          <Link href="/">
-            <Image
-              src="/logo_2.svg"
-              width={100}
-              height={70}
-              alt="logo"
-              className="w-[150px] h-[100px]"
-            />
-          </Link>
+
+          <Link href={'/'} > <Image src={'/basira.svg'} alt="Logo" width={150}  height={100} /> </Link>
 
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link, index) =>
@@ -82,7 +76,6 @@ const Nav = () => {
                   >
                     <CiUser />
                   </Link>
-                  
                 </div>
               )}
 
