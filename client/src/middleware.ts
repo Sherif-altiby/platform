@@ -2,14 +2,13 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 
-const secret = new TextEncoder().encode(process.env.JWT_SECRET as string)
-
 async function verifyJWT(token: string) {
   try {
+    const secret = new TextEncoder().encode(process.env.JWT_SECRET!)
     const { payload } = await jwtVerify(token, secret)
     return payload as { id: string; role: 'admin' | 'teacher' | 'user' }
   } catch (error) {
-    console.log(error)
+    console.error('JWT verification error:', error)
     return null
   }
 }
@@ -18,17 +17,16 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get('refreshToken')?.value
   const { pathname, origin } = request.nextUrl
 
-  // Public routes without auth
   if (
+    pathname === '/' ||
     pathname.startsWith('/login') ||
     pathname.startsWith('/register') ||
     pathname.startsWith('/forgot-password') ||
-    pathname.startsWith('/verification-code') 
+    pathname.startsWith('/verification-code')
   ) {
     return NextResponse.next()
   }
 
-  // Redirect to login if no token
   if (!token) {
     return redirectToLogin(request)
   }
@@ -39,7 +37,6 @@ export async function middleware(request: NextRequest) {
     return redirectToLogin(request)
   }
 
-  // Redirect based on role if path is root
   if (pathname === '/') {
     if (decoded.role === 'admin') {
       return NextResponse.redirect(new URL('/admin', origin))
@@ -49,7 +46,6 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // Role-based protection
   if (pathname.startsWith('/admin') && decoded.role !== 'admin') {
     return NextResponse.redirect(new URL('/', origin))
   }
@@ -62,9 +58,9 @@ export async function middleware(request: NextRequest) {
 }
 
 function redirectToLogin(request: NextRequest) {
-  return NextResponse.redirect(new URL('/register', request.nextUrl.origin))
+  return NextResponse.redirect(new URL('/login', request.nextUrl.origin))
 }
 
 export const config = {
-  matcher: ['/((?!_next|favicon.ico).*)'], // match everything except Next.js internals and favicon
+  matcher: ['/((?!_next|favicon.ico).*)'],
 }
