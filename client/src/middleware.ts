@@ -24,6 +24,8 @@ export async function middleware(request: NextRequest) {
   const authHeader = request.headers.get("authorization");
   if (authHeader?.startsWith("Bearer ")) {
     token = authHeader.substring(7);
+
+    console.log("token", token)
   }
   
   // Fallback: Try custom header
