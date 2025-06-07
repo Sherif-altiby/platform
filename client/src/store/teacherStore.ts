@@ -19,7 +19,6 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
             }))
 
             const res = await Axios.get('user/get-teachers');
-            console.log(res.data.data)
 
             set(() => ({
                 teachers: res.data.data

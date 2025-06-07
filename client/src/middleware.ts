@@ -68,5 +68,6 @@ function redirectToLogin(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|favicon.ico).*)'], // match everything except Next.js internals and favicon
+  matcher: ['/((?!_next|favicon.ico).*)'],
+  runtime: 'nodejs',
 }
