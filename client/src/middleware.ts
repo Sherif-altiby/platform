@@ -29,35 +29,34 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect to login if no token
-  if (!secret) {
+  if (!token) {
     return redirectToLogin(request)
   }
 
+  const decoded = await verifyJWT(token)
 
-  // const decoded = await verifyJWT(token)
-
-  // if (!decoded) {
-  //   return redirectToLogin(request)
-  // }
+  if (!decoded) {
+    return redirectToLogin(request)
+  }
 
   // Redirect based on role if path is root
-  // if (pathname === '/') {
-  //   if (decoded.role === 'admin') {
-  //     return NextResponse.redirect(new URL('/admin', origin))
-  //   }
-  //   if (decoded.role === 'teacher') {
-  //     return NextResponse.redirect(new URL('/teacher', origin))
-  //   }
-  // }
+  if (pathname === '/') {
+    if (decoded.role === 'admin') {
+      return NextResponse.redirect(new URL('/admin', origin))
+    }
+    if (decoded.role === 'teacher') {
+      return NextResponse.redirect(new URL('/teacher', origin))
+    }
+  }
 
   // Role-based protection
-  // if (pathname.startsWith('/admin') && decoded.role !== 'admin') {
-  //   return NextResponse.redirect(new URL('/', origin))
-  // }
+  if (pathname.startsWith('/admin') && decoded.role !== 'admin') {
+    return NextResponse.redirect(new URL('/', origin))
+  }
 
-  // if (pathname.startsWith('/teacher') && decoded.role !== 'teacher') {
-  //   return NextResponse.redirect(new URL('/', origin))
-  // }
+  if (pathname.startsWith('/teacher') && decoded.role !== 'teacher') {
+    return NextResponse.redirect(new URL('/', origin))
+  }
 
   return NextResponse.next()
 }
