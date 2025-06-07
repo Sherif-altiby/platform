@@ -124,7 +124,7 @@ export interface useAuthInterface {
     password: string,
     level: string,
     phone: string
-  ) => Promise<UserTypes>;
+  ) => Promise<CombinedType>;
   userForgotPassword: (email: string) => Promise<void>;
   userVerifyCode: (email: string, code: number) => Promise<void>;
 }
