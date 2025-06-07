@@ -10,19 +10,30 @@ export const Axios = axios.create({
     },
 });
 
+// Helper function to get token safely
+const getToken = (): string | null => {
+    if (typeof window === 'undefined') {
+        return null; // Server-side, no localStorage access
+    }
+    
+    try {
+        return localStorage.getItem('token');
+    } catch (error) {
+        console.error('Error accessing localStorage:', error);
+        return null;
+    }
+};
+
 // Request interceptor to add token to headers
 Axios.interceptors.request.use(
     (config) => {
-        // Get token from localStorage (only on client side)
-        if (typeof window !== 'undefined') {
-            const token = localStorage.getItem('token');
-            
-            if (token) {
-                // Add token to Authorization header
-                config.headers.Authorization = `Bearer ${token}`;
-                // Also add to custom header for middleware compatibility
-                config.headers['x-auth-token'] = token;
-            }
+        const token = getToken();
+        
+        if (token) {
+            // Add token to Authorization header
+            config.headers.Authorization = `Bearer ${token}`;
+            // Also add to custom header for middleware compatibility
+            config.headers['x-auth-token'] = token;
         }
         
         return config;
@@ -41,8 +52,11 @@ Axios.interceptors.response.use(
             // Token expired or invalid
             if (typeof window !== 'undefined') {
                 localStorage.removeItem('token');
-                // Redirect to login page
-                window.location.href = '/login';
+                
+                // Use Next.js router for better navigation
+                if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+                    window.location.href = '/login';
+                }
             }
         }
         
