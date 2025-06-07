@@ -33,7 +33,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
       };
 
       localStorage.setItem("user", JSON.stringify(user));
-      localStorage.setItem("token", res.data.refreshToken)
+      
     } catch {
       set(() => ({
         user: null,
@@ -58,6 +58,8 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
       set(() => ({
         user: res.data.data.user,
       }));
+
+      localStorage.setItem("token", res.data.data.refreshToken)
 
       toast.success("تم تسجيل الدخول بنجاح");
 
