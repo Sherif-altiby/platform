@@ -22,6 +22,7 @@ export async function middleware(request: NextRequest) {
 
   // Public routes without auth
   if (
+    pathname === ("/") ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/register") ||
     pathname.startsWith("/forgot-password") ||
@@ -31,7 +32,7 @@ export async function middleware(request: NextRequest) {
   }
 
   // Redirect to login if no token
-  if (!token) {
+  if (!token ) {
     return redirectToLogin(request);
   }
 
@@ -64,7 +65,7 @@ export async function middleware(request: NextRequest) {
 }
 
 function redirectToLogin(request: NextRequest) {
-  return NextResponse.redirect(new URL("/register", request.nextUrl.origin));
+  return NextResponse.redirect(new URL("/login", request.nextUrl.origin));
 }
 
 export const config = {
