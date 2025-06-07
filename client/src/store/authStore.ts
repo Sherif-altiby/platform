@@ -33,6 +33,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
       };
 
       localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("token", res.data.refreshToken)
     } catch {
       set(() => ({
         user: null,

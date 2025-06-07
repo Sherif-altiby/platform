@@ -120,6 +120,7 @@ export const login = async (req, res) => {
                 secure: true,  
                 sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000,  
+                 path: '/', 
             });
 
             const { password: _, ...accountData } = user.toObject();
@@ -153,9 +154,10 @@ export const login = async (req, res) => {
     
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
-                secure: true,  
-                sameSite: "none",
+                secure: true, // Only true in production
+                sameSite:'none'  ,
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                path: '/', 
             });
 
             const { password: _, ...accountData } = teacher.toObject();
@@ -335,6 +337,7 @@ export async function verifyForgotPasswordCode(req,res) {
                 secure: true,  
                 sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                 path: '/', 
             });
         }
 
@@ -372,6 +375,7 @@ export async function verifyForgotPasswordCode(req,res) {
                 secure: true,  
                 sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+                 path: '/', 
             });
         }
 
