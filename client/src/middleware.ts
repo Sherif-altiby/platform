@@ -2,115 +2,122 @@ import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { jwtVerify } from 'jose'
 
-/**
- * Verifies the JSON Web Token.
- * @param token The JWT string to verify.
- * @param secret The secret key as a Uint8Array.
- * @returns The decoded payload if the token is valid, otherwise null.
- */
-async function verifyJWT(token: string, secret: Uint8Array) {
+const secret = new TextEncoder().encode(process.env.JWT_SECRET as string)
+
+async function verifyJWT(token: string) {
   try {
-    const { payload } = await jwtVerify(token, secret);
-    // Type assertion to ensure the payload has the expected shape.
-    return payload as { id: string; role: 'admin' | 'teacher' | 'user' };
+    const { payload } = await jwtVerify(token, secret)
+    return payload as { id: string; role: 'admin' | 'teacher' | 'user' }
   } catch (error) {
-    // This will catch errors like an expired or invalid token.
-    console.error('JWT Verification Error:', error);
-    return null;
+    console.log('JWT verification failed:', error)
+    return null
   }
 }
 
-/**
- * The main middleware function that protects routes.
- */
 export async function middleware(request: NextRequest) {
-  try {
-    const { pathname, origin } = request.nextUrl;
-    const token = request.cookies.get('refreshToken')?.value;
+  const token = request.cookies.get('refreshToken')?.value
+  const { pathname, origin } = request.nextUrl
 
-    // --- CRITICAL RUNTIME CHECK ---
-    // This check runs on every middleware invocation.
-    // If the environment variable is missing, we log the error and
-    // prevent the app from running in an insecure state.
-    const jwtSecret = process.env.JWT_SECRET;
-    if (!jwtSecret) {
-      console.error('FATAL: JWT_SECRET environment variable is not set at runtime.');
-      return redirectToLogin(request);
+  console.log('Middleware running for:', pathname)
+  console.log('Token present:', !!token)
+
+  // Define public routes that don't require authentication
+  const publicRoutes = [
+    '/login',
+    '/register',
+    '/forgot-password',
+    '/verification-code'
+  ]
+
+  // Check if current route is public
+  const isPublicRoute = publicRoutes.some(route => 
+    pathname === route || pathname.startsWith(route + '/')
+  )
+
+  // Allow access to public routes
+  if (isPublicRoute) {
+    console.log('Public route accessed:', pathname)
+    return NextResponse.next()
+  }
+
+  // Handle root path ("/") - this needs special logic
+  if (pathname === '/') {
+    if (!token) {
+      console.log('No token for root path, redirecting to login')
+      return redirectToLogin(request)
+    }
+
+    const decoded = await verifyJWT(token)
+    if (!decoded) {
+      console.log('Invalid token for root path, redirecting to login')
+      return redirectToLogin(request)
+    }
+
+    // Redirect based on role
+    console.log('Valid token for root, user role:', decoded.role)
+    if (decoded.role === 'admin') {
+      return NextResponse.redirect(new URL('/admin', origin))
+    }
+    if (decoded.role === 'teacher') {
+      return NextResponse.redirect(new URL('/teacher', origin))
     }
     
-    // Encode the secret once we know it exists.
-    const secret = new TextEncoder().encode(jwtSecret);
-
-    // 1. Decode token if it exists.
-    const decodedToken = token ? await verifyJWT(token, secret) : null;
-
-    // 2. Define public routes that do not require authentication.
-    const publicRoutes = [
-      '/', // The root is a public marketing/landing page.
-      '/login',
-      '/register',
-      '/forgot-password',
-      '/verification-code',
-    ];
-    const isPublicRoute = publicRoutes.some(route => pathname === route || (route !== '/' && pathname.startsWith(route)));
-
-    // 3. Handle AUTHENTICATED users
-    if (decodedToken) {
-      const userRole = decodedToken.role;
-      
-      // If a logged-in user tries to access a public route (like /login),
-      // redirect them to their appropriate dashboard.
-      if (isPublicRoute && pathname !== `/${userRole}`) {
-        return NextResponse.redirect(new URL(`/${userRole}`, origin));
-      }
-      
-      // Role-based protection. If a user is on the wrong dashboard, redirect them.
-      if (pathname.startsWith('/admin') && userRole !== 'admin') {
-        return NextResponse.redirect(new URL(`/${userRole}`, origin));
-      }
-      if (pathname.startsWith('/teacher') && userRole !== 'teacher') {
-        return NextResponse.redirect(new URL(`/${userRole}`, origin));
-      }
-
-    // 4. Handle UNAUTHENTICATED users
-    } else if (!isPublicRoute) {
-      // If user is not logged in and the route is not public, redirect to login.
-      return redirectToLogin(request);
-    }
-
-    // 5. If none of the above conditions are met, allow the request to proceed.
-    return NextResponse.next();
-
-  } catch (error) {
-    // --- CATCH-ALL FOR UNEXPECTED ERRORS ---
-    // This prevents the `MIDDLEWARE_INVOCATION_FAILED` error page from showing.
-    console.error('An unexpected error occurred in middleware:', error);
-    // Redirect to login as a safe fallback.
-    return redirectToLogin(request);
+    // For regular users, you might want to redirect to a dashboard
+    // or allow them to stay at root - adjust as needed
+    return NextResponse.next()
   }
+
+  // For all other protected routes, check if token exists
+  if (!token) {
+    console.log('No token for protected route:', pathname)
+    return redirectToLogin(request)
+  }
+
+  // Verify the token
+  const decoded = await verifyJWT(token)
+  if (!decoded) {
+    console.log('Invalid token for protected route:', pathname)
+    return redirectToLogin(request)
+  }
+
+  console.log('Token verified for user:', decoded.id, 'role:', decoded.role)
+
+  // Role-based protection
+  if (pathname.startsWith('/admin') && decoded.role !== 'admin') {
+    console.log('Non-admin trying to access admin route')
+    return NextResponse.redirect(new URL('/unauthorized', origin))
+  }
+
+  if (pathname.startsWith('/teacher') && decoded.role !== 'teacher' && decoded.role !== 'admin') {
+    console.log('Non-teacher trying to access teacher route')
+    return NextResponse.redirect(new URL('/unauthorized', origin))
+  }
+
+  // Allow access to the protected route
+  console.log('Access granted to:', pathname)
+  return NextResponse.next()
 }
 
-/**
- * Helper function to create a redirect response to the login page.
- * @param request The original NextRequest object.
- * @returns A NextResponse object that redirects to the login page.
- */
 function redirectToLogin(request: NextRequest) {
-  const url = request.nextUrl.clone();
-  url.pathname = '/login';
-  url.searchParams.set('from', request.nextUrl.pathname);
-  return NextResponse.redirect(url);
+  const loginUrl = new URL('/login', request.nextUrl.origin)
+  // Optionally preserve the intended destination
+  if (request.nextUrl.pathname !== '/') {
+    loginUrl.searchParams.set('redirect', request.nextUrl.pathname)
+  }
+  console.log('Redirecting to login:', loginUrl.toString())
+  return NextResponse.redirect(loginUrl)
 }
 
-// --- Configuration ---
 export const config = {
-  /*
-   * Match all request paths except for the ones starting with:
-   * - api (API routes)
-   * - _next/static (static files)
-   * - _next/image (image optimization files)
-   * - favicon.ico (favicon file)
-   * This prevents the middleware from running on static assets and API routes.
-   */
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
-};
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)  
+     * - favicon.ico (favicon file)
+     * - public folder files
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico|public|.*\\.png$|.*\\.jpg$|.*\\.jpeg$|.*\\.gif$|.*\\.svg$|.*\\.ico$).*)'
+  ],
+}
