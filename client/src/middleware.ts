@@ -34,7 +34,7 @@ export async function middleware(request: NextRequest) {
   const decoded = await verifyJWT(token)
 
   if (!decoded) {
-    return redirectToLogin(request)
+    return NextResponse.redirect(new URL('/register', request.nextUrl.origin))
   }
 
   if (pathname === '/') {
