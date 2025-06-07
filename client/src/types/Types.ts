@@ -98,6 +98,15 @@ export interface useTeacherInterface {
   ) => Promise<void>;
 }
 
+export type Result = {
+  status: boolean;
+  message: string;
+  error: boolean;
+};
+
+export type CombinedType = Result & UserTypes;
+
+
 export interface useAuthInterface {
   user: UserTypes | null;
   isLogin: boolean;
@@ -107,7 +116,7 @@ export interface useAuthInterface {
   redirectUser: boolean;
   isVerifingCode: boolean;
 
-  userLogin: (email: string, password: string) => Promise<UserTypes>;
+  userLogin: (email: string, password: string) => Promise<CombinedType>;
   checkUser: () => Promise<void>;
   userRegister: (
     name: string,
