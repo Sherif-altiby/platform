@@ -59,8 +59,6 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
         user: res.data.data.user,
       }));
 
-      localStorage.setItem("token", res.data.data.refreshToken)
-
       toast.success("تم تسجيل الدخول بنجاح");
 
       return res.data;
