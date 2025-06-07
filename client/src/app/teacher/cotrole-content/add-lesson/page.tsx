@@ -31,8 +31,10 @@ const Page = () => {
         const res = await Axios.post('teacher/upload-video', lesson);
         toast.success(res.data.message);
 
-      } catch (error: any) {
-          toast.error(error.response.data.message)
+      } catch (error) {
+          if(error instanceof AxiosError){
+              toast.error(error?.response?.data.message)
+            }
       } finally {
         setLoading(false);
       }

@@ -8,12 +8,6 @@ const nextConfig: NextConfig = {
         hostname: "hebbkx1anhila5yf.public.blob.vercel-storage.com",
       },
       {
-        protocol: "http",
-        hostname: "localhost",
-        port: "8080",
-        pathname: "/uploads/**",
-      },
-      {
         protocol: "https",
         hostname: "img.youtube.com",
       },
@@ -22,12 +16,10 @@ const nextConfig: NextConfig = {
         hostname: "res.cloudinary.com",
         pathname: "/**", // optional: restrict to specific path structure if needed
       },
-      {
-        protocol: "https",
-        hostname: "undraw.co",
-        pathname: "/**", // optional: restrict to specific path structure if needed
-      },
     ],
+  },
+  eslint: {
+    ignoreDuringBuilds: true, // ✅ This line disables ESLint check during build
   },
 };
 

@@ -1,5 +1,6 @@
 import { Axios } from '@/axios/Axios';
 import MainButton from '@/components/MainButton'
+import { AxiosError } from 'axios';
 import React, { useState } from 'react'
 import { GoEyeClosed } from 'react-icons/go';
 import { toast } from 'react-toastify';
@@ -28,8 +29,10 @@ const ChangePassword = () => {
                      setPassword("")
                      setConfirmPassword("")
                 }
-             } catch (error: any) {
-                  toast.error(error.response.data.message)
+             } catch (error) {
+                  if(error instanceof AxiosError){
+                      toast.error(error?.response?.data.message)
+                  }
              } finally{
                  setLoading(false)
              }

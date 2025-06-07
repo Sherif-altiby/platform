@@ -8,6 +8,12 @@ import { QuizTypes } from "@/types/Types";
 import Spiner from "@/components/Spiner";
 import { toast } from "react-toastify";
 
+type ResultTypes = {
+  title: string;
+  correctAnswer: string;
+  success: string;
+};
+
 const Page = () => {
   const searchParams = useSearchParams();
   const quizId = searchParams.get("quiz");
@@ -22,8 +28,8 @@ const Page = () => {
     try {
       const res = await Axios.get(`teacher/get-quiz-by-id/${quizId}`);
       setQuiz(res.data.data);
-    } catch  {
-        toast.error("حدث خطأ")
+    } catch {
+      toast.error("حدث خطأ");
     } finally {
       setLoading(false);
     }
@@ -47,7 +53,7 @@ const Page = () => {
       });
       setResult(res.data.results);
     } catch {
-        toast.error("حدث خطأ");
+      toast.error("حدث خطأ");
     }
   };
 
@@ -57,7 +63,9 @@ const Page = () => {
       <div className="container">
         <div className="pt-3 pb-3">
           {loading ? (
-            <div className="flex items-center justify-center" > <Spiner /> </div>
+            <div className="flex items-center justify-center">
+              <Spiner />
+            </div>
           ) : (
             quiz?.questions.map((q, idx) => (
               <div key={q.title} className="mb-5">
@@ -96,14 +104,22 @@ const Page = () => {
               <thead>
                 <tr className="bg-gray-100">
                   <th className="border border-gray-300 font-medium p-2">#</th>
-                  <th className="border border-gray-300 font-medium p-2">  السؤال </th>
-                  <th className="border border-gray-300 font-medium p-2">  الاجابة الصحيحة </th>
-                  <th className="border border-gray-300 font-medium p-2">  اجابتك  </th>
-                  <th className="border border-gray-300 font-medium p-2">  النتيجة  </th>
+                  <th className="border border-gray-300 font-medium p-2">
+                    السؤال
+                  </th>
+                  <th className="border border-gray-300 font-medium p-2">
+                    الاجابة الصحيحة
+                  </th>
+                  <th className="border border-gray-300 font-medium p-2">
+                    اجابتك
+                  </th>
+                  <th className="border border-gray-300 font-medium p-2">
+                    النتيجة
+                  </th>
                 </tr>
               </thead>
               <tbody>
-                {result.map((resItem: any, idx: number) => (
+                {result.map((resItem: ResultTypes, idx: number) => (
                   <tr key={idx} className="hover:bg-gray-50">
                     <td className="border border-gray-300 p-2">{idx + 1}</td>
                     <td className="border border-gray-300 p-2">
