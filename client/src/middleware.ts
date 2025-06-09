@@ -9,7 +9,6 @@ async function verifyToken(token: string) {
       console.error('[Middleware] JWT_SECRET is not set');
       return null;
     }
-    console.log('[Middleware] JWT_SECRET exists:', !!process.env.JWT_SECRET);
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
     return payload as { id: string; role: 'admin' | 'teacher' | 'user' };
