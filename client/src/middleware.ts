@@ -82,5 +82,8 @@ function redirectToLogin(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: [
+    // Apply middleware to all routes except:
+    '/((?!api|_next/static|_next/image|images|favicon.ico|.*\\.(?:jpg|jpeg|png|gif|svg|ico|webp)).*)',
+  ],
 };
