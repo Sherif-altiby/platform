@@ -21,6 +21,10 @@ async function verifyToken(token: string) {
 export async function middleware(request: NextRequest) {
   const { pathname, origin } = request.nextUrl;
 
+  if(!process.env.JWT_SECRET){
+    NextResponse.redirect(new URL('/register', request.nextUrl.origin))
+  }
+
   // Bypass middleware for static assets and API routes
   if (
     pathname.startsWith('/_next') ||
