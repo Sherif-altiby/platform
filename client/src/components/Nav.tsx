@@ -18,8 +18,6 @@ const Nav = () => {
   const [user, setUser] = useState<UserTypes>();
   const [block, setBlock] = useState(false);
   const [role, setRole] = useState("");
-    const pathname = usePathname()
-  const router = useRouter()
 
 
   useEffect(() => {
@@ -36,13 +34,7 @@ const Nav = () => {
     return <BlockedPage />;
   }
 
-  if(role === "admin" && pathname !== "/" && !pathname.startsWith('/admin')  && pathname !== "/profile" && pathname !== "/notifications"){
-          router.push('/admin')
-  }
 
-  if(role === "teacher" && pathname !== "/" && !pathname.startsWith('/teacher')  && pathname !== "/profile" && pathname !== "/notifications"){
-          router.push('/teacher')
-  }
 
   return (
     <>

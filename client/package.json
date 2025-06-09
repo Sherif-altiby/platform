@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
+    "@types/js-cookie": "^3.0.6",
     "@types/react-youtube": "^7.6.2",
     "@types/uuid": "^10.0.0",
     "animate.css": "^4.1.1",
