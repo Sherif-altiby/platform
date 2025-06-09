@@ -118,7 +118,7 @@ export const login = async (req, res) => {
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: true,  
-                sameSite: "lax",
+                sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000,  
                  path: '/', 
             });
@@ -155,7 +155,7 @@ export const login = async (req, res) => {
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: true, // Only true in production
-                sameSite:'lax'  ,
+                sameSite:'none'  ,
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
                 path: '/', 
             });
@@ -204,7 +204,7 @@ export const logout = async (req, res) => {
         res.clearCookie("refreshToken", {
             httpOnly: true,
             secure: true,
-            sameSite: "lax",
+            sameSite: "none",
         });
 
         return res.status(200).json({
@@ -335,7 +335,7 @@ export async function verifyForgotPasswordCode(req,res) {
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: true,  
-                sameSite: "lax",
+                sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
                  path: '/', 
             });
@@ -373,7 +373,7 @@ export async function verifyForgotPasswordCode(req,res) {
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,
                 secure: true,  
-                sameSite: "lax",
+                sameSite: "none",
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
                  path: '/', 
             });

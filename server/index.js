@@ -21,8 +21,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors({
-    origin: process.env.FRONTEMD_URL,
+    origin: [process.env.FRONTEMD_URL, 'http://localhost:3000'],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
 }));
  
 app.use(express.json()) 
