@@ -151,9 +151,6 @@ export const login = async (req, res) => {
             teacher.refreshToken = refreshToken;
     
             await teacher.save();
-
-            res.setHeader("Access-Control-Allow-Credentials", "true");
-             res.setHeader("Access-Control-Allow-Origin", process.env.FRONTEND_URL || "*");
     
             res.cookie("refreshToken", refreshToken, {
                 httpOnly: true,

@@ -1,89 +1,102 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+// middleware.ts
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { jwtVerify } from 'jose';
 
 async function verifyToken(token: string) {
   try {
     if (!process.env.JWT_SECRET) {
-      console.error("JWT_SECRET is not set");
+      console.error('[Middleware] JWT_SECRET is not set');
       return null;
     }
-
+    console.log('[Middleware] JWT_SECRET exists:', !!process.env.JWT_SECRET);
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
-    return payload as { id: string; role: "admin" | "teacher" | "user" };
+    return payload as { id: string; role: 'admin' | 'teacher' | 'user' };
   } catch (error) {
-    console.error("JWT verification failed:", error);
+    console.error('[Middleware] JWT verification failed:', error);
     return null;
   }
 }
 
 export async function middleware(request: NextRequest) {
-  // Log cookies for debugging
-  console.log("Cookies received:", request.cookies.getAll());
-  console.log("Cookies header:", request.headers)
-
-  const token = request.cookies.get("refreshToken")?.value;
   const { pathname, origin } = request.nextUrl;
 
-  // Public routes - allow access without authentication
+  // Bypass middleware for static assets
   if (
-    pathname === "/" ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/register") ||
-    pathname.startsWith("/forgot-password") ||
-    pathname.startsWith("/verification-code")
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/images') ||
+    pathname.match(/\.(jpg|jpeg|png|gif|svg|ico|webp)$/)
+  ) {
+    console.log(`[Middleware] Bypassing middleware for asset: ${pathname}`);
+    return NextResponse.next();
+  }
+
+  // Log cookies and headers for debugging
+  const cookies = request.cookies.getAll();
+  const refreshToken = request.cookies.get('refreshToken')?.value;
+  console.log('[Middleware] Cookies received:', cookies);
+  console.log('[Middleware] refreshToken:', refreshToken || 'Not found');
+  console.log('[Middleware] Request headers:', Object.fromEntries(request.headers));
+  console.log('[Middleware] Request URL:', request.nextUrl.href);
+
+  // Public routes
+  if (
+    pathname === '/' ||
+    pathname.startsWith('/login') ||
+    pathname.startsWith('/register') ||
+    pathname.startsWith('/forgot-password') ||
+    pathname.startsWith('/verification-code')
   ) {
     return NextResponse.next();
   }
 
   // Check for token
-  if (!token) {
-    console.log("No refreshToken found, redirecting to login");
+  if (!refreshToken) {
+    console.log('[Middleware] No refreshToken found, redirecting to login');
     return redirectToLogin(request);
   }
 
   // Verify token
-  const decoded = await verifyToken(token);
-
+  const decoded = await verifyToken(refreshToken);
   if (!decoded) {
-    console.log("Invalid token, redirecting to login");
+    console.log('[Middleware] Invalid token, redirecting to login');
     return redirectToLogin(request);
   }
 
   // Role-based redirects for root path
-  if (pathname === "/") {
-    if (decoded.role === "admin") {
-      return NextResponse.redirect(new URL("/admin", origin));
+  if (pathname === '/') {
+    if (decoded.role === 'admin') {
+      return NextResponse.redirect(new URL('/admin', origin));
     }
-    if (decoded.role === "teacher") {
-      return NextResponse.redirect(new URL("/teacher", origin));
+    if (decoded.role === 'teacher') {
+      return NextResponse.redirect(new URL('/teacher', origin));
     }
-    return NextResponse.redirect(new URL("/user", origin));
+    return NextResponse.redirect(new URL('/user', origin));
   }
 
   // Protect routes by role
   if (
-    (pathname.startsWith("/admin") && decoded.role !== "admin") ||
-    (pathname.startsWith("/teacher") && decoded.role !== "teacher") ||
-    (pathname.startsWith("/user") && decoded.role !== "user")
+    (pathname.startsWith('/admin') && decoded.role !== 'admin') ||
+    (pathname.startsWith('/teacher') && decoded.role !== 'teacher') ||
+    (pathname.startsWith('/user') && decoded.role !== 'user')
   ) {
-    console.log(`Role '${decoded.role}' attempted to access restricted route: ${pathname}`);
-    return NextResponse.redirect(new URL("/login", origin));
+    console.log(`[Middleware] Role '${decoded.role}' attempted to access restricted route: ${pathname}`);
+    return NextResponse.redirect(new URL('/login', origin));
   }
 
   return NextResponse.next();
 }
 
 function redirectToLogin(request: NextRequest) {
-  const response = NextResponse.redirect(new URL("/login", request.nextUrl.origin));
-  response.cookies.delete("refreshToken");
+  const response = NextResponse.redirect(new URL('/login', request.nextUrl.origin));
+  response.cookies.delete('refreshToken');
+  response.headers.set('Cache-Control', 'no-cache, no-store, max-age=0, must-revalidate');
   return response;
 }
 
 export const config = {
   matcher: [
-    // Apply middleware to all routes except:
     '/((?!api|_next/static|_next/image|images|favicon.ico|.*\\.(?:jpg|jpeg|png|gif|svg|ico|webp)).*)',
   ],
 };

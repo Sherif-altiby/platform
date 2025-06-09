@@ -21,7 +21,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors({
-    origin: [process.env.FRONTEMD_URL, 'https://platform-ten-gilt.vercel.app'],
+    origin: process.env.FRONTEMD_URL,
     credentials: true,
 }));
  
