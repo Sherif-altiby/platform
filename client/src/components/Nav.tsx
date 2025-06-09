@@ -10,12 +10,17 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiUser } from "react-icons/ci";
 import BlockedPage from "./blocked";
 import { UserTypes } from "@/types/Types";
+import { usePathname, useRouter } from 'next/navigation'
 
 
 const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [user, setUser] = useState<UserTypes>();
   const [block, setBlock] = useState(false);
+  const [role, setRole] = useState("");
+    const pathname = usePathname()
+  const router = useRouter()
+
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -23,11 +28,20 @@ const Nav = () => {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
       setBlock(parsedUser?.isBlocked);
+      setRole(parsedUser?.role);
     }
   }, []);
 
   if (block) {
     return <BlockedPage />;
+  }
+
+  if(role === "admin" && pathname !== "/" && !pathname.startsWith('/admin')  && pathname !== "/profile" && pathname !== "/notifications"){
+          router.push('/admin')
+  }
+
+  if(role === "teacher" && pathname !== "/" && !pathname.startsWith('/teacher')  && pathname !== "/profile" && pathname !== "/notifications"){
+          router.push('/teacher')
   }
 
   return (
