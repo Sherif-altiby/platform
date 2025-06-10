@@ -21,7 +21,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors({
-    origin: [process.env.FRONTEMD_URL, 'http://localhost:3000'],
+    origin: [process.env.FRONTEMD_URL, 'http://localhost:3000', 'https://mellifluous-choux-8901ec.netlify.app'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization'],
 }));
