@@ -6,14 +6,12 @@ import { jwtVerify } from 'jose';
 async function verifyToken(token: string) {
   try {
     if (!process.env.JWT_SECRET) {
-      console.error('[Middleware] JWT_SECRET is not set');
       return null;
     }
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
     return payload as { id: string; role: 'admin' | 'teacher' | 'user' };
   } catch (error) {
-    console.error('[Middleware] JWT verification failed:', error);
     return null;
   }
 }
@@ -32,16 +30,13 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/images') ||
     pathname.match(/\.(jpg|jpeg|png|gif|svg|ico|webp|css|js|woff|woff2|ttf|eot)$/)
   ) {
-    console.log(`[Middleware] Bypassing middleware for asset: ${pathname}`);
     return NextResponse.next();
   }
 
   // Enhanced cookie debugging
   const cookieHeader = request.headers.get('cookie');
-  console.log('[Middleware] Raw cookie header:', cookieHeader);
   
   const cookies = request.cookies.getAll();
-  console.log('[Middleware] Parsed cookies:', cookies);
   
   // Try multiple ways to get the refresh token
   const refreshToken = 
@@ -50,13 +45,7 @@ export async function middleware(request: NextRequest) {
     extractTokenFromHeader(cookieHeader, 'refreshToken') ||
     extractTokenFromHeader(cookieHeader, 'refresh_token');
     
-  console.log('[Middleware] refreshToken found:', !!refreshToken);
-  console.log('[Middleware] refreshToken value (first 20 chars):', refreshToken?.substring(0, 20) + '...' || 'Not found');
   
-  // Additional debugging info
-  console.log('[Middleware] Request URL:', request.nextUrl.href);
-  console.log('[Middleware] User-Agent:', request.headers.get('user-agent'));
-  console.log('[Middleware] Host:', request.headers.get('host'));
 
   // Public routes - allow access without authentication
   if (
@@ -66,24 +55,20 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/forgot-password') ||
     pathname.startsWith('/verification-code')
   ) {
-    console.log(`[Middleware] Public route accessed: ${pathname}`);
     return NextResponse.next();
   }
 
   // Check for token
   if (!refreshToken) {
-    console.log('[Middleware] No refreshToken found, redirecting to login');
     return redirectToLogin(request);
   }
 
   // Verify token
   const decoded = await verifyToken(refreshToken);
   if (!decoded) {
-    console.log('[Middleware] Invalid token, redirecting to login');
     return redirectToLogin(request);
   }
 
-  console.log(`[Middleware] Valid token for user role: ${decoded.role}`);
 
   // Role-based redirects for root path
   if (pathname === '/') {
@@ -102,11 +87,9 @@ export async function middleware(request: NextRequest) {
     (pathname.startsWith('/teacher') && decoded.role !== 'teacher') ||
     (pathname.startsWith('/user') && decoded.role !== 'user')
   ) {
-    console.log(`[Middleware] Role '${decoded.role}' attempted to access restricted route: ${pathname}`);
     return NextResponse.redirect(new URL('/login', origin));
   }
 
-  console.log(`[Middleware] Access granted to ${pathname} for role: ${decoded.role}`);
   return NextResponse.next();
 }
 
@@ -125,7 +108,6 @@ function extractTokenFromHeader(cookieHeader: string | null, tokenName: string):
 }
 
 function redirectToLogin(request: NextRequest) {
-  console.log('[Middleware] Redirecting to login and clearing cookies');
   const response = NextResponse.redirect(new URL('/login', request.nextUrl.origin));
   
   // Clear cookies with different configurations to ensure they're removed

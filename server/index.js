@@ -21,9 +21,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 app.use(cors({
-    origin: [process.env.FRONTEMD_URL, 'http://localhost:3000', 'https://mellifluous-choux-8901ec.netlify.app'],
+    origin: process.env.FRONTEMD_URL,
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ["GET", "POST", "OPTIONS"],
+    allowedHeaders: ['Content-Type'],
 }));
  
 app.use(express.json()) 
@@ -47,11 +48,23 @@ const limiter = rateLimit({
 app.use(limiter);
 
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "https://platform-ten-gilt.vercel.app");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    return res.status(204).end();
+  }
+  next();
+});
+
 
 app.use('/api/user', userRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/teacher', teacherRouter)
+
+
 
 const PORT = 8080;
 

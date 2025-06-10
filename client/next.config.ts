@@ -14,12 +14,20 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "res.cloudinary.com",
-        pathname: "/**",  
+        pathname: "/**",
       },
     ],
   },
   eslint: {
-    ignoreDuringBuilds: true,  
+    ignoreDuringBuilds: true,
+  },
+  async rewrites() {
+    return [
+      {
+        source: "/api/:path*",
+        destination: "https://basira-server.vercel.app", // Replace with your backend URL
+      },
+    ];
   },
 };
 
