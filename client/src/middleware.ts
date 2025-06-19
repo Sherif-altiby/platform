@@ -34,16 +34,10 @@ export async function middleware(request: NextRequest) {
   }
 
   // Enhanced cookie debugging
-  const cookieHeader = request.headers.get('cookie');
   
-  const cookies = request.cookies.getAll();
   
-  // Try multiple ways to get the refresh token
-  const refreshToken = 
-    request.cookies.get('refreshToken')?.value ||
-    request.cookies.get('refresh_token')?.value ||
-    extractTokenFromHeader(cookieHeader, 'refreshToken') ||
-    extractTokenFromHeader(cookieHeader, 'refresh_token');
+   const token = request.cookies.get('refreshToken')?.value;
+
     
   
 
@@ -59,12 +53,12 @@ export async function middleware(request: NextRequest) {
   }
 
   // Check for token
-  if (!refreshToken) {
+  if (!token) {
     return redirectToLogin(request);
   }
 
   // Verify token
-  const decoded = await verifyToken(refreshToken);
+  const decoded = await verifyToken(token);
   if (!decoded) {
     return redirectToLogin(request);
   }
