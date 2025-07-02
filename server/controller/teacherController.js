@@ -4,7 +4,6 @@ import { PdfModel } from "../models/pdfModel.js";
 import { VideoModel } from "../models/videoModel.js";
 import { Quizz } from "../models/quizzModel.js";
 import cloudinary from "../utils/uploadPdf.js";
-import fs from "fs";
 
 export const getTeacherById = async (req, res) => {
   try {
@@ -386,8 +385,6 @@ export const uploadPdf = async (req, res) => {
       });
     }
 
-    console.log(req.file)
-
     // Validate file upload
     if (!req.file?.buffer) {
       return res.status(400).json({
@@ -396,14 +393,21 @@ export const uploadPdf = async (req, res) => {
       });
     }
 
-    // Upload to Cloudinary
-    const filePath = req.file.path;
-
-    const result = await cloudinary.uploader.upload(filePath, {
-      resource_type: "raw",
+    // Upload to Cloudinary using buffer
+    const result = await new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          resource_type: "raw",
+          format: "pdf",
+          folder: "pdf_uploads",
+        },
+        (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        }
+      );
+      uploadStream.end(req.file.buffer);
     });
-
-    fs.unlinkSync(filePath);
 
     // Create new PDF record
     const newPdf = new PdfModel({
