@@ -10,7 +10,7 @@ import { useEffect } from "react";
 
 
 const Nav = () => {
-  const user = localStorage.getItem("user") || '';
+  const user = localStorage.getItem("user");
   const parsedUser = user ? JSON.parse(user) : ''
 
   const { checkUser} = useAuthUser()
@@ -18,7 +18,7 @@ const Nav = () => {
   useEffect(() => {
     checkUser()
   }, [])
-
+  
 
   if (parsedUser.isBlocked) {
     return <BlockedPage />;
