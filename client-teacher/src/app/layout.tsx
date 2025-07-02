@@ -3,6 +3,7 @@ import "./globals.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Nav from "@/components/Nav";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: "منصة بصيرة التعليمية",
@@ -21,7 +22,11 @@ const TeacherLayout = ({
         <Nav />
         <div className="flex ctm-height">
           <div className="flex-1 p-4">
-            <div className=" p-3 h-full bg-slate-50 rounded-md">{children}</div>
+            <div className=" p-3 h-full bg-slate-50 rounded-md">
+                 <Suspense fallback={<div>جاري التحميل ........</div>}>
+            {children}
+          </Suspense>
+            </div>
           </div>
         </div>
 
@@ -32,3 +37,5 @@ const TeacherLayout = ({
 };
 
 export default TeacherLayout;
+
+
