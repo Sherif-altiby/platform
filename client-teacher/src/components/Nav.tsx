@@ -6,21 +6,24 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiUser } from "react-icons/ci";
 import BlockedPage from "./blocked";
 import { useAuthUser } from "@/store/authStore";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { UserTypes } from "@/types/Types";
 
 
 const Nav = () => {
-  const user = localStorage.getItem("user");
-  const parsedUser = user ? JSON.parse(user) : ''
-
-  const { checkUser} = useAuthUser()
+  const [parsedUser, setParsedUser] = useState<UserTypes>();
+  const { checkUser } = useAuthUser();
 
   useEffect(() => {
-    checkUser()
-  }, [])
-  
+    const user = localStorage.getItem("user");
+    const parsed = user ? JSON.parse(user) : '';
+    setParsedUser(parsed);
 
-  if (parsedUser.isBlocked) {
+    checkUser();
+  }, []);
+
+
+  if (parsedUser?.isBlocked) {
     return <BlockedPage />;
   }
 
@@ -35,7 +38,7 @@ const Nav = () => {
 
 
           <div>
-            {!parsedUser.name && (
+            {!parsedUser?.name && (
               <Link
                 className="hidden lg:flex items-center justify-center md:text-lg xl:text-xl h-[50px] rounded-xl w-[170px] bg-hoverLinkColor border border-hoverLinkColor text-white transition-all duration-500 hover:rounded-[50px] hover:bg-white hover:text-hoverLinkColor"
                 href="/register"
@@ -45,7 +48,7 @@ const Nav = () => {
             )}
 
             <div className="flex gap-4">
-              {parsedUser.name && (
+              {parsedUser?.name && (
                 <div className="flex items-center gap-4">
                   <Link
                     href="/notifications"
