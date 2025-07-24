@@ -15,18 +15,23 @@ const Page = () => {
   const name = searchParams.get("teacherName");
   const teacherId = searchParams.get("teacherId");
 
+  console.log(teacherId)
+
+
   const { user } = useAuthUser();
+
+  console.log(user)
 
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]);
 
   const getVideos = async () => {
-    if (!teacherId || !user?.level) return; // Safe check
+    // if (!teacherId || !user?.level) return; // Safe check
 
     setLoading(true);
     try {
       const res = await Axios.post('user/get-video-by-level', {
-        level: user.level,
+        level: user?.level,
         teacherId,
       });
 

@@ -33,11 +33,14 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
       };
 
       localStorage.setItem("user", JSON.stringify(user));
-      
     } catch {
       set(() => ({
         user: null,
       }));
+
+      // if (window.location.href !== "/login") {
+      //   window.location.href = "/login";
+      // }
     } finally {
       set(() => ({
         isChecking: false,

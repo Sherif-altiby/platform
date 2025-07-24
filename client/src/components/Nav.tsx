@@ -10,23 +10,28 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiUser } from "react-icons/ci";
 import BlockedPage from "./blocked";
 import { UserTypes } from "@/types/Types";
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 
 const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [user, setUser] = useState<UserTypes>();
   const [block, setBlock] = useState(false);
-  const [role, setRole] = useState("");
 
+  const router = useRouter()
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
+    const isLogin = localStorage.getItem("isLogin");
+
+    if(isLogin && !JSON.parse(isLogin)){
+         router.push('/login')
+    }
+
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
       setUser(parsedUser);
       setBlock(parsedUser?.isBlocked);
-      setRole(parsedUser?.role);
     }
   }, []);
 

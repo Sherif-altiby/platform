@@ -18,9 +18,7 @@ const StatsSection: React.FC = () => {
         setUsers(res.data.data.users)
         setLessons(res.data.data.lessons)
       
-    } catch  {
-        toast.error("حدث خطأ")
-    }
+    } catch  {}
   }
 
   useEffect(() => {
