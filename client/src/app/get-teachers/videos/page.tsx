@@ -15,12 +15,7 @@ const Page = () => {
   const name = searchParams.get("teacherName");
   const teacherId = searchParams.get("teacherId");
 
-  console.log(teacherId)
-
-
   const { user } = useAuthUser();
-
-  console.log(user)
 
   const [loading, setLoading] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]);

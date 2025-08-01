@@ -22,10 +22,11 @@ const Nav = () => {
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
-    const isLogin = localStorage.getItem("isLogin");
+    const isLogin = localStorage.getItem("isLogin") || "false";
 
-    if(isLogin && !JSON.parse(isLogin)){
+    if(JSON.parse(isLogin) === false){
          router.push('/login')
+
     }
 
     if (storedUser) {

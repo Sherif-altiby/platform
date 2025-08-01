@@ -29,7 +29,7 @@ const VideoCard = ({ name, teacherId, title, videoId }: VideoCardProps) => {
     <Link
       href={
         isValidVideo
-          ? `/teachers/videos/watch?teacherName=${name}&teacherId=${teacherId}&videoId=${id}`
+          ? `/get-teachers/videos/watch?teacherName=${name}&teacherId=${teacherId}&videoId=${id}`
           : "#"
       }
       className="block rounded-xl bg-white shadow-sm p-4 transition-all duration-300 hover:bg-gray-50 hover:shadow-md"
