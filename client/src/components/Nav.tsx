@@ -8,39 +8,21 @@ import { useEffect, useState } from "react";
 import ResponsiveMenu from "./ResponsiveMenu";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiUser } from "react-icons/ci";
-import BlockedPage from "./blocked";
 import { UserTypes } from "@/types/Types";
-import { useRouter } from 'next/navigation'
+import { useQueryClient } from "@tanstack/react-query";
 
 
 const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
-  const [user, setUser] = useState<UserTypes>();
-  const [block, setBlock] = useState(false);
 
-  const router = useRouter()
+  const queryClient = useQueryClient();
+  const userData = queryClient.getQueryData(["user"]) as UserTypes
 
-  useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const isLogin = localStorage.getItem("isLogin") || "false";
+  // const [user, setUser] = useState<UserTypes>()
 
-    if(JSON.parse(isLogin) === false){
-         router.push('/login')
-
-    }
-
-    if (storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setUser(parsedUser);
-      setBlock(parsedUser?.isBlocked);
-    }
-  }, []);
-
-  if (block) {
-    return <BlockedPage />;
-  }
-
-
+  // useEffect(() => {
+  //   setUser(userData)
+  // }, [])
 
   return (
     <>
@@ -64,7 +46,7 @@ const Nav = () => {
           </div>
 
           <div>
-            {!user && (
+            {!userData && (
               <Link
                 className="hidden lg:flex items-center justify-center md:text-lg xl:text-xl h-[50px] rounded-xl w-[170px] bg-hoverLinkColor border border-hoverLinkColor text-white transition-all duration-500 hover:rounded-[50px] hover:bg-white hover:text-hoverLinkColor"
                 href="/register"
@@ -74,7 +56,7 @@ const Nav = () => {
             )}
 
             <div className="flex gap-4">
-              {user && (
+              {userData && (
                 <div className="hidden lg:flex items-center gap-4">
                   <Link
                     href="/notifications"

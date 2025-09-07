@@ -3,13 +3,14 @@
 import { Axios } from "@/axios/Axios";
 import Spiner from "@/components/Spiner";
 import { useAuthUser } from "@/store/authStore";
-import { Video } from "@/types/Types";
+import { UserTypes, Video } from "@/types/Types";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 import { toast } from "react-toastify";
 import EditLesson from "./EditLesson";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Page = () => {
   const params = useSearchParams();
@@ -18,7 +19,8 @@ const Page = () => {
   const levelText =
     level === "first" ? "الاول" : level === "second" ? "الثاني" : "الثالث";
 
-  const { user, checkUser } = useAuthUser();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData(["user"]) as UserTypes
 
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -35,7 +37,6 @@ const Page = () => {
       if (!user?._id || !level) return;
 
       setLoading(true);
-      await checkUser();
 
       try {
         const res = await Axios.post("user/get-video-by-level", {
@@ -71,7 +72,6 @@ const Page = () => {
       if (!user?._id || !level) return;
 
       setLoading(true);
-      await checkUser();
 
       try {
         const res = await Axios.post("user/get-video-by-level", {

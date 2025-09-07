@@ -4,26 +4,28 @@ import SubHeader from "@/components/SubHeader";
 import { useSearchParams } from "next/navigation";
 import { Axios } from "@/axios/Axios";
 import { useEffect, useState } from "react";
-import { Quize } from "@/types/Types";
+import { Quize, UserTypes } from "@/types/Types";
 import { useAuthUser } from "@/store/authStore";
 import Quiz from "./Quiz";
 import Spiner from "@/components/Spiner";
 import { toast } from "react-toastify";
+import { useQueryClient } from "@tanstack/react-query";
+
 
 const Pages = () => {
   const searchParams = useSearchParams();
   const name = searchParams.get("teacherName");
   const teacherId = searchParams.get("teacherId");
 
-  const { user, checkUser } = useAuthUser();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData(["user"]) as UserTypes
+
 
   const [quizzes, setQuizzes] = useState<Quize[]>([]);
   const [loading, setLoading] = useState(false);
 
   const getNotes = async () => {
     setLoading(true);
-
-    await checkUser();
 
     try {
       const res = await Axios.post("teacher/get-quiz-by-level", {

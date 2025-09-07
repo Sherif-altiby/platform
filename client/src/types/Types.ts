@@ -84,8 +84,6 @@ export interface useTeacherInterface {
   teacherStatics: TeacherStatics | null;
   isFetchingTeacherStatics: boolean;
 
-  getTeachers: () => Promise<void>;
-  getTeacherById: (teacherId: string) => Promise<void>;
   getTeacherStatics: () => Promise<void>;
   addTeacher: (
     name: string,
@@ -117,7 +115,7 @@ export interface useAuthInterface {
   isVerifingCode: boolean;
 
   userLogin: (email: string, password: string) => Promise<CombinedType>;
-  checkUser: () => Promise<void>;
+  // checkUser: () => Promise<void>;
   userRegister: (
     name: string,
     email: string,

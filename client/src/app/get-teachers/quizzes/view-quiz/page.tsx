@@ -3,10 +3,12 @@
 import { Axios } from "@/axios/Axios";
 import SubHeader from "@/components/SubHeader";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { QuizTypes } from "@/types/Types";
 import Spiner from "@/components/Spiner";
 import { toast } from "react-toastify";
+import { useQuery } from "@tanstack/react-query";
+import { getQuiz } from "@/app/utils/quizFeatures";
 
 type ResultTypes = {
   title: string;
@@ -18,26 +20,16 @@ const Page = () => {
   const searchParams = useSearchParams();
   const quizId = searchParams.get("quiz");
 
-  const [loading, setLoading] = useState(false);
-  const [quiz, setQuiz] = useState<QuizTypes>();
   const [answers, setAnswers] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
 
-  const getQuiz = async () => {
-    setLoading(true);
-    try {
-      const res = await Axios.get(`teacher/get-quiz-by-id/${quizId}`);
-      setQuiz(res.data.data);
-    } catch {
-      toast.error("حدث خطأ");
-    } finally {
-      setLoading(false);
+  const {data: quiz, isLoading} = useQuery({
+    queryKey: ['quiz'],
+    queryFn: async () => {
+      const res = await getQuiz(quizId as string)
+      return res.data as QuizTypes
     }
-  };
-
-  useEffect(() => {
-    if (quizId) getQuiz();
-  }, [quizId]);
+  })
 
   const handleAnswerChange = (index: number, selected: string) => {
     const updatedAnswers = [...answers];
@@ -62,7 +54,7 @@ const Page = () => {
       <SubHeader currentTitle={quiz?.title || ""} />
       <div className="container">
         <div className="pt-3 pb-3">
-          {loading ? (
+          {isLoading ? (
             <div className="flex items-center justify-center">
               <Spiner />
             </div>

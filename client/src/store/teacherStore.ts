@@ -12,45 +12,6 @@ export const useTeacherStore = create<useTeacherInterface>((set) => ({
      teacherStatics: null,
      isFetchingTeacherStatics : false,
 
-     getTeachers: async () => {
-        try {
-            set(() => ({
-                isFetchingTeachers: true
-            }))
-
-            const res = await Axios.get('user/get-teachers');
-
-            set(() => ({
-                teachers: res.data.data
-            }))
-            
-        } catch  {
-             toast.error("حدث خطأ")
-        } finally {
-            set(() => ({
-                isFetchingTeachers: false
-            }))
-        }
-     },
-
-     getTeacherById: async (teacherId: string) => {
-        set(() => ({
-            isFetchingTeacher: true
-        }))
-        try {
-             const res = await Axios.get(`teacher/get-teacher/${teacherId}`)
-             set(() => ({
-                teacher: res.data.data
-             }))
-        } catch {
-              toast.error("حدث خطأ")
-        } finally {
-            set(() => ({
-                isFetchingTeacher: false
-            }))
-        }
-     },
-
      getTeacherStatics: async () => {
         set(() => ({
             isFetchingTeacherStatics: true

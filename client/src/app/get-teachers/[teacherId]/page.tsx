@@ -4,12 +4,13 @@ import SubHeader from '@/components/SubHeader';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useParams, useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
 import { CiVideoOff } from "react-icons/ci";
 import { PiNotepadThin } from "react-icons/pi";
 import { CiSquareQuestion } from "react-icons/ci";
-import { useTeacherStore } from '@/store/teacherStore';
 import SkeletonTeacherInfo from '../../../skeletons/SkeletonTeacherInfo';
+import { useQuery } from '@tanstack/react-query';
+import { getTeacherById } from '@/app/utils/teacherFeatuers';
+import { TeacherTypes } from '@/types/Types';
 
 const Page = () => {
   const { teacherId } = useParams();
@@ -17,17 +18,20 @@ const Page = () => {
 
   const name = searchParams.get('name');
 
-  const { teacher, getTeacherById, isFetchingTeacher } = useTeacherStore();
 
-  useEffect(() => {
-    getTeacherById(teacherId as string);
-  }, [teacherId]);
+  const {data: teacher, isLoading} = useQuery({
+    queryKey: ['teacher'],
+    queryFn: async () => {
+      const res = await getTeacherById(teacherId as string)
+      return res.data as TeacherTypes
+    }
+  })
 
   return (
     <div className="ctm-height bg-white">
       <SubHeader currentTitle={`أ/ ${name}`} />
       <div className="container max-w-screen-lg mx-auto px-4">
-        {isFetchingTeacher ? (
+        {isLoading ? (
           <SkeletonTeacherInfo />
         ) : (
           <>

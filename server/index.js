@@ -20,12 +20,20 @@ const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-app.use(cors({
-    origin: process.env.FRONTEMD_URL,
+app.use(
+  cors({
+    origin: [
+      "https://platform-ten-gilt.vercel.app", // your frontend
+      "http://localhost:3000", // for local dev
+    ],
     credentials: true,
-    methods: ["GET", "POST", "OPTIONS"],
-    allowedHeaders: ['Content-Type'],
-}));
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+
+app.options("*", cors());
+
  
 app.use(express.json()) 
 app.use(express.urlencoded({ extended: true }));
@@ -51,6 +59,15 @@ app.use(limiter);
 app.use('/api/user', userRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/teacher', teacherRouter)
+
+
+app.use((req, res, next) => {
+  res.header("Access-Control-Allow-Origin", "https://platform-ten-gilt.vercel.app");
+  res.header("Access-Control-Allow-Credentials", "true");
+  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  next();
+});
 
 
 

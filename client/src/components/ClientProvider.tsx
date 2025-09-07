@@ -1,15 +1,21 @@
-"use client"
+"use client";
+import { useQuery } from "@tanstack/react-query";
+import { checkUser } from "@/app/utils/userFeatuers";
 
-import { useAuthUser } from "@/store/authStore";
-import { useEffect } from "react";
- 
 const ClientProvider = () => {
+  const { data, isLoading, error } = useQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const res = await checkUser();
+      return res.user; 
+    },
+    retry: false,
+  });
 
-    const { checkUser } = useAuthUser();
-    useEffect(() => {
-         checkUser();  
-      }, []);
-  return null
-}
+  if (isLoading) return null;
+  if (error) return null;
 
-export default ClientProvider
+  return null;
+};
+
+export default ClientProvider;

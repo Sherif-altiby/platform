@@ -3,7 +3,8 @@
 import { Axios } from "@/axios/Axios";
 import Spiner from "@/components/Spiner";
 import { useAuthUser } from "@/store/authStore";
-import { NoteType } from "@/types/Types";
+import { NoteType, UserTypes } from "@/types/Types";
+import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
@@ -17,7 +18,8 @@ const NotesPage = () => {
   const levelText =
     level === "first" ? "الاول" : level === "second" ? "الثاني" : "الثالث";
 
-  const { user, checkUser } = useAuthUser();
+  const queryClient = useQueryClient();
+  const user = queryClient.getQueryData(["user"]) as UserTypes
 
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -31,7 +33,6 @@ const NotesPage = () => {
       if (!user?._id || !level) return;
 
       setLoading(true);
-      await checkUser();
 
       try {
         const res = await Axios.post("teacher/get-pdf-by-level", {

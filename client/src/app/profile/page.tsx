@@ -3,20 +3,32 @@
 import { Axios } from "@/axios/Axios"
 import MainButton from "@/components/MainButton"
 import SubHeader from "@/components/SubHeader"
-import { useAuthUser } from "@/store/authStore"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { toast } from "react-toastify"
 import ChangePassword from "./ChangePassword"
 import AddComment from "@/components/addComment"
+import { useQueryClient } from "@tanstack/react-query"
+import { UserTypes } from "@/types/Types"
 
 const Page = () => {
 
-    const  { user, checkUser } = useAuthUser()
+    const queryClient = useQueryClient();
+    const user = queryClient.getQueryData(["user"]) as UserTypes
 
-    const [name, setName] = useState(user?.name);
-    const [email, setEmail] = useState(user?.email);
-    const [phone, setPhone] = useState(user?.phone);
-    const [level, setLevel] = useState(user?.level);
+    const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState<number | string>("");
+  const [level, setLevel] = useState("");
+
+  // ✅ Update state when user is available
+  useEffect(() => {
+    if (user) {
+      setName(user.name || "");
+      setEmail(user.email || "");
+      setPhone(user.phone || "");
+      setLevel(user.level || "");
+    }
+  }, [user]);
 
     const [loading, setLoading] = useState(false)
 
@@ -47,7 +59,7 @@ const Page = () => {
                 level
              })
 
-             await  checkUser()
+            //  await  checkUser()  will update user here
 
              toast.success(res.data.message)
         } catch  {

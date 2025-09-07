@@ -13,41 +13,6 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
   redirectUser: false,
   isVerifingCode: false,
 
-  checkUser: async () => {
-    set(() => ({
-      isChecking: true,
-    }));
-
-    try {
-      const res = await Axios.get("/user/check");
-
-      set(() => ({
-        user: res.data.user,
-      }));
-
-      const user = {
-        name: res.data.user.name,
-        isBlocked: res.data.user.isBlocked,
-        email: res.data.user.email,
-        role: res.data.user.role,
-      };
-
-      localStorage.setItem("user", JSON.stringify(user));
-    } catch {
-      set(() => ({
-        user: null,
-      }));
-
-      // if (window.location.href !== "/login") {
-      //   window.location.href = "/login";
-      // }
-    } finally {
-      set(() => ({
-        isChecking: false,
-      }));
-    }
-  },
-
   userLogin: async (email: string, password: string) => {
     set(() => ({
       isLogin: true,

@@ -1,7 +1,8 @@
+import { getPlatformStatics } from '@/app/utils/userFeatuers';
 import { Axios } from '@/axios/Axios';
+import { useQuery } from '@tanstack/react-query';
 import React, { useEffect, useState } from 'react';
 import { FaUsers, FaChalkboardTeacher, FaBook } from 'react-icons/fa';
-import { toast } from 'react-toastify';
 
 const StatsSection: React.FC = () => {
 
@@ -9,21 +10,16 @@ const StatsSection: React.FC = () => {
   const [teachers, setTeachers] = useState(0)
   const [lessons, setLessons] = useState(0)
 
-  const getStatics = async () => {
-    try {
-
-        const res = await Axios.get('user/get-statics-num')
-
-        setTeachers(res.data.data.teachers)
-        setUsers(res.data.data.users)
-        setLessons(res.data.data.lessons)
-      
-    } catch  {}
-  }
-
-  useEffect(() => {
-    getStatics()
-  }, [])
+  const {} = useQuery({
+    queryKey: ["usersNum"],
+    queryFn:async () => {
+      const res = await getPlatformStatics()
+        setTeachers(res.data.teachers)
+        setUsers(res.data.users)
+        setLessons(res.data.lessons)
+      return res.data
+    }
+  })
 
   return (
     <section className="bg-gradient-to-r from-blue-500 to-teal-500 text-white py-20">

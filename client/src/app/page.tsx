@@ -9,12 +9,6 @@ import StatsSection from "@/components/StatsSection";
 
 export default function Home() {
 
-   const { checkUser  } = useAuthUser();
-
-   useEffect(() => {
-      checkUser()
-   }, [])
-
   return (
      <div>
          <Hero /> 
