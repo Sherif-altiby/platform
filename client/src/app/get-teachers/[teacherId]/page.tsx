@@ -35,18 +35,18 @@ const Page = () => {
           <SkeletonTeacherInfo />
         ) : (
           <>
-            <div className="flex flex-col md:flex-row items-center gap-10 max-w-3xl mx-auto mt-10 p-6 rounded-xl bg-white shadow-xl opacity-0 animate-fadeInUp">
+            <div className="flex flex-col md:flex-row items-center gap-5 max-w-3xl mx-auto mt-10 p-6 rounded-xl bg-white shadow-xl opacity-0 animate-fadeInUp">
               <div className="w-[200px]">
                 { teacher?.avatar?.startsWith("http") &&  <Image
                   src={teacher?.avatar}
                   alt="Teacher Image"
-                  height={200}
-                  width={200}
-                  className="w-[150px] h-[150px] rounded-full border-4 border-gradient-to-r from-blue-500 to-green-400 object-cover shadow-xl transition-all duration-500 ease-in-out transform hover:scale-110"
+                  height={300}
+                  width={300}
+                  className="w-full md:min-w-[150px] h-[200px] rounded-lg border-4 border-gradient-to-r from-blue-500 to-green-400 object-cover shadow-xl transition-all duration-500 ease-in-out transform hover:scale-110"
                 />}
               </div>
               <div className="flex-1">
-                <p className="text-gray-700 text-lg text-justify">{teacher?.about}</p>
+                <p className="text-gray-700 text-sm md:text-lg text-justify">{teacher?.about}</p>
               </div>
             </div>
 

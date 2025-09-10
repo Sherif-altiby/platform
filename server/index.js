@@ -24,6 +24,7 @@ app.use(
   cors({
     origin: [
       "https://platform-ten-gilt.vercel.app", // your frontend
+      "https://platform-uo84.vercel.app", // your frontend
       "http://localhost:3000", // for local dev
     ],
     credentials: true,
