@@ -1,17 +1,16 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Axios } from "@/axios/Axios";
 import Spiner from "@/components/Spiner";
-import { useAuthUser } from "@/store/authStore";
 import { NoteType, UserTypes } from "@/types/Types";
 import { useQueryClient } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
 import { AiOutlineDelete } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
 import { toast } from "react-toastify";
 
-const NotesPage = () => {
+const NotesPageContent = () => {
   const params = useSearchParams();
   const level = params.get("level");
 
@@ -19,56 +18,48 @@ const NotesPage = () => {
     level === "first" ? "الاول" : level === "second" ? "الثاني" : "الثالث";
 
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData(["user"]) as UserTypes
+  const user = queryClient.getQueryData(["user"]) as UserTypes;
 
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [notes, setNotes] = useState<NoteType[]>([]);
-
   const [showDeleteCard, setShowDeleteCard] = useState(false);
   const [noteId, setNoteID] = useState("");
 
+  // Fetch notes
+  const fetchNotes = async () => {
+    if (!user?._id || !level) return;
+
+    setLoading(true);
+    try {
+      const res = await Axios.post("teacher/get-pdf-by-level", {
+        level,
+        teacherId: user._id,
+      });
+      setNotes(res.data.data);
+    } catch {
+      toast.error("حدث خطأ");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchNotes = async () => {
-      if (!user?._id || !level) return;
-
-      setLoading(true);
-
-      try {
-        const res = await Axios.post("teacher/get-pdf-by-level", {
-          level,
-          teacherId: user._id,
-        });
-
-        setNotes(res.data.data);
-      } catch  {
-          toast.error("حدث خطأ")
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNotes();
   }, [user?._id, level]);
 
+  // Delete note
   const deleteNote = async (noteId: string) => {
     setIsDeleting(true);
     try {
       const res = await Axios.delete("teacher/delete-pdf", {
         data: { pdfId: noteId },
       });
-
       toast.success(res.data.message);
       setShowDeleteCard(false);
-
-      // Refresh notes
-      const updated = await Axios.post("teacher/get-pdf-by-level", {
-        level,
-        teacherId: user?._id,
-      });
-      setNotes(updated.data.data);
-    } catch   {
-       toast.error("حدث خطأ أثناء حذف المذكرة.");
+      await fetchNotes();
+    } catch {
+      toast.error("حدث خطأ أثناء حذف المذكرة.");
     } finally {
       setIsDeleting(false);
     }
@@ -108,7 +99,6 @@ const NotesPage = () => {
               </a>
 
               <div className="flex justify-end items-center gap-3">
-
                 <div>
                   <CiEdit
                     className="text-xl text-gray-600 hover:text-green-600 cursor-pointer"
@@ -133,6 +123,7 @@ const NotesPage = () => {
         </div>
       )}
 
+      {/* Delete Confirmation */}
       {showDeleteCard && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[90%] max-w-md text-center relative">
@@ -167,6 +158,21 @@ const NotesPage = () => {
         </div>
       )}
     </div>
+  );
+};
+
+// ✅ Wrap with Suspense
+const NotesPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <Spiner />
+        </div>
+      }
+    >
+      <NotesPageContent />
+    </Suspense>
   );
 };
 

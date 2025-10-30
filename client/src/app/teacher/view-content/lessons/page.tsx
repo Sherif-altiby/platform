@@ -1,18 +1,18 @@
 "use client";
 
+import { Suspense, useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { Axios } from "@/axios/Axios";
 import Spiner from "@/components/Spiner";
-import { useAuthUser } from "@/store/authStore";
-import { UserTypes, Video } from "@/types/Types";
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 import { AiOutlineDelete } from "react-icons/ai";
 import { CiEdit } from "react-icons/ci";
-import { toast } from "react-toastify";
 import EditLesson from "./EditLesson";
-import { useQueryClient } from "@tanstack/react-query";
+import { UserTypes, Video } from "@/types/Types";
 
-const Page = () => {
+// ✅ Moved the actual logic into a child component wrapped by Suspense
+const PageContent = () => {
   const params = useSearchParams();
   const level = params.get("level");
 
@@ -20,93 +20,75 @@ const Page = () => {
     level === "first" ? "الاول" : level === "second" ? "الثاني" : "الثالث";
 
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData(["user"]) as UserTypes
+  const user = queryClient.getQueryData(["user"]) as UserTypes;
 
   const [loading, setLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [videos, setVideos] = useState<Video[]>([]);
   const [video, setVideo] = useState<Video>();
-
   const [showDeletCard, setShowDeleteCard] = useState(false);
   const [videoId, setVideoID] = useState("");
+  const [showEdit, setShowEdit] = useState(false);
 
-  const [showEdit, setShowEdit] = useState(false)
+  // Fetch videos
+  const fetchData = async () => {
+    if (!user?._id || !level) return;
+    setLoading(true);
+
+    try {
+      const res = await Axios.post("user/get-video-by-level", {
+        level,
+        teacherId: user._id,
+      });
+      setVideos(res.data.data);
+    } catch {
+      toast.error("حدث خطأ");
+    } finally {
+      setLoading(false);
+      setIsDeleting(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (!user?._id || !level) return;
-
-      setLoading(true);
-
-      try {
-        const res = await Axios.post("user/get-video-by-level", {
-          level,
-          teacherId: user._id,
-        });
-
-        setVideos(res.data.data);
-      } catch  {
-          toast.error("حدث خطأ")
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [user?._id, level]);
 
+  // Delete a video
   const deleteLessson = async (videoId: string) => {
     setIsDeleting(true);
-    const res = await Axios.delete("teacher/delete-video", {
-      data: {
-        videoId,
-      },
-    });
-
-    await fetchData();
-    setShowDeleteCard(false);
-    toast.success(res.data.message);
+    try {
+      const res = await Axios.delete("teacher/delete-video", {
+        data: { videoId },
+      });
+      await fetchData();
+      setShowDeleteCard(false);
+      toast.success(res.data.message);
+    } catch {
+      toast.error("حدث خطأ أثناء الحذف");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
-  const fetchData = async () => {
-      if (!user?._id || !level) return;
-
-      setLoading(true);
-
-      try {
-        const res = await Axios.post("user/get-video-by-level", {
-          level,
-          teacherId: user._id,
-        });
-
-        setVideos(res.data.data);
-      } catch  {
-         toast.error("حدث خطأ")
-      } finally {
-        setLoading(false);
-        setIsDeleting(false);
-      }
-    };
-
+  // Update a video
   const updateLessonFn = async (video: Video) => {
-       try {
-         const res = await Axios.put('teacher/update-video', video)
-
-         await fetchData()
-         toast.success(res.data.message)
-         setShowEdit(false)
-       } catch  {
-         toast.error("حاول مرة اخري !!")
-       }
-  }
+    try {
+      const res = await Axios.put("teacher/update-video", video);
+      await fetchData();
+      toast.success(res.data.message);
+      setShowEdit(false);
+    } catch {
+      toast.error("حاول مرة أخرى !!");
+    }
+  };
 
   return (
-    <div className="">
+    <div>
       <h1 className="text-2xl text-primary1 mb-6">
         دروس الصف {levelText} الثانوي
       </h1>
 
-      {/* Video Card */}
+      {/* Videos List */}
       {loading ? (
         <div className="flex items-center justify-center">
           <Spiner />
@@ -122,7 +104,8 @@ const Page = () => {
                 {video.title}
               </h2>
               <p className="text-sm text-gray-600 mb-1">
-                الصف: <span className="font-medium text-gray-700"> {levelText} </span>
+                الصف:{" "}
+                <span className="font-medium text-gray-700">{levelText}</span>
               </p>
               <p className="text-sm text-gray-400 mb-2 truncate">
                 {video.description}
@@ -130,14 +113,14 @@ const Page = () => {
 
               <div className="flex gap-3 justify-end">
                 <button
-                onClick={() => {
-                  setVideo(video)
-                  setShowEdit(true)
-                }}
+                  onClick={() => {
+                    setVideo(video);
+                    setShowEdit(true);
+                  }}
                 >
                   <CiEdit
                     className="text-xl text-gray-600 hover:text-green-600 cursor-pointer"
-                    title="تعديل الاختبار"
+                    title="تعديل الدرس"
                   />
                 </button>
                 <button
@@ -148,7 +131,7 @@ const Page = () => {
                 >
                   <AiOutlineDelete
                     className="text-xl text-gray-600 hover:text-red-600 cursor-pointer"
-                    title="حذف الاختبار"
+                    title="حذف الدرس"
                   />
                 </button>
               </div>
@@ -157,10 +140,10 @@ const Page = () => {
         </div>
       )}
 
+      {/* Delete Confirmation Card */}
       {showDeletCard && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-xl p-6 w-[90%] max-w-md text-center relative">
-            {/* Optional Close Button in Top-Left */}
             <button
               onClick={() => setShowDeleteCard(false)}
               className="absolute top-3 left-3 text-gray-500 hover:text-gray-700 transition"
@@ -173,15 +156,11 @@ const Page = () => {
               هل أنت متأكد من حذف الدرس؟
             </h2>
 
-            <p className="text-gray-700 mb-6 truncate">
-              {/* يمكن عرض اسم الدرس هنا */}
-            </p>
-
             <div className="flex justify-center gap-4">
               <button
                 className="bg-red-600 text-white px-5 py-2 rounded-lg hover:bg-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => deleteLessson(videoId)}
-                disabled={isDeleting} // optional state
+                disabled={isDeleting}
               >
                 {isDeleting ? "جاري الحذف..." : "نعم، حذف"}
               </button>
@@ -195,8 +174,31 @@ const Page = () => {
           </div>
         </div>
       )}
-      {(showEdit && video) && <EditLesson video={video} closeEdit={setShowEdit} updateLessonFn={updateLessonFn}/>}
+
+      {/* Edit Modal */}
+      {showEdit && video && (
+        <EditLesson
+          video={video}
+          closeEdit={setShowEdit}
+          updateLessonFn={updateLessonFn}
+        />
+      )}
     </div>
+  );
+};
+
+// ✅ Main Page with Suspense Wrapper
+const Page = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center min-h-screen">
+          <Spiner />
+        </div>
+      }
+    >
+      <PageContent />
+    </Suspense>
   );
 };
 

@@ -3,14 +3,14 @@
 import SubHeader from "@/components/SubHeader";
 import { useSearchParams } from "next/navigation";
 import { Axios } from "@/axios/Axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { toast } from "react-toastify";
 import { SubjectTypes } from "@/types/Types";
 import Image from "next/image";
 import Link from "next/link";
 import Spiner from "@/components/Spiner";
 
-const Page = () => {
+const SubjectPageContent = () => {
   const params = useSearchParams();
   const subName = params.get("subName") || "";
   const subId = params.get("subId");
@@ -22,7 +22,7 @@ const Page = () => {
       const res = await Axios.post("user/get-subject-details", { subId });
       setSubject(res.data.data);
     } catch {
-       toast.error("فشل في جلب بيانات المادة");
+      toast.error("فشل في جلب بيانات المادة");
     }
   };
 
@@ -39,12 +39,14 @@ const Page = () => {
           <div className="flex flex-col items-center animate-fadeIn">
             {/* Subject Image */}
             <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-blue-200 shadow-md transition-transform duration-500 hover:scale-105">
-             {subject.image?.startsWith("http") &&  <Image
-                src={subject.image}
-                alt={subject.name}
-                fill
-                className="object-cover"
-              />}
+              {subject.image?.startsWith("http") && (
+                <Image
+                  src={subject.image}
+                  alt={subject.name}
+                  fill
+                  className="object-cover"
+                />
+              )}
             </div>
 
             {/* Subject Name */}
@@ -100,10 +102,26 @@ const Page = () => {
             )}
           </div>
         ) : (
-          <p className="flex items-center justify-center"> <Spiner/> </p>
+          <p className="flex items-center justify-center">
+            <Spiner />
+          </p>
         )}
       </div>
     </div>
+  );
+};
+
+const Page = () => {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center h-[80vh]">
+          <Spiner />
+        </div>
+      }
+    >
+      <SubjectPageContent />
+    </Suspense>
   );
 };
 
