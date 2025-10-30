@@ -18,6 +18,7 @@ export default {
            primary1: "#5700FF",
            primary5: "#F7F8FF",
            primary3: '#3B82F6',
+           primary4: '#82F6',
       },
       boxShadow: {
         'main-shadow': '0 0 5px #939597',
