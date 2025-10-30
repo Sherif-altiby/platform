@@ -39,7 +39,7 @@ const Page = () => {
               <div className="w-[200px]">
                 { teacher?.avatar?.startsWith("http") &&  <Image
                   src={teacher?.avatar}
-                  alt="Teacher Image"
+                  alt="Teacher Image "
                   height={300}
                   width={300}
                   className="w-full md:min-w-[150px] h-[200px] rounded-lg border-4 border-gradient-to-r from-blue-500 to-green-400 object-cover shadow-xl transition-all duration-500 ease-in-out transform hover:scale-110"
