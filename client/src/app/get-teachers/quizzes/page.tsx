@@ -1,47 +1,45 @@
 "use client";
 
+import { Suspense, useEffect, useState } from "react";
 import SubHeader from "@/components/SubHeader";
 import { useSearchParams } from "next/navigation";
 import { Axios } from "@/axios/Axios";
-import { useEffect, useState } from "react";
 import { Quize, UserTypes } from "@/types/Types";
-import { useAuthUser } from "@/store/authStore";
 import Quiz from "./Quiz";
 import Spiner from "@/components/Spiner";
 import { toast } from "react-toastify";
 import { useQueryClient } from "@tanstack/react-query";
 
-
-const Pages = () => {
+function QuizzesContent() {
   const searchParams = useSearchParams();
   const name = searchParams.get("teacherName");
   const teacherId = searchParams.get("teacherId");
 
   const queryClient = useQueryClient();
-  const user = queryClient.getQueryData(["user"]) as UserTypes
-
+  const user = queryClient.getQueryData(["user"]) as UserTypes;
 
   const [quizzes, setQuizzes] = useState<Quize[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const getNotes = async () => {
-    setLoading(true);
+  const getQuizzes = async () => {
+    if (!teacherId || !user?.level) return;
 
+    setLoading(true);
     try {
       const res = await Axios.post("teacher/get-quiz-by-level", {
         teacherId,
-        level: user?.level,
+        level: user.level,
       });
-
       setQuizzes(res.data.data);
     } catch {
-        toast.error("حدث خطأ")    } finally {
+      toast.error("حدث خطأ أثناء تحميل الاختبارات");
+    } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    getNotes();
+    getQuizzes();
   }, []);
 
   return (
@@ -61,11 +59,19 @@ const Pages = () => {
             ))}
           </div>
         ) : (
-          <div className=" mt-5 text-xl"> لا يوجد الاختبارات حتى الان </div>
+          <div className="mt-5 text-xl text-gray-600 text-center">
+            لا يوجد اختبارات حتى الآن
+          </div>
         )}
       </div>
     </div>
   );
-};
+}
 
-export default Pages;
+export default function Pages() {
+  return (
+    <Suspense fallback={<div className="text-center py-10">جارٍ تحميل الصفحة...</div>}>
+      <QuizzesContent />
+    </Suspense>
+  );
+}
