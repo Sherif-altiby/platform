@@ -18,15 +18,9 @@ const Nav = () => {
   const queryClient = useQueryClient();
   const userData = queryClient.getQueryData(["user"]) as UserTypes
 
-  // const [user, setUser] = useState<UserTypes>()
-
-  // useEffect(() => {
-  //   setUser(userData)
-  // }, [])
-
   return (
     <>
-      <nav className="shadow-md sticky top-0 bg-white z-10">
+      <nav className="shadow-md sticky top-0 bg-white z-50">
         <div className="flex items-center justify-between h-[80px] container">
 
           <Link href={'/'} > <Image src={'/basira.svg'} alt="Logo" width={150}  height={100} /> </Link>
