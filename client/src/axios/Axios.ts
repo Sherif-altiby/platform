@@ -1,5 +1,4 @@
 import axios from "axios";
-import Router from "next/router"; // Import the Router
 
 const URL = process.env.NEXT_PUBLIC_SERVER_URL;
 

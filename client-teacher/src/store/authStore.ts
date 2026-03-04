@@ -47,35 +47,34 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
     }
   },
 
-  userLogin: async (email: string, password: string) => {
-    set(() => ({
-      isLogin: true,
-    }));
+ userLogin: async (email: string, password: string) => {
+  set(() => ({ isLogin: true }));
 
-    try {
-      const res = await Axios.post("user/login", {
-        email,
-        password,
-      });
-      set(() => ({
-        user: res.data.data.user,
-      }));
+  try {
+    const res = await Axios.post("user/login", {
+      email,
+      password,
+    });
 
-      toast.success("تم تسجيل الدخول بنجاح");
+    console.log(res)
 
-      return res.data;
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        toast.error(error?.response?.data.message);
-      } else {
-        toast.error("البريد الالكتروني او كلمة المرور خطأ");
-      }
-    } finally {
-      set(() => ({
-        isLogin: false,
-      }));
+    set(() => ({ user: res.data.data.user }));
+    toast.success("تم تسجيل الدخول بنجاح");
+
+    return res.data;
+
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      toast.error(error?.response?.data.message);
+    } else {
+      toast.error("البريد الالكتروني او كلمة المرور خطأ");
     }
-  },
+    return { status: false }; // ✅ ADD THIS
+
+  } finally {
+    set(() => ({ isLogin: false }));
+  }
+},
 
   userRegister: async (
     name: string,

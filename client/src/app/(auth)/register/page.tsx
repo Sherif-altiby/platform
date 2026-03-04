@@ -28,20 +28,20 @@ const Page = () => {
 
   const onSubmit: SubmitHandler<RegisterInputs> = async (data) => {
     try {
-     const res =  await userRegister(
+      const res = await userRegister(
         data.name,
         data.email,
         data.password,
         data.level,
-        data.phone
+        data.phone,
       );
 
-      if(res.status){
+      if (res.status) {
         router.push("/login");
       }
       reset();
     } catch {
-       toast.error("حاول مرة اخري");
+      toast.error("حاول مرة اخري");
     }
   };
 
@@ -56,7 +56,6 @@ const Page = () => {
         <div className="flex items-start flex-col md:flex-row gap-5 mb-5">
           <div className="w-full md:w-1/2">
             <label className="block text-grayColor text-lg mb-2" htmlFor="name">
-              {" "}
               الاسم ثلاثي
             </label>
             <input
@@ -67,10 +66,7 @@ const Page = () => {
               } `}
               {...register("name")}
             />
-            <span className="text-red-500 text-sm">
-              {" "}
-              {errors.name?.message}{" "}
-            </span>
+            <span className="text-red-500 text-sm">{errors.name?.message}</span>
           </div>
 
           <div className="w-full md:w-1/2">
@@ -78,7 +74,6 @@ const Page = () => {
               className="block text-grayColor text-lg mb-2"
               htmlFor="email"
             >
-              {" "}
               البريد الالكتروني
             </label>
             <input
@@ -90,8 +85,7 @@ const Page = () => {
               {...register("email")}
             />
             <span className="text-red-500 text-sm">
-              {" "}
-              {errors.email?.message}{" "}
+              {errors.email?.message}
             </span>
           </div>
         </div>
@@ -102,8 +96,7 @@ const Page = () => {
               className="block text-grayColor text-lg mb-2"
               htmlFor="phone"
             >
-              {" "}
-              رقم التلفون{" "}
+              رقم التلفون
             </label>
             <input
               type="number"
@@ -114,8 +107,7 @@ const Page = () => {
               {...register("phone")}
             />
             <span className="text-red-500 text-sm">
-              {" "}
-              {errors.phone?.message}{" "}
+              {errors.phone?.message}
             </span>
           </div>
 
@@ -124,8 +116,7 @@ const Page = () => {
               className="block text-grayColor text-lg mb-2"
               htmlFor="level"
             >
-              {" "}
-              الصف الدراسي{" "}
+              الصف الدراسي
             </label>
             <select
               id="level"
@@ -139,8 +130,7 @@ const Page = () => {
               <option value="third"> الصف الثالث الثانوي </option>
             </select>
             <span className="text-red-500 text-sm">
-              {" "}
-              {errors.level?.message}{" "}
+              {errors.level?.message}
             </span>
           </div>
         </div>
@@ -151,8 +141,7 @@ const Page = () => {
               className="block text-grayColor text-lg mb-2"
               htmlFor="password"
             >
-              {" "}
-              كلمة المرور{" "}
+              كلمة المرور
             </label>
             <input
               type="password"
@@ -163,8 +152,7 @@ const Page = () => {
               {...register("password")}
             />
             <span className="text-red-500 text-sm">
-              {" "}
-              {errors.password?.message}{" "}
+              {errors.password?.message}
             </span>
           </div>
 
@@ -173,8 +161,7 @@ const Page = () => {
               className="block text-grayColor text-lg mb-2"
               htmlFor="pass-confirm"
             >
-              {" "}
-              تاكيد كلمة المرور{" "}
+              تاكيد كلمة المرور
             </label>
             <input
               type="password"
@@ -185,8 +172,7 @@ const Page = () => {
               {...register("confirmPassword")}
             />
             <span className="text-red-500 text-sm">
-              {" "}
-              {errors.confirmPassword?.message}{" "}
+              {errors.confirmPassword?.message}
             </span>
           </div>
         </div>
@@ -207,8 +193,7 @@ const Page = () => {
         <div className="flex items-center justify-center gap-1 mt-5 text-lg">
           <p> لديك حساب بالفعل؟ </p>
           <Link href={"/login"} className="text-hoverLinkColor">
-            {" "}
-            تسجيل الدخول{" "}
+            تسجيل الدخول
           </Link>
         </div>
       </form>

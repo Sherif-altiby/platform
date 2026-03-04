@@ -4,6 +4,7 @@ export const checkUser = async () => {
   });
 
   if (!res.ok) throw new Error("Failed to fetch user");
+  localStorage.setItem("user-exist", JSON.stringify(true))
   return res.json();
 };
 

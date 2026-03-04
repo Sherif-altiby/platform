@@ -10,53 +10,108 @@ const Hero = () => {
   const textRef = useRef<HTMLParagraphElement>(null);
   const imageRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const blob1Ref = useRef<HTMLDivElement>(null);
+  const blob2Ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (
+      !sectionRef.current ||
+      !titleRef.current ||
+      !textRef.current ||
+      !imageRef.current ||
+      !overlayRef.current
+    ) return;
+
+    const elements = [
+      sectionRef.current,
+      titleRef.current,
+      textRef.current,
+      imageRef.current,
+      overlayRef.current,
+    ].filter(Boolean);
+
+    gsap.set(elements, { clearProps: "all" });
+
     const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
 
     tl.from(sectionRef.current, {
       opacity: 0,
-      duration: 0.6,
+      y: 60,
+      duration: 0.8,
     })
-    .from(overlayRef.current, {
-      scaleX: 0,
-      transformOrigin: "left center",
-      duration: 0.8,
-      ease: "power4.inOut",
-    }, "-=0.3")
-    .from(imageRef.current, {
-      opacity: 0,
-      x: 120,
-      rotation: 8,
-      duration: 1,
-      ease: "back.out(1.4)",
-    }, "-=0.5")
-    .from(titleRef.current, {
-      opacity: 0,
-      x: 80,
-      duration: 0.8,
-    }, "-=0.6")
-    .from(textRef.current, {
-      opacity: 0,
-      y: 30,
-      duration: 0.8,
-    }, "-=0.4");
+      .from(overlayRef.current, {
+        scaleY: 0,
+        transformOrigin: "top center",
+        duration: 1,
+        ease: "expo.inOut",
+      }, "-=0.4")
+      .from(imageRef.current, {
+        opacity: 0,
+        y: -120,
+        rotation: -15,
+        scale: 0.7,
+        duration: 1.2,
+        ease: "elastic.out(1, 0.5)",
+      }, "-=0.6")
+      .from(titleRef.current, {
+        opacity: 0,
+        scale: 0.5,
+        rotation: -5,
+        duration: 0.9,
+        ease: "back.out(2)",
+      }, "-=0.5")
+      .from(textRef.current, {
+        opacity: 0,
+        clipPath: "inset(0 100% 0 0)",
+        duration: 1,
+        ease: "power4.out",
+      }, "-=0.4");
 
-    gsap.to(imageRef.current, {
-      y: -16,
-      duration: 2.5,
+    const floatAnim = gsap.to(imageRef.current, {
+      rotation: 4,
+      duration: 3,
       ease: "sine.inOut",
       yoyo: true,
       repeat: -1,
     });
 
-    gsap.to(titleRef.current, {
+    const blob1Anim = blob1Ref.current
+      ? gsap.to(blob1Ref.current, {
+          x: 40,
+          y: 30,
+          duration: 5,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        })
+      : null;
+
+    const blob2Anim = blob2Ref.current
+      ? gsap.to(blob2Ref.current, {
+          x: -40,
+          y: -30,
+          duration: 4,
+          ease: "sine.inOut",
+          yoyo: true,
+          repeat: -1,
+        })
+      : null;
+
+    const titleAnim = gsap.to(titleRef.current, {
       backgroundPosition: "200% center",
-      duration: 4,
+      duration: 5,
       ease: "none",
       repeat: -1,
     });
 
+    return () => {
+      tl.kill();
+      floatAnim.kill();
+      blob1Anim?.kill();
+      blob2Anim?.kill();
+      titleAnim.kill();
+      gsap.set(elements, { clearProps: "all" });
+    };
   }, []);
 
   return (
@@ -69,10 +124,19 @@ const Hero = () => {
           ref={overlayRef}
           className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none"
         />
-        <div className="absolute top-10 left-10 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-primary3/10 blur-3xl pointer-events-none" />
+
+        <div
+          ref={blob1Ref}
+          className="absolute top-10 left-10 w-64 h-64 rounded-full bg-white/5 blur-3xl pointer-events-none"
+        />
+        <div
+          ref={blob2Ref}
+          className="absolute bottom-10 right-10 w-80 h-80 rounded-full bg-primary3/10 blur-3xl pointer-events-none"
+        />
 
         <div className="container mx-auto flex flex-col-reverse md:flex-row items-center justify-between gap-12 px-4 relative z-10">
+
+          {/* Text */}
           <div className="md:w-1/2 text-center md:text-right space-y-6">
             <h1
               ref={titleRef}
@@ -87,12 +151,13 @@ const Hero = () => {
             >
               منصة تعليمية مبتكرة تهدف إلى توفير تجربة تعليمية متكاملة وشاملة
               للمستخدمين من جميع الأعمار والخلفيات. تعتمد على أحدث التقنيات
-              التعليمية لخلق بيئة تعلم تفاعلية وجذابة، حيث يمكن للمتعلمين الوصول
-              إلى مجموعة متنوعة من الموارد والدورات التدريبية المصممة بعناية
-              لتلبية احتياجاتهم التعليمية.
+              التعليمية لخلق بيئة تعلم تفاعلية وجذابة، حيث يمكن للمتعلمين
+              الوصول إلى مجموعة متنوعة من الموارد والدورات التدريبية المصممة
+              بعناية لتلبية احتياجاتهم التعليمية.
             </p>
           </div>
 
+          {/* Image */}
           <div className="md:w-1/2 flex justify-center">
             <div ref={imageRef}>
               <Image

@@ -21,8 +21,9 @@ const Login = () => {
       const onSubmit: SubmitHandler<LoginInputs> = async (data) =>  {
         const res = await userLogin(data.email, data.password)
 
-
-        reset()
+        // reset()
+        console.log(res)
+        console.log(data)
 
         if (res.status){
           router.push('/')

@@ -34,6 +34,7 @@ userRouter.post('/logout', auth, logout)
 userRouter.post('/forgot-password', forgotPassword)
 userRouter.post('/verify-code', verifyForgotPasswordCode)
 userRouter.post('/resset-password', ressetPassword)
+
 userRouter.put('/update-user-details', auth,  updateUserDetails)
 userRouter.get('/get-user-details', auth,  getUserDetails)
 userRouter.get('/get-users', auth, isAdmin,  getAllUsers)

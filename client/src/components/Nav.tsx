@@ -8,22 +8,30 @@ import { useEffect, useState } from "react";
 import ResponsiveMenu from "./ResponsiveMenu";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiUser } from "react-icons/ci";
-import { UserTypes } from "@/types/Types";
-import { useQueryClient } from "@tanstack/react-query";
-
 
 const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
 
-  const queryClient = useQueryClient();
-  const userData = queryClient.getQueryData(["user"]) as UserTypes
+  const [isUserExist, setIsUserExist] = useState(false);
+
+  useEffect(() => {
+    const userExist = JSON.parse(localStorage.getItem("user-exist") || "false");
+    setIsUserExist(userExist);
+  }, []);
 
   return (
     <>
       <nav className="shadow-md sticky top-0 bg-white z-50">
         <div className="flex items-center justify-between h-[80px] container">
-
-          <Link href={'/'} > <Image src={'/basira.svg'} alt="Logo" width={150}  height={100} /> </Link>
+          <Link href={"/"}>
+            {" "}
+            <Image
+              src={"/basira.svg"}
+              alt="Logo"
+              width={150}
+              height={100}
+            />{" "}
+          </Link>
 
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map((link, index) =>
@@ -35,12 +43,12 @@ const Nav = () => {
                 >
                   {link.link}
                 </Link>
-              ) : null
+              ) : null,
             )}
           </div>
 
           <div>
-            {!userData && (
+            {!isUserExist && (
               <Link
                 className="hidden lg:flex items-center justify-center md:text-lg xl:text-xl h-[50px] rounded-xl w-[170px] bg-hoverLinkColor border border-hoverLinkColor text-white transition-all duration-500 hover:rounded-[50px] hover:bg-white hover:text-hoverLinkColor"
                 href="/register"
@@ -50,7 +58,7 @@ const Nav = () => {
             )}
 
             <div className="flex gap-4">
-              {userData && (
+              {isUserExist && (
                 <div className="hidden lg:flex items-center gap-4">
                   <Link
                     href="/notifications"
