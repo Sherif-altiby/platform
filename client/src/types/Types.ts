@@ -115,7 +115,6 @@ export interface useAuthInterface {
   isVerifingCode: boolean;
 
   userLogin: (email: string, password: string) => Promise<CombinedType>;
-  // checkUser: () => Promise<void>;
   userRegister: (
     name: string,
     email: string,
@@ -125,6 +124,7 @@ export interface useAuthInterface {
   ) => Promise<CombinedType>;
   userForgotPassword: (email: string) => Promise<void>;
   userVerifyCode: (email: string, code: number) => Promise<void>;
+  setUser: (user: UserTypes | null) => void;
 }
 
 export type TeacherStatics = {

@@ -12,6 +12,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
   isForgetting: false,
   redirectUser: false,
   isVerifingCode: false,
+  setUser: (user) => set(() => ({ user })),
 
   userLogin: async (email: string, password: string) => {
     set(() => ({

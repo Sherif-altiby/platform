@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <Providers>
           <Nav />
             <ClientProvider /> 
-            {children}
+               {children}
           </Providers>
           <Footer />
           <ToastContainer position="top-right" autoClose={3000} />

@@ -2,7 +2,7 @@
 
 import { getPlatformStatics } from '@/app/utils/userFeatuers';
 import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { FaUsers, FaChalkboardTeacher, FaBook } from 'react-icons/fa';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,10 +10,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 gsap.registerPlugin(ScrollTrigger);
 
 const StatsSection: React.FC = () => {
-  const [users, setUsers] = useState(0);
-  const [teachers, setTeachers] = useState(0);
-  const [lessons, setLessons] = useState(0);
-
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const card1Ref = useRef<HTMLDivElement>(null);
@@ -23,65 +19,57 @@ const StatsSection: React.FC = () => {
   const teachersNumRef = useRef<HTMLParagraphElement>(null);
   const lessonsNumRef = useRef<HTMLParagraphElement>(null);
 
-  useQuery({
+  // Track previous values to avoid re-animating from 0
+  const prevUsers = useRef(0);
+  const prevTeachers = useRef(0);
+  const prevLessons = useRef(0);
+
+  const { data } = useQuery({
     queryKey: ['usersNum'],
     queryFn: async () => {
       const res = await getPlatformStatics();
-      setTeachers(res.data.teachers);
-      setUsers(res.data.users);
-      setLessons(res.data.lessons);
       return res.data;
     },
+    staleTime: 1000 * 60 * 5, // cache for 5 minutes — prevents refetch on route change
   });
 
-  // Counter animation when numbers change
-  useEffect(() => {
-    if (users > 0) {
-      gsap.from({ val: 0 }, {
-        val: users,
-        duration: 2,
-        ease: 'power2.out',
-        onUpdate: function () {
-          if (usersNumRef.current)
-            usersNumRef.current.textContent = Math.ceil(this.targets()[0].val).toString();
-        },
-      });
-    }
-  }, [users]);
+  // Animate counter from previous value to new value
+  const animateCounter = (
+    ref: React.RefObject<HTMLParagraphElement | null>,
+    from: number,
+    to: number
+  ) => {
+    if (!ref.current || to === from) return;
+    const obj = { val: from };
+    gsap.to(obj, {
+      val: to,
+      duration: 2,
+      ease: 'power2.out',
+      onUpdate: () => {
+        if (ref.current) {
+          ref.current.textContent = Math.ceil(obj.val).toString();
+        }
+      },
+    });
+  };
 
   useEffect(() => {
-    if (teachers > 0) {
-      gsap.from({ val: 0 }, {
-        val: teachers,
-        duration: 2,
-        ease: 'power2.out',
-        onUpdate: function () {
-          if (teachersNumRef.current)
-            teachersNumRef.current.textContent = Math.ceil(this.targets()[0].val).toString();
-        },
-      });
-    }
-  }, [teachers]);
+    if (!data) return;
 
-  useEffect(() => {
-    if (lessons > 0) {
-      gsap.from({ val: 0 }, {
-        val: lessons,
-        duration: 2,
-        ease: 'power2.out',
-        onUpdate: function () {
-          if (lessonsNumRef.current)
-            lessonsNumRef.current.textContent = Math.ceil(this.targets()[0].val).toString();
-        },
-      });
-    }
-  }, [lessons]);
+    const { users, teachers, lessons } = data;
 
-  // Entrance animations
+    animateCounter(usersNumRef, prevUsers.current, users);
+    animateCounter(teachersNumRef, prevTeachers.current, teachers);
+    animateCounter(lessonsNumRef, prevLessons.current, lessons);
+
+    prevUsers.current = users;
+    prevTeachers.current = teachers;
+    prevLessons.current = lessons;
+  }, [data]);
+
+  // Entrance animations — run once on mount only
   useEffect(() => {
     const ctx = gsap.context(() => {
-
-      // Title drops in with bounce
       gsap.from(titleRef.current, {
         opacity: 0,
         y: -60,
@@ -93,7 +81,6 @@ const StatsSection: React.FC = () => {
         },
       });
 
-      // Cards stagger in from bottom
       gsap.from([card1Ref.current, card2Ref.current, card3Ref.current], {
         opacity: 0,
         y: 80,
@@ -107,7 +94,6 @@ const StatsSection: React.FC = () => {
         },
       });
 
-      // Background blob pulse
       gsap.to('.stats-blob', {
         scale: 1.2,
         opacity: 0.4,
@@ -116,7 +102,6 @@ const StatsSection: React.FC = () => {
         yoyo: true,
         repeat: -1,
       });
-
     }, sectionRef);
 
     // Hover animations
@@ -125,13 +110,8 @@ const StatsSection: React.FC = () => {
 
     cards.forEach((ref) => {
       const el = ref.current;
-
-      const onEnter = () => {
-        gsap.to(el, { y: -12, scale: 1.05, duration: 0.3, ease: 'power2.out' });
-      };
-      const onLeave = () => {
-        gsap.to(el, { y: 0, scale: 1, duration: 0.3, ease: 'power2.inOut' });
-      };
+      const onEnter = () => gsap.to(el, { y: -12, scale: 1.05, duration: 0.3, ease: 'power2.out' });
+      const onLeave = () => gsap.to(el, { y: 0, scale: 1, duration: 0.3, ease: 'power2.inOut' });
 
       el?.addEventListener('mouseenter', onEnter);
       el?.addEventListener('mouseleave', onLeave);
@@ -152,7 +132,6 @@ const StatsSection: React.FC = () => {
       ref={sectionRef}
       className="bg-gradient-to-r from-blue-500 to-teal-500 text-white py-20 relative overflow-hidden"
     >
-      {/* Decorative blobs */}
       <div className="stats-blob absolute -top-20 -left-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
       <div className="stats-blob absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
 
@@ -163,33 +142,30 @@ const StatsSection: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
 
-          {/* Total Users */}
           <div ref={card1Ref} className="bg-white text-gray-800 p-8 rounded-xl shadow-lg cursor-pointer">
             <div className="flex items-center justify-center mb-4 text-4xl text-indigo-600">
               <FaUsers />
             </div>
             <h3 className="text-2xl font-semibold mb-2">إجمالي المستخدمين</h3>
-            <p ref={usersNumRef} className="text-4xl font-bold">{users}</p>
+            <p ref={usersNumRef} className="text-4xl font-bold">0</p>
             <p className="text-sm text-gray-500">عدد المستخدمين المسجلين في المنصة</p>
           </div>
 
-          {/* Total Teachers */}
           <div ref={card2Ref} className="bg-white text-gray-800 p-8 rounded-xl shadow-lg cursor-pointer">
             <div className="flex items-center justify-center mb-4 text-4xl text-teal-600">
               <FaChalkboardTeacher />
             </div>
             <h3 className="text-2xl font-semibold mb-2">إجمالي المعلمين</h3>
-            <p ref={teachersNumRef} className="text-4xl font-bold">{teachers}</p>
+            <p ref={teachersNumRef} className="text-4xl font-bold">0</p>
             <p className="text-sm text-gray-500">عدد المعلمين الذين يقدمون دروسًا</p>
           </div>
 
-          {/* Total Lessons */}
           <div ref={card3Ref} className="bg-white text-gray-800 p-8 rounded-xl shadow-lg cursor-pointer">
             <div className="flex items-center justify-center mb-4 text-4xl text-purple-600">
               <FaBook />
             </div>
             <h3 className="text-2xl font-semibold mb-2">إجمالي الدروس</h3>
-            <p ref={lessonsNumRef} className="text-4xl font-bold">{lessons}</p>
+            <p ref={lessonsNumRef} className="text-4xl font-bold">0</p>
             <p className="text-sm text-gray-500">عدد الدروس المتوفرة للطلاب</p>
           </div>
 

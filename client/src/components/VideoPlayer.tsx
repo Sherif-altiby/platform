@@ -9,17 +9,19 @@ const VideoPlayer: React.FC<CustomYouTubePlayerProps> = ({ videoId }) => {
     height: '100%',
     width: '100%',
     playerVars: {
-      autoplay: 0,  
-      controls: 0, 
-      modestbranding: 1, 
-      showinfo: 0,  
-      rel: 0,  
-      iv_load_policy: 3,  
+      autoplay: 0,
+      controls: 0,
+      modestbranding: 1,
+      showinfo: 0,
+      rel: 0,
+      iv_load_policy: 3,
     },
   };
 
   return (
-    <div style={{ position: 'relative', paddingBottom: '56.25%', overflow: 'hidden' }}>
+    <div className="relative w-full rounded-2xl overflow-hidden shadow-2xl border border-gray-100 bg-black"
+      style={{ paddingBottom: '56.25%' }}
+    >
       <YouTube
         videoId={videoId}
         opts={opts}

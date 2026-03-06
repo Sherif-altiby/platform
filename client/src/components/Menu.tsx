@@ -1,19 +1,21 @@
 import Link from "next/link"
 import { MenuLinksTypes } from "../types/Types"
 
-const Menu = ( {data}: {data: MenuLinksTypes} ) => {
+const Menu = ({ data }: { data: MenuLinksTypes }) => {
   return (
-    <div className="shadow-sm h-full p-3 rounded-lg bg-slate-50  top-[95px] w-[230px] ring-0" >
-        {data.map((link) => (
-            <Link 
-                key={link.link} 
-                href={link.paht} 
-                className="flex p-3 mb-3 items-center gap-3 shadow-sm rounded-lg bg-white text-grayColor transition-all duration-300 hover:bg-blue-600 hover:text-white"
-            > 
-                 <div className="text-lg" > <link.icon /> </div>
-                 <p className="text-xl font-light" > {link.link}  </p>
-            </Link>
-        ))}
+    <div className="h-full p-3 rounded-2xl bg-white border border-gray-100 shadow-sm w-[230px]">
+      {data.map((link) => (
+        <Link
+          key={link.link}
+          href={link.paht}
+          className="group flex items-center gap-3 px-3 py-2.5 mb-1 rounded-xl text-gray-500 hover:bg-indigo-50 hover:text-indigo-600 transition-all duration-200"
+        >
+          <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-gray-100 group-hover:bg-indigo-100 text-base transition-colors duration-200">
+            <link.icon />
+          </div>
+          <p className="text-sm font-medium">{link.link}</p>
+        </Link>
+      ))}
     </div>
   )
 }

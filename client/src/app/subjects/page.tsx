@@ -6,28 +6,42 @@ import { SubjectTypes } from "@/types/Types";
 import Spiner from "@/components/Spiner";
 import { useQuery } from "@tanstack/react-query";
 import { getSubjects } from "../utils/subjectFearuers";
+import { PiBookOpenTextLight } from "react-icons/pi";
 
 const Page = () => {
-
-  const {data: subjects, isLoading} = useQuery({
-    queryKey: ['subjects'],
+  const { data: subjects, isLoading } = useQuery({
+    queryKey: ["subjects"],
     queryFn: async () => {
       const res = await getSubjects();
-      return res.data as SubjectTypes[]
-    }
-  })
+      return res.data as SubjectTypes[];
+    },
+  });
 
   return (
-    <div className="ctm-height mb-10">
+    <div className="ctm-height bg-gray-50">
       <SubHeader currentTitle="المواد الدراسية" />
-      <div className="container">
+
+      <div className="container py-12">
+
+        {/* Section heading */}
+        <div className="flex items-center gap-3 mb-10">
+          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
+            <PiBookOpenTextLight className="text-white text-xl" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">المواد الدراسية</h2>
+            <p className="text-sm text-gray-400">اختر المادة لعرض المدرسين المتاحين</p>
+          </div>
+        </div>
+
+        {/* Content */}
         {isLoading ? (
-          <div className="flex items-center justify-center mt-5">
+          <div className="flex items-center justify-center h-64">
             <Spiner />
           </div>
-        ) : (
-          <div className="mt-10 mb-10 grid grid-flow-row xl:grid-cols-5 lg:grid-cols-3 sm:grid-cols-2 gap-3">
-            {subjects?.map((s) => (
+        ) : subjects?.length ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+            {subjects.map((s) => (
               <SubjectCard
                 link={`/subjects/sub-details?subId=${s._id}&subName=${s.name}`}
                 key={s._id}
@@ -36,8 +50,11 @@ const Page = () => {
                 avatar={s.image}
               />
             ))}
-
-            {subjects?.length === 0 &&  ( <div className="text-center text-lg text-primary1" > لا يوجد مواد دراسية</div> )}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
+            <PiBookOpenTextLight className="text-5xl opacity-30" />
+            <p className="text-lg">لا يوجد مواد دراسية</p>
           </div>
         )}
       </div>
