@@ -20,7 +20,7 @@
     "gsap": "^3.14.2",
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
-    "next": "15.1.6",
+    "next": "^15.2.3",
     "next-nprogress-bar": "^2.4.7",
     "nprogress": "^0.2.0",
     "react": "^19.0.0",
