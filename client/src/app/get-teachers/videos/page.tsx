@@ -70,7 +70,7 @@ const VideosPageContent = () => {
                 teacherId={teacherId as string}
                 key={v._id}
                 videoId={v.link}
-                name=""
+                name = {name || ""}
               />
             ))}
           </div>

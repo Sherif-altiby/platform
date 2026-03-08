@@ -118,7 +118,7 @@ const Hero = () => {
     <>
       <section
         ref={sectionRef}
-        className="bg-hoverLinkColor text-white py-16 min-h-[calc(100vh-80px)] flex items-center relative overflow-hidden"
+        className="bg-hoverLinkColor text-white py-16 min-h-[calc(100vh-70px)] flex items-center relative overflow-hidden"
       >
         <div
           ref={overlayRef}
@@ -140,10 +140,10 @@ const Hero = () => {
           <div className="md:w-1/2 text-center md:text-right space-y-6">
             <h1
               ref={titleRef}
-              className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-white to-primary3 bg-clip-text text-transparent leading-snug"
+              className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white to-primary3 bg-clip-text text-transparent leading-snug"
               style={{ backgroundSize: "200% auto" }}
             >
-              منصة بصيرة التعليمية
+              منصة العبقري التعليمية
             </h1>
             <p
               ref={textRef}

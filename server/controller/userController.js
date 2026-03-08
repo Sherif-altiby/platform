@@ -49,7 +49,7 @@ export const register = async (req, res) => {
 
     await sendEmail({
       sendTo: email,
-      subject: "مرحبا بك في منصة بصيرة",
+      subject: "مرحبا بك في منصة العبقري",
       html: generateRegistrationEmail(newUser.name, process.env.FRONTEMD_URL),
     });
 
@@ -244,7 +244,7 @@ export const forgotPassword = async (req, res) => {
 
     await sendEmail({
       sendTo: email,
-      subject: "منصة بصيرة التعليمية",
+      subject: "منصة العبقري التعليمية",
       html: forgotPasswordTemplate({
         name: user.name,
         code: code,

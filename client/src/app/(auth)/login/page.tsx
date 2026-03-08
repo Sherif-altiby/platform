@@ -25,7 +25,6 @@ const Login = () => {
     try {
       const res = await userLogin(data.email, data.password);
       reset();
-      console.log(res);
 
       if (res?.status) {
         router.push("/");

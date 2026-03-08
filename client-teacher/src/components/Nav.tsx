@@ -9,69 +9,61 @@ import { useAuthUser } from "@/store/authStore";
 import { useEffect, useState } from "react";
 import { UserTypes } from "@/types/Types";
 
-
 const Nav = () => {
   const [parsedUser, setParsedUser] = useState<UserTypes>();
   const { checkUser } = useAuthUser();
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    const parsed = user ? JSON.parse(user) : '';
+    const parsed = user ? JSON.parse(user) : "";
     setParsedUser(parsed);
-
     checkUser();
   }, []);
 
-
-  if (parsedUser?.isBlocked) {
-    return <BlockedPage />;
-  }
-
-
+  if (parsedUser?.isBlocked) return <BlockedPage />;
 
   return (
-    <>
-      <nav className="shadow-md sticky top-0 bg-white z-10">
-        <div className="flex items-center justify-between h-[80px] container">
+    <nav
+      className="sticky top-0 z-50 border-b border-gray-100 bg-white"
+      style={{ boxShadow: "0 1px 2px 0 rgba(0,0,0,0.05)" }}
+    >
+      <div className="flex items-center justify-between h-[70px] container">
 
-          <Link href={'/'} > <Image src={'/basira.svg'} alt="Logo" width={150}  height={100} /> </Link>
+        {/* Logo */}
+        <Link href="/" className="shrink-0">
+          <Image src="/main-logo.png" alt="Logo" width={130} height={100} />
+        </Link>
 
+        {/* Actions */}
+        <div className="flex items-center gap-2">
+          {!parsedUser?.name && (
+            <Link
+              href="/register"
+              className="hidden lg:flex items-center justify-center text-sm font-semibold h-[40px] rounded-xl px-6 bg-indigo-600 text-white hover:bg-indigo-700 transition-colors duration-200 shadow-sm shadow-indigo-200"
+            >
+              تسجيل الدخول
+            </Link>
+          )}
 
-          <div>
-            {!parsedUser?.name && (
+          {parsedUser?.name && (
+            <div className="flex items-center gap-2">
               <Link
-                className="hidden lg:flex items-center justify-center md:text-lg xl:text-xl h-[50px] rounded-xl w-[170px] bg-hoverLinkColor border border-hoverLinkColor text-white transition-all duration-500 hover:rounded-[50px] hover:bg-white hover:text-hoverLinkColor"
-                href="/register"
+                href="/notifications"
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 text-xl"
               >
-                تسجيل الدخول
+                <IoIosNotificationsOutline />
               </Link>
-            )}
-
-            <div className="flex gap-4">
-              {parsedUser?.name && (
-                <div className="flex items-center gap-4">
-                  <Link
-                    href="/notifications"
-                    className="w-9 h-8 text-xl lg:text-3xl lg:w-[40px] lg:h-[40px] border border-hoverLinkColor flex items-center justify-center rounded-lg text-hoverLinkColor transition-all duration-300 hover:bg-hoverLinkColor hover:text-white"
-                  >
-                    <IoIosNotificationsOutline />
-                  </Link>
-                  <Link
-                    href="/profile"
-                    className="w-9 h-8 text-xl lg:text-3xl lg:w-[40px] lg:h-[40px] border border-hoverLinkColor flex items-center justify-center rounded-lg text-hoverLinkColor transition-all duration-300 hover:bg-hoverLinkColor hover:text-white"
-                  >
-                    <CiUser />
-                  </Link>
-                </div>
-              )}
-
-              
+              <Link
+                href="/profile"
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 text-xl"
+              >
+                <CiUser />
+              </Link>
             </div>
-          </div>
+          )}
         </div>
-
-      </nav>
-    </>
+      </div>
+    </nav>
   );
 };
 

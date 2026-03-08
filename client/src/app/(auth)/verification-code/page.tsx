@@ -42,10 +42,8 @@ function VerificationForm() {
     if (code.length < 6) return alert("من فضلك أدخل الكود بالكامل");
 
     setIsVerifyingCode(true);
-    console.log("Email:", email);
-    console.log("Code:", code);
+   
 
-    // مثال على تحقق بسيط
     setTimeout(() => {
       alert("تم التحقق بنجاح!");
       setIsVerifyingCode(false);

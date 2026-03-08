@@ -69,7 +69,7 @@ const Page = () => {
                     <div className="flex flex-col items-center text-center">
                       {/* Avatar */}
                       <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-blue-100 shadow-sm mb-4 transition-transform duration-300 group-hover:scale-105">
-                        <img
+                        <Image
                           src={
                             t.avatar
                               ? `${t.avatar}`
@@ -77,6 +77,8 @@ const Page = () => {
                           }
                           alt={t.name}
                           className="w-full h-full object-cover"
+                          width={80}
+                          height={80}
                         />
                       </div>
 

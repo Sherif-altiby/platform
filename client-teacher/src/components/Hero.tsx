@@ -10,7 +10,7 @@ const Hero = () => {
           {/* Text Content */}
           <div className="md:w-1/2 text-center md:text-right space-y-6">
             <h1 className="text-3xl lg:text-5xl font-bold bg-gradient-to-r from-white to-primary3 bg-clip-text text-transparent leading-snug animate__animated animate__fadeInRight">
-              منصة بصيرة التعليمية
+              منصة العبقري التعليمية
             </h1>
             <p className="text-sm md:text-lg lg:text-xl text-justify md:text-right text-gray-100 leading-relaxed animate__animated animate__fadeInRight animate__delay-1s">
               منصة تعليمية مبتكرة تهدف إلى توفير تجربة تعليمية متكاملة وشاملة للمستخدمين من جميع الأعمار والخلفيات. تعتمد على أحدث التقنيات التعليمية لخلق بيئة تعلم تفاعلية وجذابة، حيث يمكن للمتعلمين الوصول إلى مجموعة متنوعة من الموارد والدورات التدريبية المصممة بعناية لتلبية احتياجاتهم التعليمية.

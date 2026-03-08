@@ -9,6 +9,7 @@ import { NoteType } from "@/types/Types";
 import { useAuthUser } from "@/store/authStore";
 import Spiner from "@/components/Spiner";
 import { toast } from "react-toastify";
+import { PiNotepadThin } from "react-icons/pi";
 
 function NotesContent() {
   const searchParams = useSearchParams();
@@ -19,6 +20,8 @@ function NotesContent() {
 
   const [notes, setNotes] = useState<NoteType[]>([]);
   const [loading, setLoading] = useState(false);
+
+  console.log("user from note",user)
 
   const getNotes = async () => {
     setLoading(true);
@@ -40,25 +43,37 @@ function NotesContent() {
   }, []);
 
   return (
-    <div className="ctm-height">
+    <div className="ctm-height bg-gray-50">
       <SubHeader currentTitle={`أ/ ${name}`} />
 
-      <div className="container">
-        <h3 className="mt-5 mb-10 text-hoverLinkColor text-2xl">المذكرات</h3>
+      <div className="container py-12">
 
+        {/* Section heading */}
+        <div className="flex items-center gap-3 mb-10">
+          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
+            <PiNotepadThin className="text-white text-xl" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">المذكرات</h2>
+            <p className="text-sm text-gray-400">مذكرات أ/ {name}</p>
+          </div>
+        </div>
+
+        {/* Content */}
         {loading ? (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center h-64">
             <Spiner />
           </div>
         ) : notes.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-3 mb-3 relative">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {notes.map((note) => (
               <Note name={note.title} key={note._id} pdf={note.pdf} />
             ))}
           </div>
         ) : (
-          <div className="mt-5 text-xl text-center text-gray-600">
-            لا يوجد مذكرات حتى الآن
+          <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
+            <PiNotepadThin className="text-5xl opacity-30" />
+            <p className="text-lg">لا يوجد مذكرات حتى الآن</p>
           </div>
         )}
       </div>
@@ -68,7 +83,13 @@ function NotesContent() {
 
 export default function Pages() {
   return (
-    <Suspense fallback={<div className="text-center py-10">جارٍ تحميل الصفحة...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex items-center justify-center h-64 text-gray-400">
+          جارٍ تحميل الصفحة...
+        </div>
+      }
+    >
       <NotesContent />
     </Suspense>
   );

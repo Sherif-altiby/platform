@@ -4,6 +4,7 @@ import { CardStaticsTypes } from "@/types/Types";
 import Link from "next/link";
 import CountUp from "react-countup";
 import { FaBookOpen, FaChalkboardTeacher } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa";
 
 const CardStatics = ({
   title,
@@ -23,48 +24,58 @@ const CardStatics = ({
   ];
 
   return (
-    <div className="mb-8 p-6 rounded-xl bg-white shadow-md border border-gray-200">
+    <div className="bg-white border border-gray-100 rounded-3xl shadow-sm p-6 mb-6">
+
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-          <FaChalkboardTeacher className="text-primary1" />
-          {title}
-        </h2>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
+            <FaChalkboardTeacher className="text-white text-sm" />
+          </div>
+          <h2 className="text-lg font-bold text-gray-900">{title}</h2>
+        </div>
         <Link
           href={`/teacher/cotrole-content/${href}`}
-          className="bg-primary1 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary2 transition"
+          className="flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 transition-colors duration-200 shadow-sm shadow-indigo-200"
         >
           {link}
+          <FaArrowLeft className="text-xs" />
         </Link>
       </div>
 
-      {/* Total Items Card */}
-      <div className="flex items-center gap-4 p-5 bg-gray-50 rounded-lg shadow-sm border border-gray-100 mb-6 hover:shadow-md transition">
-        <div className="w-12 h-12 bg-primary1 text-white rounded-full flex items-center justify-center text-xl">
-          <FaBookOpen />
+      {/* Total count */}
+      <div className="flex items-center gap-4 p-5 bg-indigo-50 rounded-2xl border border-indigo-100 mb-6">
+        <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-md shrink-0">
+          <FaBookOpen className="text-white text-base" />
         </div>
         <div>
-          <p className="text-gray-600 text-sm">عدد {title} التي قمت بإضافتها</p>
-          <h3 className="text-2xl font-semibold text-gray-800">
+          <p className="text-xs text-indigo-400 font-medium mb-0.5">
+            عدد {title} التي قمت بإضافتها
+          </p>
+          <h3 className="text-3xl font-bold text-indigo-700">
             <CountUp start={0} end={allLength} duration={2} />
           </h3>
         </div>
       </div>
 
-      {/* Level Cards */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {levels.map(({ label, value, level }) => (
+      {/* Level cards */}
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+        {levels.map(({ label, value, level }, i) => (
           <Link
             key={level}
             href={`/teacher/view-content/${contentView}?level=${level}`}
-            className="flex items-center gap-4 bg-white p-5 rounded-lg border border-gray-100 shadow-sm hover:shadow-md transition group"
+            className="group flex items-center gap-4 bg-gray-50 hover:bg-indigo-50 border border-gray-100 hover:border-indigo-100 p-4 rounded-2xl transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm"
           >
-            <div className="w-12 h-12 bg-primary1 text-white rounded-full flex items-center justify-center text-xl group-hover:bg-primary2 transition">
+            <div className={`w-11 h-11 rounded-xl flex items-center justify-center text-base font-bold shrink-0 transition-colors duration-200
+              ${i === 0 ? "bg-indigo-100 text-indigo-600 group-hover:bg-indigo-200" :
+                i === 1 ? "bg-blue-100 text-blue-600 group-hover:bg-blue-200" :
+                          "bg-teal-100 text-teal-600 group-hover:bg-teal-200"}`}
+            >
               <CountUp start={0} end={value} duration={2} />
             </div>
-            <div className="flex flex-col">
-              <p className="text-sm text-gray-500">عدد {subTitle}</p>
-              <p className="text-gray-700 font-medium">{label}</p>
+            <div>
+              <p className="text-xs text-gray-400 mb-0.5">عدد {subTitle}</p>
+              <p className="text-sm font-semibold text-gray-700">{label}</p>
             </div>
           </Link>
         ))}
