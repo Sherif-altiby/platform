@@ -1,14 +1,13 @@
 "use client";
 
-import Image from "next/image";
 import { useEffect, useRef } from "react";
 import { gsap } from "gsap";
+import Image from "next/image";
 
 const Hero = () => {
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const textRef = useRef<HTMLParagraphElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
   const blob1Ref = useRef<HTMLDivElement>(null);
   const blob2Ref = useRef<HTMLDivElement>(null);
@@ -18,7 +17,6 @@ const Hero = () => {
       !sectionRef.current ||
       !titleRef.current ||
       !textRef.current ||
-      !imageRef.current ||
       !overlayRef.current
     ) return;
 
@@ -26,7 +24,6 @@ const Hero = () => {
       sectionRef.current,
       titleRef.current,
       textRef.current,
-      imageRef.current,
       overlayRef.current,
     ].filter(Boolean);
 
@@ -45,14 +42,7 @@ const Hero = () => {
         duration: 1,
         ease: "expo.inOut",
       }, "-=0.4")
-      .from(imageRef.current, {
-        opacity: 0,
-        y: -120,
-        rotation: -15,
-        scale: 0.7,
-        duration: 1.2,
-        ease: "elastic.out(1, 0.5)",
-      }, "-=0.6")
+       
       .from(titleRef.current, {
         opacity: 0,
         scale: 0.5,
@@ -67,13 +57,7 @@ const Hero = () => {
         ease: "power4.out",
       }, "-=0.4");
 
-    const floatAnim = gsap.to(imageRef.current, {
-      rotation: 4,
-      duration: 3,
-      ease: "sine.inOut",
-      yoyo: true,
-      repeat: -1,
-    });
+    
 
     const blob1Anim = blob1Ref.current
       ? gsap.to(blob1Ref.current, {
@@ -106,7 +90,6 @@ const Hero = () => {
 
     return () => {
       tl.kill();
-      floatAnim.kill();
       blob1Anim?.kill();
       blob2Anim?.kill();
       titleAnim.kill();
@@ -159,7 +142,7 @@ const Hero = () => {
 
           {/* Image */}
           <div className="md:w-1/2 flex justify-center">
-            <div ref={imageRef}>
+            <div>
               <Image
                 src="/intro.png"
                 width={450}
