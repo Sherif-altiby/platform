@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 app.use(
   cors({
     origin: [
-      "https://platform-git-vercel-react-server-7d93ef-sherif-altibys-projects.vercel.app/", 
+      "https://platform-mu-steel.vercel.app/"
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
