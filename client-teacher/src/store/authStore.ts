@@ -56,7 +56,7 @@ export const useAuthUser = create<useAuthInterface>((set) => ({
       password,
     });
 
-    console.log(res)
+     
 
     set(() => ({ user: res.data.data.user }));
     toast.success("تم تسجيل الدخول بنجاح");
