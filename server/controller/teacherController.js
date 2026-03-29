@@ -4,6 +4,9 @@ import { PdfModel } from "../models/pdfModel.js";
 import { VideoModel } from "../models/videoModel.js";
 import { Quizz } from "../models/quizzModel.js";
 import cloudinary from "../utils/uploadPdf.js";
+import { Course } from "../models/model.js";
+import { Subject } from "../models/model.js";
+import uploadImageClodinary from "../utils/uploadImages.js";
 
 export const getTeacherById = async (req, res) => {
   try {
@@ -575,6 +578,74 @@ export const teacherStatics = async (req, res) => {
         secondLevelNotesLength,
         thirdLevelNotesLength,
       },
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || "Internal Server Error",
+      error: true,
+      status: false,
+    });
+  }
+};
+
+export const teacherAddCourse = async (req, res) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        message: "Validation failed",
+        error: true,
+        status: false,
+        details: errors.array(),
+      });
+    }
+
+    // 1. Manually check if the file exists (since express-validator didn't)
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Course image file is required",
+        error: true,
+        status: false,
+      });
+    }
+
+    const { title, subjectId, price, offer, offerExpirt, level } = req.body;
+    const teacherId = req.userId;
+
+    const teacher = await Teacher.findById(teacherId);
+    if (!teacher) {
+      return res.status(404).json({ message: "Teacher not found", error: true, status: false });
+    }
+
+    const isSubjectExist = await Subject.findById(subjectId);
+    if (!isSubjectExist) {
+      return res.status(404).json({ message: "Subject not found", error: true, status: false });
+    }
+
+    // 2. Upload to Cloudinary
+    const uploaded = await uploadImageClodinary(req.file.buffer);
+
+    const course = new Course({
+      title,
+      subject: subjectId,
+      image: uploaded.secure_url, // Use the URL from Cloudinary
+      price,
+      offer,
+      offerExpirt,
+      level,
+    });
+
+    await course.save();
+
+    isSubjectExist.courses.push(course);
+    
+    await isSubjectExist.save();
+
+    return res.status(201).json({
+      message: "Course added successfully",
+      error: false,
+      status: true,
+      data: course,
     });
   } catch (error) {
     return res.status(500).json({

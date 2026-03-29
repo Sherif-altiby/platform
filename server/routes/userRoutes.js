@@ -1,23 +1,16 @@
 import { Router } from "express";
 import { 
-    forgotPassword, 
     getAllSubjects, 
     getAllTeachers, 
     getAllUsers, 
     getUserDetails, 
     getVideo, 
-    login, 
-    logout, 
-    register, 
-    ressetPassword, 
     updateUserDetails, 
-    verifyForgotPasswordCode, 
-    addComment,
+     addComment,
     getAvilableComments,
     getVideoByLevel,
     checkAuth,
     userUpdateProfile,
-    userChangePassword,
     getPlatformStatics,
     getSubjectDetails
     }  from "../controller/userController.js";
@@ -25,6 +18,7 @@ import auth from "../middlewares/auth.js";
 import { validateRegistration } from "../validations/ApiValidations.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import { checkQuiz } from "../controller/quizController.js";
+import { login, register, forgotPassword, logout, ressetPassword, userChangePassword, verifyForgotPasswordCode } from "../controller/authController.js";
 
 const  userRouter = Router();
 

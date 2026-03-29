@@ -1,4 +1,4 @@
-import { body, check } from 'express-validator'
+import { body} from 'express-validator'
 
 export const validateRegistration = [
   
@@ -68,3 +68,32 @@ export const  uploadQuizValidation = [
     .notEmpty().withMessage('Level is required')
     .isIn(['first', 'second', 'third']).withMessage('Invalid level'),
 ]
+
+export const addCourseValidation = [
+  body('title')
+    .trim()
+    .notEmpty().withMessage('Title is required'),
+
+  body('subjectId') // Changed from 'subject' to 'subjectId' to match your controller
+    .trim()
+    .notEmpty().withMessage('Subject ID is required')
+    .isMongoId().withMessage('Invalid Subject ID format'),
+
+  body('price')
+    .trim()
+    .notEmpty().withMessage('Price is required')
+    .isNumeric().withMessage('Price must be a number'),
+
+  body('level')
+    .trim()
+    .notEmpty().withMessage('Level is required')
+    .isIn(['first', 'second', 'third']).withMessage('Invalid level'),
+
+  body('offer')
+    .optional({ checkFalsy: true })
+    .isNumeric().withMessage('Offer must be a number'),
+
+  body('offerExpirt')
+    .optional({ checkFalsy: true })
+    .isISO8601().withMessage('Offer expiration must be a valid date'),
+];

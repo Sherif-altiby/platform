@@ -30,7 +30,6 @@ export const createSubject = async (req, res) => {
 
        const uploaded = await uploadImageClodinary(req.file.buffer)
 
-
         const newUbject = new Subject({
             name: subjectName,
             image: uploaded.secure_url 

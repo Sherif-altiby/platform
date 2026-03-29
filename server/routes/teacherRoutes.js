@@ -13,10 +13,12 @@ import {
           getTeacherById,
           deleteQuize,
           teacherStatics,
+          teacherAddCourse,
         } from "../controller/teacherController.js";
-import { uploadQuizValidation, uploadVideoValidation } from "../validations/ApiValidations.js";
+import { addCourseValidation, uploadQuizValidation, uploadVideoValidation } from "../validations/ApiValidations.js";
 import isTeacher from "../middlewares/isTeacher.js";
 import uploadPdfMulter from "../middlewares/pdfMulter.js";
+import upload from "../middlewares/multer.js";
 
 
 const teacherRouter = Router();
@@ -36,5 +38,7 @@ teacherRouter.post('/get-pdf-by-level', auth, getPdfByLevel);
 teacherRouter.delete('/delete-pdf', auth, isTeacher, deletePdf);
 
 teacherRouter.get('/statics', auth, isTeacher, teacherStatics)
+
+teacherRouter.post('/add-course', auth, isTeacher, upload.single('avatar'), addCourseValidation, teacherAddCourse)
 
 export default teacherRouter

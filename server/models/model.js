@@ -52,7 +52,13 @@ const userSchema = new mongoose.Schema({
   isBlocked: {
     type: Boolean,
     default: false,
-  }
+  },
+  accessedCourses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+  ],
 });
 
 const subjectSchema = new mongoose.Schema({
@@ -60,6 +66,13 @@ const subjectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  // Adding the courses array here
+  courses: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Course",
+    },
+  ],
   teachers: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -71,7 +84,30 @@ const subjectSchema = new mongoose.Schema({
   },
 });
 
+const courseSchema = new mongoose.Schema({
+  title: { type: String, required: true , unique: true},
+  subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" },
+  image: {
+    type: String,
+  },
+   price: {
+    type: Number,
+    default: 0,
+   },
+   offer: {
+    type: Number,
+    default: 0,
+   },
+   offerExpirt: {
+    type: Date,
+   },
+   level: {
+    type: String,
+    enum: StudentLevels,
+    required: true,
+   }
+});
 
 export const User = mongoose.model("User", userSchema);
 export const Subject = mongoose.model("Subject", subjectSchema);
-
+export const Course = mongoose.model("Course", courseSchema);

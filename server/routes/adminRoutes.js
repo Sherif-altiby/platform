@@ -16,7 +16,6 @@ import {
     showComment } from "../controller/adminController.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import upload from "../middlewares/multer.js";
-import uploadImageClodinary from "../utils/uploadImages.js";
 
 
 const adminRouter = Router();
