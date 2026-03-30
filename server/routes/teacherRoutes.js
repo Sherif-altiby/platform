@@ -19,7 +19,7 @@ import { addCourseValidation, uploadQuizValidation, uploadVideoValidation } from
 import isTeacher from "../middlewares/isTeacher.js";
 import uploadPdfMulter from "../middlewares/pdfMulter.js";
 import upload from "../middlewares/multer.js";
-import { getList, removeFromList } from "../controller/listCoontroller.js";
+import { getList, userAccessCourse } from "../controller/listCoontroller.js";
 
 
 const teacherRouter = Router();
@@ -43,6 +43,6 @@ teacherRouter.get('/statics', auth, isTeacher, teacherStatics)
 teacherRouter.post('/add-course', auth, isTeacher, upload.single('avatar'), addCourseValidation, teacherAddCourse);
 
 teacherRouter.get('/get-list', auth, getList);
-teacherRouter.delete('/delete-list-item', auth, removeFromList);
+teacherRouter.delete('/delete-list-item', auth, userAccessCourse);
 
 export default teacherRouter

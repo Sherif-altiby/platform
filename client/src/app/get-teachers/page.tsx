@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import SubHeader from "../../components/SubHeader";
 import TeacherCard from "./TeacherCard";
 import Spiner from "@/components/Spiner";
@@ -8,6 +7,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getTeachers } from "../utils/teacherFeatuers";
 import { TeacherTypes } from "@/types/Types";
 import { FaChalkboardTeacher } from "react-icons/fa";
+import SectionHeading from "@/components/common/SectionHeading";
+import SectionNotfound from "@/components/common/SectionNotfound";
 
 const Page = () => {
   const { data: teachers, isLoading } = useQuery({
@@ -23,17 +24,12 @@ const Page = () => {
       <SubHeader currentTitle="المدرسين" />
 
       <div className="container py-12">
-
         {/* Section heading */}
-        <div className="flex items-center gap-3 mb-10">
-          <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
-            <FaChalkboardTeacher className="text-white text-lg" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">المدرسون</h2>
-            <p className="text-sm text-gray-400">اختر مدرسك وابدأ رحلتك التعليمية</p>
-          </div>
-        </div>
+        <SectionHeading
+          title="المدرسون"
+          description="اختر مدرسك وابدأ رحلتك التعليمية"
+          icon={FaChalkboardTeacher}
+        />
 
         {/* Content */}
         {isLoading ? (
@@ -47,10 +43,10 @@ const Page = () => {
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
-            <FaChalkboardTeacher className="text-5xl opacity-30" />
-            <p className="text-lg">لا يوجد مدرسين حتى الآن</p>
-          </div>
+          <SectionNotfound
+            icon={FaChalkboardTeacher}
+            content="لا يوجد مدرسين حتى الآن"
+          />
         )}
       </div>
     </div>

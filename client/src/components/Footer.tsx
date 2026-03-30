@@ -1,76 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
 import Image from "next/image";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const Footer = () => {
   const date = new Date();
-  const footerRef = useRef<HTMLElement>(null);
-
-  useGSAP(() => {
-    const ctx = gsap.context(() => {
-
-      // Logo fades + slides up
-      gsap.fromTo(".footer-logo", 
-        { y: 40, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.8, ease: "power3.out",
-          scrollTrigger: { trigger: ".footer-logo", start: "top 95%" },
-        }
-      );
-
-      // Description fades in
-      gsap.fromTo(".footer-desc",
-        { y: 30, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.7, ease: "power2.out", delay: 0.1,
-          scrollTrigger: { trigger: ".footer-desc", start: "top 95%" },
-        }
-      );
-
-      // Links stagger in
-      gsap.fromTo(".footer-link",
-        { x: 20, opacity: 0 },
-        {
-          x: 0, opacity: 1, duration: 0.5, ease: "power2.out",
-          stagger: 0.1,
-          scrollTrigger: { trigger: ".footer-links", start: "top 95%" },
-        }
-      );
-
-      // Bottom bar slides up
-      gsap.fromTo(".footer-bottom",
-        { y: 20, opacity: 0 },
-        {
-          y: 0, opacity: 1, duration: 0.6, ease: "power2.out", delay: 0.3,
-          scrollTrigger: { trigger: ".footer-bottom", start: "top 100%" },
-        }
-      );
-
-      // Blobs pulse
-      gsap.to(".footer-blob", {
-        scale: 1.3,
-        opacity: 0.2,
-        duration: 4,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1,
-        stagger: 1.5,
-      });
-
-    }, footerRef);
-
-    return () => ctx.revert();
-  }, { scope: footerRef });
 
   return (
-    <footer ref={footerRef} className="relative bg-gradient-to-br from-indigo-900 via-blue-900 to-teal-900 text-white overflow-hidden">
+    <footer  className="relative bg-gradient-to-br from-indigo-900 via-blue-900 to-teal-900 text-white overflow-hidden">
 
       {/* Decorative blobs */}
       <div className="footer-blob absolute top-0 left-0 w-72 h-72 bg-indigo-500 opacity-10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
