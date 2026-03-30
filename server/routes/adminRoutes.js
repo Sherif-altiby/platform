@@ -4,18 +4,16 @@ import {
     addTeacherToSubject, 
     blockTeacher, 
     blockUser, 
-    createSubject, 
     createTeacher, 
-    removeSubject, 
     removeTeacherFromSubject, 
     unBlockTeacher, 
     unBlockUser, 
     updateSubjectName, 
-    getComments,
-    deleteComment, 
-    showComment } from "../controller/adminController.js";
+     } from "../controller/adminController.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import upload from "../middlewares/multer.js";
+import { deleteComment, getComments, showComment } from "../controller/commentController.js";
+import { createSubject, removeSubject } from "../controller/subjectController.js";
 
 
 const adminRouter = Router();

@@ -1,56 +1,9 @@
-import { validationResult } from "express-validator";
 import { Subject, User } from "../models/model.js";
-import { Comment } from "../models/commentsModel.js"; 
 import { Teacher } from "../models/teacherModel.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import mongoose from "mongoose";
 import uploadImageClodinary from "../utils/uploadImages.js";
 
-export const createSubject = async (req, res) => {
-    try {
-
-        const { subjectName } = req.body;
-
-        if(!subjectName){
-            return res.status(500).json({
-                message:"Complete data",
-                error: true,
-                status: false,
-            });
-        }
-
-        const isSubjectExist = await Subject.findOne({name: subjectName});
-        if(isSubjectExist){
-            return res.status(400).json({
-                message:"The subjict is exist",
-                error: true,
-                status: false,
-            });
-        }
-
-       const uploaded = await uploadImageClodinary(req.file.buffer)
-
-        const newUbject = new Subject({
-            name: subjectName,
-            image: uploaded.secure_url 
-        })
-        await newUbject.save();
-
-        return res.json({
-            message: "Subject created successfully",
-            error: false,
-            status: true,
-            data: newUbject
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
-    }
-}
 
 export const updateSubjectName = async (req, res) => {
     try {
@@ -230,52 +183,6 @@ export const removeTeacherFromSubject = async (req, res) => {
     }
 }
 
-export const removeSubject = async (req, res) => {
-    try {
-
-        const { subId } = req.body;
-
-        if (!mongoose.Types.ObjectId.isValid(subId)) {
-            return res.status(400).json({
-              message: "Invalid Subject ID format",
-              error: true,
-              status: false,
-            });
-        }
-
-        const subject = await Subject.findById(subId);
-        if(!subject){
-            return res.status(400).json({
-                message: "subject not found",
-                error: true,
-                status: false,
-              });
-        }
-
-        if(subject.teachers.length > 0){
-            return res.status(400).json({
-                message: "can not remove subject",
-                error: true,
-                status: false,
-              });
-        }
-
-        await Subject.findByIdAndDelete(subId);
-
-        return res.status(200).json({
-            message: "Subject removed successfully",
-            error: false,
-            status: true,
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
-    }
-}
 
 export const createTeacher = async (req, res) => {
     try {
@@ -497,98 +404,6 @@ export const unBlockTeacher = async (req, res) => {
 
         return res.status(200).json({
             message: "teacher un blocked successfully",
-            error: false,
-            status: true,
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
-    }
-}
-
-export const getComments = async (req, res) => {
-    try {
-
-        const comments = await Comment.find({}).populate('user', 'name email level phone');
-        return res.json({
-            error: false,
-            status: true,
-            data: comments
-        })
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
-    }
-}
-
-
-export const showComment = async (req, res) => {
-    try {
-
-         const { commentId } = req.body;
-         if(!commentId){
-            return res.status(500).json({
-                message: "Provide comment id",
-                error: true,
-                status: false,
-            });
-         }
-
-         const updatedComment = await Comment.findByIdAndUpdate(
-            commentId,
-            { $set: { show: true } }, 
-            { new: true }  
-        );
-         if(!updatedComment){
-            return res.status(404).json({
-                message: "Comment not founded",
-                error: true,
-                status: false,
-            });
-         }
-
-         
-         return res.status(200).json({
-            message: "Comment show is true",
-            error: false,
-            status: true,
-            data: updatedComment
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
-    }
-}
-
-
-export const deleteComment = async (req, res) => {
-    try {
-
-         const { commentId } = req.body;
-         if(!commentId){
-            return res.status(500).json({
-                message: "Provide comment id",
-                error: true,
-                status: false,
-            });
-         }
-
-         await Comment.findByIdAndDelete(commentId)
-
-         return res.status(200).json({
-            message: "Comment deleted",
             error: false,
             status: true,
         });

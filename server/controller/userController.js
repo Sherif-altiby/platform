@@ -4,7 +4,6 @@ import { Teacher } from "../models/teacherModel.js";
 import { VideoModel } from "../models/videoModel.js";
 
 
-
 export const getUserDetails = async (req, res) => {
   try {
     const userId = req.userId;
@@ -125,62 +124,6 @@ export const getAllTeachers = async (req, res) => {
   }
 };
 
-export const getAllSubjects = async (req, res) => {
-  try {
-    const allSubs = await Subject.find({});
-
-    return res.json({
-      error: false,
-      status: true,
-      data: allSubs,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
-
-export const getSubjectDetails = async (req, res) => {
-  try {
-    const { subId } = req.body;
-
-    if (!subId) {
-      return res.status(400).json({
-        message: "Provide sub Id",
-        error: true,
-        status: false,
-      });
-    }
-
-    const subDetails = await Subject.findById(subId).populate(
-      "teachers",
-      "name avatar about"
-    ).populate("courses");
-
-    if (!subDetails) {
-      return res.status(404).json({
-        message: "Not found",
-        error: true,
-        status: false,
-      });
-    }
-
-    return res.json({
-      error: false,
-      status: true,
-      data: subDetails,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
 
 export const getVideo = async (req, res) => {
   try {

@@ -1,10 +1,13 @@
 import { validationResult } from "express-validator";
 import { User } from "../models/model.js";
 import { generateRegistrationEmail } from "../utils/registerEmailTemplate.js";
-import { comparePassword } from "../utils/hashPassword.js";
+import { comparePassword, hashPassword } from "../utils/hashPassword.js";
 import generatedAccessToken from "../utils/generateAccessToken.js";
 import generateRefreshToken from "../utils/generateRefreshToken.js";
 import { Teacher } from "../models/teacherModel.js";
+import  sendEmail  from "../config/sendEmail.js";
+import  forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
+import  generateCode  from "../utils/generateCode.js";
 
 export const register = async (req, res) => {
   try {

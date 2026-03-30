@@ -1,24 +1,24 @@
 import { Router } from "express";
 import { 
-    getAllSubjects, 
     getAllTeachers, 
     getAllUsers, 
     getUserDetails, 
     getVideo, 
     updateUserDetails, 
-     addComment,
+    addComment,
     getAvilableComments,
     getVideoByLevel,
     checkAuth,
     userUpdateProfile,
     getPlatformStatics,
-    getSubjectDetails
     }  from "../controller/userController.js";
 import auth from "../middlewares/auth.js";
 import { validateRegistration } from "../validations/ApiValidations.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import { checkQuiz } from "../controller/quizController.js";
 import { login, register, forgotPassword, logout, ressetPassword, userChangePassword, verifyForgotPasswordCode } from "../controller/authController.js";
+import { getAllSubjects, getSubjectDetails } from "../controller/subjectController.js";
+import { addToList } from "../controller/listCoontroller.js";
 
 const  userRouter = Router();
 
@@ -47,5 +47,7 @@ userRouter.post('/change-password', auth,  userChangePassword)
 userRouter.post('/check-quiz', auth,  checkQuiz)
 userRouter.get('/get-statics-num',  getPlatformStatics)
 
+
+userRouter.post('/add-to-list', auth, addToList);
 
 export default userRouter
