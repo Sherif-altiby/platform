@@ -8,6 +8,7 @@ import { Teacher } from "../models/teacherModel.js";
 import  sendEmail  from "../config/sendEmail.js";
 import  forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
 import  generateCode  from "../utils/generateCode.js";
+import { Level } from "../models/levelModel.js";
 
 export const register = async (req, res) => {
   try {
@@ -21,7 +22,17 @@ export const register = async (req, res) => {
       });
     }
 
-    const { name, email, password, level, phone } = req.body;
+    const { name, email, password, level, phone, parentPhone } = req.body;
+
+    const levelExists = await Level.findById(level);
+    
+    if (!levelExists) {
+      return res.status(404).json({
+        message: "المستوى الدراسي المحدد غير موجود",
+        error: true,
+        status: false,
+      });
+    }
 
     const user = await User.findOne({ email });
 
@@ -39,8 +50,9 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      level,
+      level: levelExists.name,
       phone,
+      parentPhone
     });
 
     await newUser.save();
@@ -70,43 +82,50 @@ export const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // 1. التحقق من وجود البيانات المرسلة
     if (!email || !password) {
-      return res.status(500).json({
-        message: "Provide the all data",
+      return res.status(400).json({
+        message: "يرجى تقديم البريد الإلكتروني وكلمة المرور",
         error: true,
         status: false,
       });
     }
 
+    // 2. البحث عن المستخدم أو المدرس
     const user = await User.findOne({ email });
     const teacher = await Teacher.findOne({ email });
 
     if (!user && !teacher) {
       return res.status(404).json({
-        message: "User not found",
+        message: "المستخدم غير موجود",
         error: true,
         status: false,
       });
     }
 
+    // --- حالة تسجيل دخول الطالب (User) ---
     if (user) {
       const isMatch = await comparePassword(password, user.password);
       if (!isMatch) {
         return res.status(400).json({
-          message: "Invalid email or password",
+          message: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+          error: true,
+          status: false,
         });
       }
 
       const accessToken = await generatedAccessToken(user._id, user.role);
       const refreshToken = await generateRefreshToken(user._id, user.role);
 
-      user.refreshToken = refreshToken;
-
-      await user.save();
+      // تحديث الـ refreshToken مباشرة لتجنب خطأ الـ Validation (مثل parentPhone)
+      await User.updateOne(
+        { _id: user._id },
+        { $set: { refreshToken: refreshToken } }
+      );
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true,
+        secure: process.env.NODE_ENV === "production", 
         sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",
@@ -114,8 +133,8 @@ export const login = async (req, res) => {
 
       const { password: _, ...accountData } = user.toObject();
 
-      res.status(200).json({
-        message: "User login successfully",
+      return res.status(200).json({
+        message: "تم تسجيل دخول الطالب بنجاح",
         error: false,
         status: true,
         data: {
@@ -126,36 +145,38 @@ export const login = async (req, res) => {
       });
     }
 
+    // --- حالة تسجيل دخول المدرس (Teacher) ---
     if (teacher) {
       const isMatch = await comparePassword(password, teacher.password);
       if (!isMatch) {
         return res.status(400).json({
-          message: "Invalid email or password",
+          message: "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+          error: true,
+          status: false,
         });
       }
 
       const accessToken = await generatedAccessToken(teacher._id, teacher.role);
-      const refreshToken = await generateRefreshToken(
-        teacher._id,
-        teacher.role
+      const refreshToken = await generateRefreshToken(teacher._id, teacher.role);
+
+      // تحديث الـ refreshToken للمدرس
+      await Teacher.updateOne(
+        { _id: teacher._id },
+        { $set: { refreshToken: refreshToken } }
       );
-
-      teacher.refreshToken = refreshToken;
-
-      await teacher.save();
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true, 
+        secure: process.env.NODE_ENV === "production",
         sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",
       });
 
       const { password: _, ...accountData } = teacher.toObject();
 
-      res.status(200).json({
-        message: "User login successfully",
+      return res.status(200).json({
+        message: "تم تسجيل دخول المدرس بنجاح",
         error: false,
         status: true,
         data: {
@@ -165,9 +186,11 @@ export const login = async (req, res) => {
         },
       });
     }
+
   } catch (error) {
+    console.error("Login Error:", error);
     return res.status(500).json({
-      message: error.message,
+      message: error.message || "حدث خطأ داخلي في السيرفر",
       error: true,
       status: false,
     });

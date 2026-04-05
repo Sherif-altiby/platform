@@ -11,10 +11,13 @@ const listSchema = new mongoose.Schema({
     ref: "Course",
     required: true, 
   },
+  image: {
+    type: String, 
+    required: true, 
+  },
 }, { 
   timestamps: true  
 });
-
 
 
 export const List = mongoose.model("List", listSchema);

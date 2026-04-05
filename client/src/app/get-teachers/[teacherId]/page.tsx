@@ -10,11 +10,16 @@ import { TeacherTypes } from "@/types/Types";
 import TeacherCardGradient from "@/components/teacher/TeacherCardGradient";
 import TeacherAboutAvatar from "@/components/teacher/TeacherAboutAvatar";
 import TeacherAboutLink from "@/components/teacher/TeacherAboutLink";
+import TeacherRatingSystem from "@/components/teacher/TeacherRating";
+import { useAuthUser } from "@/store/authStore";
 
 function TeacherContent() {
+
   const { teacherId } = useParams();
   const searchParams = useSearchParams();
   const name = searchParams.get("name");
+
+  const user = useAuthUser(s => s.user)
 
   const { data: teacher, isLoading } = useQuery({
     queryKey: ["teacher", teacherId],
@@ -37,6 +42,8 @@ function TeacherContent() {
 
               <TeacherCardGradient />
 
+             
+
               <div className="px-8 pb-8">
                   <TeacherAboutAvatar avatar={teacher?.avatar || ""} name={teacher?.name || ""} subjects={teacher?.subjects || []} />
 
@@ -48,9 +55,10 @@ function TeacherContent() {
               </div>
             </div>
 
-            <TeacherAboutLink teacherId={teacherId as string} />
+            <TeacherAboutLink teacherId={teacherId as string} name={name || ""}  level={user?.level || ""}/>
           </>
         )}
+        <TeacherRatingSystem teacherId={teacherId as string}/>
       </div>
     </div>
   );

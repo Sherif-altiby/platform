@@ -1,69 +1,132 @@
+"use client";
+import { Course } from "@/types/Types";
 import Image from "next/image";
-import Link from "next/link"
-import { FaArrowLeft, FaPlay, FaRegClock, FaUsers } from "react-icons/fa6"
-import { MdSlowMotionVideo } from "react-icons/md";
+import { CiLock } from "react-icons/ci";
+import { FaPlayCircle } from "react-icons/fa";
+import { FaChevronLeft, FaHourglass } from "react-icons/fa6";
+import Link from "next/link";
+import { usePaymentStore } from "@/store/PaymentStore";
+import { useRouter } from "next/navigation";
 
-interface CourseCardProps {
-  title: string;
-  subject: string;
-  price: number;
-  image: string;
-  students: number;
-  length: string;
-  link: string;
-}
+const CourseCard = ({ course }: { course: Course }) => {
+  const isClosed = course.status === "close";
+  const isPending = course.status === "pending";
+  const isOpen = course.status === "open";
 
-const CourseCard = ({ title, subject, price, image, students, length, link }: CourseCardProps) => {
+  const router = useRouter();
+
+  const {setCourseToPay} = usePaymentStore()
+
   return (
-     <Link
-      href={link}
-      className="group relative flex flex-col bg-white border border-gray-100 rounded-3xl p-4 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden"
+    <div
+      className={`relative bg-white rounded-3xl  p-4 border transition-all duration-300 group
+        ${isClosed ? "grayscale-[0.8] opacity-90 border-slate-200" : "border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-1"}
+        ${isPending ? "border-amber-200 shadow-amber-50" : ""}
+      `}
     >
-      {/* Course Image & Play Overlay */}
-      <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden bg-gray-100 mb-4">
+      {/* 1. Image & Overlay Status */}
+      <div className="relative h-52 w-full rounded-3xl overflow-hidden mb-5">
         <Image
-          src={ image }
-          alt={title}
+          src={course.image}
+          alt={course.title}
           fill
-          className="object-cover group-hover:scale-110 transition-transform duration-700"
+          className={`object-cover transition-transform duration-700 ${isOpen ? "group-hover:scale-105" : ""}`}
         />
-        {/* Hover Overlay */}
-        <div className="absolute inset-0 bg-indigo-600/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg transform scale-50 group-hover:scale-100 transition-transform duration-500">
-            <FaPlay className="text-indigo-600 ml-1 text-sm" />
+
+        {/* Status Overlays */}
+        {isClosed && (
+          <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-[2px] flex flex-col items-center justify-center text-white">
+            <div className="bg-white/20 p-3 rounded-2xl backdrop-blur-md mb-2">
+              <CiLock size={24} />
+            </div>
+            <span className="text-xs font-black">المحتوى مقفل</span>
           </div>
+        )}
+
+        {isPending && (
+          <div className="absolute inset-0 bg-amber-500/20 backdrop-blur-[1px] flex flex-col items-center justify-center text-amber-900">
+            <div className="bg-amber-100/80 p-3 rounded-2xl backdrop-blur-md mb-2 animate-pulse">
+              <FaHourglass size={24} />
+            </div>
+            <span className="text-xs font-black">قيد المراجعة</span>
+          </div>
+        )}
+
+        {/* Level Badge (Top Right) */}
+        <div
+          className={`absolute top-3 right-3 px-4 py-1.5 rounded-xl text-[10px] font-black text-white shadow-lg
+          ${isClosed ? "bg-slate-500" : isPending ? "bg-amber-500" : "bg-[#0066FF]"}
+        `}
+        >
+          {course.level}
         </div>
       </div>
 
-      {/* Course Content */}
-      <div className="flex flex-col flex-1 px-2">
-        <span className="text-[9px] font-bold text-indigo-500 uppercase tracking-wider mb-1">
-          {subject}
-        </span>
-        <h3 className="text-sm font-bold text-gray-700 leading-tight group-hover:text-indigo-600 transition-colors duration-300">
-          {title}
+      {/* 2. Info Section */}
+      <div className="px-1 text-right" dir="rtl">
+        <h3
+          className={`text-lg font-black mb-3 leading-tight transition-colors
+          ${isClosed ? "text-slate-500" : "text-slate-900 group-hover:text-[#0066FF]"}
+        `}
+        >
+          {course.title}
         </h3>
 
-        {/* Stats Row */}
-        <div className="flex items-center gap-4 mt-4 text-gray-400 text-xs border-y border-gray-50 py-3">
-          <span className="flex items-center gap-1.5 font-medium">
-            <MdSlowMotionVideo  className="text-indigo-400" /> {length}
-          </span>
+        {/* Pricing/Status Row */}
+        <div className="flex items-center justify-start flex-row-reverse gap-3 mb-4">
+          {isOpen ? (
+            <span className="text-2xl ml-auto font-black text-[#0066FF]">
+              {course.price - course.offer}{" "}
+              <span className="text-xs text-slate-400 font-medium">ج.م</span>
+            </span>
+          ) : (
+            <div
+              className={`text-sm font-bold px-3 py-1 rounded-lg ${isClosed ? "bg-slate-100 text-slate-500" : "bg-amber-100 text-amber-700"}`}
+            >
+              {isClosed ? "غير مشترك" : "طلبك قيد التنفيذ"}
+            </div>
+          )}
         </div>
 
-        {/* Footer: Price & CTA */}
-        <div className="flex items-center justify-between mt-4">
-          <div className="flex flex-col">
-            <span className="text-xs text-gray-400 line-through">240 ج.م</span>
-            <span className="text-sm font-bold text-gray-900">{price} ج.م</span>
-          </div>
-          <div className="size-8 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:bg-indigo-600 group-hover:text-white transition-all duration-300">
-            <FaArrowLeft className="text-sm" />
-          </div>
+        {/* 3. Action Button (Dynamic based on status) */}
+        <div className="mt-4 pt-4 border-t border-slate-50">
+          {isOpen ? (
+            <Link
+              href={`lessons?course_id=${course._id}`}
+              className="w-full bg-[#0066FF] text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all"
+            >
+              <span>دخول الكورس</span>
+              <FaPlayCircle size={18} />
+            </Link>
+          ) : isPending ? (
+            <button
+              disabled
+              className="w-full bg-amber-50 text-amber-600 py-3 rounded-2xl font-bold flex items-center justify-center gap-2"
+            >
+              <span>انتظر التفعيل</span>
+              <FaHourglass size={18} className="animate-spin" />
+            </button>
+          ) : (
+            <button
+              onClick={() => {
+                router.push('/payment')
+                setCourseToPay({
+                  _id: course._id,
+                  title: course.title,
+                  price: course.price - course.offer,
+                  phone: course.phone
+                })
+              }}
+              className="w-full bg-slate-900 text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all"
+            >
+              <span> اشترك الان </span>
+              <FaChevronLeft size={18} />
+            </button>
+          )}
         </div>
       </div>
-    </Link>
-  )
-}
+    </div>
+  );
+};
 
-export default CourseCard
+export default CourseCard;

@@ -10,6 +10,7 @@ import AddComment from "@/components/addComment"
 import { useQueryClient } from "@tanstack/react-query"
 import { UserTypes } from "@/types/Types"
 import { FaUser } from "react-icons/fa"
+import { useLevelStore } from "@/store/levelStore"
 
 const Page = () => {
   const queryClient = useQueryClient();
@@ -18,6 +19,7 @@ const Page = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState<number | string>("");
+  const [parentPhone, setParentPhone] = useState<number | string>("");
   const [level, setLevel] = useState("");
 
   useEffect(() => {
@@ -26,22 +28,19 @@ const Page = () => {
       setEmail(user.email || "");
       setPhone(user.phone || "");
       setLevel(user.level || "");
+      setParentPhone(user.parentPhone || "")
     }
   }, [user]);
 
   const [loading, setLoading] = useState(false)
 
-  const levels = [
-    { level: "الصف الأول الثانوي", value: "first" },
-    { level: "الصف الثاني الثانوي", value: "second" },
-    { level: "الصف الثالث الثانوي", value: "third" },
-  ]
+ const levels = useLevelStore(s => s.levels)
 
   const updateProfile = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
     try {
-      const res = await Axios.post('user/update-profile', { name, phone, email, level })
+      const res = await Axios.post('user/update-profile', { name, phone, email, level , parentPhone})
       toast.success(res.data.message)
     } catch {
       toast.error("حدث خطأ")
@@ -86,15 +85,22 @@ const Page = () => {
                 <label className={labelClass} htmlFor="phone">رقم الهاتف</label>
                 <input type="number" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} />
               </div>
+
               <div className="w-full md:w-1/2">
+                <label className={labelClass} htmlFor="parentPhone">رقم هاتف ولي الامر</label>
+                <input type="number" id="parentPhone" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} className={inputClass} />
+              </div>
+              
+            </div>
+
+            <div className="w-full md:w-1/2">
                 <label className={labelClass} htmlFor="level">الصف الدراسي</label>
                 <select id="level" value={level} onChange={(e) => setLevel(e.target.value)} className={inputClass}>
                   {levels.map((l) => (
-                    <option value={l.value} key={l.value}>{l.level}</option>
+                    <option value={l._id} key={l._id}>{l.name}</option>
                   ))}
                 </select>
               </div>
-            </div>
 
             <div className="pt-1">
               <MainButton loading={loading} text="حفظ التغييرات" />

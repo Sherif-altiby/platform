@@ -14,6 +14,7 @@ import isAdmin from "../middlewares/isAdmin.js";
 import upload from "../middlewares/multer.js";
 import { deleteComment, getComments, showComment } from "../controller/commentController.js";
 import { createSubject, removeSubject } from "../controller/subjectController.js";
+import { createLevel } from "../controller/levelController.js";
 
 
 const adminRouter = Router();
@@ -32,6 +33,9 @@ adminRouter.delete('/remove-subject', auth, isAdmin, removeSubject);
 adminRouter.get('/get-all-comments', auth, isAdmin, getComments);
 adminRouter.put('/show-comment', auth, isAdmin, showComment);
 adminRouter.delete('/delete-comment', auth, isAdmin, deleteComment);
+
+
+adminRouter.post('/create-level', auth, isAdmin, createLevel)
 
 
 export default adminRouter;

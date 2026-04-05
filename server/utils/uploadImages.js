@@ -7,7 +7,7 @@ cloudinary.config({
 });
 
 const uploadImageClodinary = async (arrayBuffer) => {
-  // Convert ArrayBuffer to Node.js Buffer
+
   const buffer = Buffer.from(arrayBuffer);
 
   try {
@@ -21,7 +21,7 @@ const uploadImageClodinary = async (arrayBuffer) => {
           resolve(result);
         }
       );
-      stream.end(buffer); // ✅ Now this is a proper Buffer
+      stream.end(buffer); 
     });
 
     return uploadImage;

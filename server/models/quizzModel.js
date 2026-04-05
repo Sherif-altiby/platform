@@ -6,6 +6,16 @@ const quizzSchema = new mongoose.Schema({
         ref: "Teacher",
         required: true,
     },
+    subject: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Subject",
+        required: true,
+    },
+    course: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Course",
+        required: true,
+    },
     title: {
         type: String,
         required: true,
@@ -14,28 +24,20 @@ const quizzSchema = new mongoose.Schema({
     level: {
         type: String,
         required: true,
-        enum: ["first", "second", "third"],  
+    },
+    duration: {
+        type: Number, 
+        required: true,
+        default: 10 
     },
     questions: [
         {
             _id: false, 
-            title: {
-                type: String,
-                required: true,
-            },
-            answers: [
-                {
-                    _id: false,  
-                    type: String,
-                    required: true
-                }
-            ],
-            correctAnswer: {
-                type: String,  
-                required: true
-            }
+            title: { type: String, required: true },
+            answers: [{ type: String, required: true }],
+            correctAnswer: { type: String, required: true }
         }
     ]
-});
+}, { timestamps: true });
 
 export const Quizz =  mongoose.model("Quizz", quizzSchema);

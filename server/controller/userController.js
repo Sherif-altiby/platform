@@ -3,7 +3,6 @@ import { Comment } from "../models/commentsModel.js";
 import { Teacher } from "../models/teacherModel.js";
 import { VideoModel } from "../models/videoModel.js";
 
-
 export const getUserDetails = async (req, res) => {
   try {
     const userId = req.userId;
@@ -59,7 +58,7 @@ export const updateUserDetails = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { $set: updateFields },
-      { new: true, runValidators: true }
+      { new: true, runValidators: true },
     );
 
     if (!updatedUser) {
@@ -124,7 +123,6 @@ export const getAllTeachers = async (req, res) => {
   }
 };
 
-
 export const getVideo = async (req, res) => {
   try {
     const { teacherId, level, videoId } = req.body;
@@ -154,7 +152,7 @@ export const getVideo = async (req, res) => {
     }
 
     const video = teacherVideo.level[level].find(
-      (item) => item._id.toString() === videoId.toString()
+      (item) => item._id.toString() === videoId.toString(),
     );
     if (!video) {
       return res.status(404).json({
@@ -277,7 +275,7 @@ export const getAvilableComments = async (req, res) => {
   try {
     const comments = await Comment.find({ show: true }).populate(
       "user",
-      "name email level phone"
+      "name email level phone",
     );
     if (!comments || comments.length === 0) {
       return res.status(404).json({ message: "No visible comments found" });
@@ -340,13 +338,12 @@ export const checkAuth = async (req, res) => {
 
 export const userUpdateProfile = async (req, res) => {
   try {
-    const { name, email, phone, level } = req.body;
+    const { name, email, phone, level, parentPhone } = req.body;
     const userId = req.userId;
 
     const user = await User.findById(userId);
-    const teacher = await Teacher.findById(userId);
 
-    if (!user && !teacher) {
+    if (!user) {
       return res.status(404).json({
         message: "User not found",
         error: true,
@@ -354,36 +351,20 @@ export const userUpdateProfile = async (req, res) => {
       });
     }
 
-    if (user) {
-      user.name = name || user.name;
-      user.email = email || user.email;
-      user.phone = phone || user.phone;
-      user.level = level || user.level;
+    user.name = name || user.name;
+    user.email = email || user.email;
+    user.phone = phone || user.phone;
+    user.level = level || user.level;
+    user.parentPhone = parentPhone || user.parentPhone;
 
-      await user.save();
+    await user.save();
 
-      return res.status(200).json({
-        message: "تم حفظ البيانات بنجاح",
-        error: false,
-        status: true,
-        user,
-      });
-    }
-
-    if (teacher) {
-      teacher.name = name || teacher.name;
-      teacher.email = email || teacher.email;
-      teacher.phone = phone || teacher.phone;
-      teacher.level = level || teacher.level;
-
-      await teacher.save();
-
-      return res.status(200).json({
-        message: "تم حفظ البيانات بنجاح",
-        error: false,
-        status: true,
-      });
-    }
+    return res.status(200).json({
+      message: "تم حفظ البيانات بنجاح",
+      error: false,
+      status: true,
+      user,
+    });
   } catch (error) {
     return res.status(500).json({
       message: error.message || "Internal Server Error",

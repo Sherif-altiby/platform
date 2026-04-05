@@ -9,53 +9,17 @@ import ResponsiveMenu from "./ResponsiveMenu";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiUser } from "react-icons/ci";
 import { useAuthUser } from "@/store/authStore";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useGSAP } from "@gsap/react";
-
-gsap.registerPlugin(ScrollTrigger, useGSAP);
-
+   
+ 
 const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
   const { user } = useAuthUser();
-  const navRef = useRef<HTMLElement>(null);
-
-  useGSAP(() => {
-    const nav = navRef.current;
-    if (!nav) return;
-
-    const tl = gsap.timeline();
-
-    tl.fromTo(
-      nav,
-      { y: -80, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.7, ease: "power3.out" }
-    )
-    .fromTo(
-      ".nav-logo",
-      { x: -30, opacity: 0 },
-      { x: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
-      "-=0.4"
-    )
-    .fromTo(
-      ".nav-link",
-      { y: -16, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.4, ease: "power2.out", stagger: 0.08 },
-      "-=0.3"
-    )
-    .fromTo(
-      ".nav-action",
-      { scale: 0.8, opacity: 0 },
-      { scale: 1, opacity: 1, duration: 0.4, ease: "back.out(1.7)" },
-      "-=0.2"
-    );
-  }, { scope: navRef });
-
+ 
+  
   return (
     <>
       <nav
-        ref={navRef}
-        className="sticky top-0 z-50 border-b border-gray-100 opacity-0"
+         className="sticky top-0 z-50 border-b border-gray-100  "
         style={{
           willChange: "background-color, backdrop-filter, box-shadow",
           backgroundColor: "rgba(255,255,255,1)",

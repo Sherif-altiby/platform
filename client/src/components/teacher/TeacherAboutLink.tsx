@@ -2,13 +2,15 @@ import Link from "next/link"
 import { CiSquareQuestion, CiVideoOff } from "react-icons/ci"
 import { PiNotepadThin } from "react-icons/pi"
 
-const TeacherAboutLink = ({teacherId}: {teacherId: string}) => {
+const TeacherAboutLink = ({teacherId, name, level}: {teacherId: string, name: string, level: string}) => {
+
+
   return (
     <div className="max-w-3xl mx-auto mt-8 grid sm:grid-cols-3 gap-4">
 
               {/* Subjects */}
               <Link
-                href={`/get-teachers/${teacherId}/course`}
+                href={`/get-teachers/${teacherId}/subjects`}
                 className="group relative bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-400 hover:-translate-y-1 overflow-hidden opacity-0 animate-fadeInLeft"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-indigo-600 to-blue-500 opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-2xl" />
@@ -38,7 +40,7 @@ const TeacherAboutLink = ({teacherId}: {teacherId: string}) => {
 
               {/* Quizzes */}
               <Link
-                href={`/get-teachers/quizzes?teacherName=${name}&teacherId=${teacherId}`}
+                href={`/quizzes?teacherName=${name}&teacherId=${teacherId}&level=${level}`}
                 className="group relative bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-400 hover:-translate-y-1 overflow-hidden opacity-0 animate-fadeInRight"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-2xl" />

@@ -1,7 +1,5 @@
 import mongoose from "mongoose";
 
-const StudentLevels = ["first", "second", "third"];
-
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -22,7 +20,6 @@ const userSchema = new mongoose.Schema({
   },
   level: {
     type: String,
-    enum: StudentLevels,
     required: true,
   },
   subscribedTeachers: [
@@ -38,6 +35,11 @@ const userSchema = new mongoose.Schema({
     type: Date,
   },
   phone: {
+    type: Number,
+    required: true,
+    unique: true,
+  },
+  parentPhone: {
     type: Number,
     required: true,
     unique: true,
@@ -58,15 +60,15 @@ const userSchema = new mongoose.Schema({
       course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
-        required: true
+        required: true,
       },
       status: {
         type: String,
         enum: ["open", "close", "pending"],
-        default: "close"
-      }
+        default: "close",
+      },
     },
-  ]
+  ],
 });
 
 const subjectSchema = new mongoose.Schema({
@@ -93,28 +95,34 @@ const subjectSchema = new mongoose.Schema({
 });
 
 const courseSchema = new mongoose.Schema({
-  title: { type: String, required: true , unique: true},
+  title: { type: String, required: true, unique: true },
   subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" },
   image: {
     type: String,
   },
-   price: {
+  price: {
     type: Number,
     default: 0,
-   },
-   offer: {
+  },
+  offer: {
     type: Number,
     default: 0,
-   },
-   offerExpirt: {
+  },
+  offerExpirt: {
     type: Date,
-   },
-   level: {
+  },
+  level: {
     type: String,
-    enum: StudentLevels,
     required: true,
-   }
-});
+  },
+  status: {
+    type: String,
+    required: true,
+  },
+  quizzes: {
+     type: mongoose.Schema.Types.ObjectId, ref: "Quizz"
+  }
+},  { timestamps: true });
 
 export const User = mongoose.model("User", userSchema);
 export const Subject = mongoose.model("Subject", subjectSchema);

@@ -5,11 +5,10 @@ import { FaArrowLeft } from "react-icons/fa";
 interface SubjectCardProps {
   link: string;
   name: string;
-  length: number;
   avatar: string;
 }
 
-const SubjectCard = ({ link, name, length, avatar }: SubjectCardProps) => {
+const SubjectCard = ({ link, name, avatar }: SubjectCardProps) => {
   return (
     <Link
       href={link}
@@ -40,11 +39,6 @@ const SubjectCard = ({ link, name, length, avatar }: SubjectCardProps) => {
       <h3 className="mt-4 text-lg font-bold text-gray-900 text-center group-hover:text-indigo-600 transition-colors duration-300">
         {name}
       </h3>
-
-      {/* Teacher count */}
-      <span className="mt-1 text-xs font-medium bg-indigo-50 text-indigo-500 px-3 py-1 rounded-full border border-indigo-100">
-        {length} معلم
-      </span>
 
       {/* Divider */}
       <div className="w-full h-px bg-gray-100 my-4" />

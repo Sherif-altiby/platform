@@ -25,7 +25,8 @@ const __dirname = path.dirname(__filename);
       origin: [
         "https://platform-mu-steel.vercel.app",
         "https://platform-db7k.vercel.app",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "http://localhost:3001"
       ],
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

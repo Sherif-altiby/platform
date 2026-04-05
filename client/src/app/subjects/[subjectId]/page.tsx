@@ -1,130 +1,139 @@
 "use client";
 
-import SubHeader from "@/components/SubHeader";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Axios } from "@/axios/Axios";
-import { useEffect, useState, Suspense } from "react";
-import { toast } from "react-toastify";
-import { SubjectTypes } from "@/types/Types";
 import Image from "next/image";
 import Link from "next/link";
+import { useQuery } from "@tanstack/react-query";
+
+import SubHeader from "@/components/SubHeader";
 import Spiner from "@/components/Spiner";
+import { getSubjectDetails } from "@/app/utils/subjectFearuers";
+import { FaArrowLeft, FaUserTie, FaGraduationCap } from "react-icons/fa6";
 
 const SubjectPageContent = () => {
   const params = useSearchParams();
   const subName = params.get("subName") || "";
   const subId = params.get("subId");
 
-  const [subject, setSubject] = useState<SubjectTypes>();
+  const {
+    data: subject,
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ["subject-details", subId],
+    queryFn: () => getSubjectDetails(subId as string),
+    enabled: !!subId,
+  });
 
-  const getSubDetails = async () => {
-    try {
-      const res = await Axios.post("user/get-subject-details", { subId });
-      setSubject(res.data.data);
-    } catch {
-      toast.error("فشل في جلب بيانات المادة");
-    }
-  };
+  if (isLoading) return <div className="flex justify-center items-center h-[60vh]"><Spiner /></div>;
 
-  useEffect(() => {
-    if (subId) getSubDetails();
-  }, [subId]);
+  if (isError || !subject) {
+    return (
+      <div className="text-center py-20 animate-pulse">
+        <p className="text-red-500 font-bold">فشل في تحميل البيانات. يرجى المحاولة لاحقاً.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="ctm-height">
+    <div className="bg-slate-50/50 min-h-screen font-kufi" dir="rtl">
       <SubHeader currentTitle={subName} />
 
-      <div className="container py-10">
-        {subject ? (
-          <div className="flex flex-col items-center animate-fadeIn">
-            {/* Subject Image */}
-            <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-blue-200 shadow-md transition-transform duration-500 hover:scale-105">
-              {subject.image?.startsWith("http") && (
-                <Image
-                  src={subject.image}
-                  alt={subject.name}
-                  fill
-                  className="object-cover"
-                />
-              )}
-            </div>
-
-            {/* Subject Name */}
-            <h2 className="mt-6 text-3xl font-extrabold text-gray-800 tracking-tight">
-              {subject.name}
-            </h2>
-
-            {/* Teacher Count */}
-            <p className="text-gray-500 mt-2 mb-8 text-lg">
-              {subject.teachers.length} معلم
-            </p>
-
-            {/* Teachers Grid */}
-            {subject.teachers.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full">
-                {subject.teachers.map((t) => (
-                  <Link
-                    href={`/get-teachers/${t._id}?name=${t.name}`}
-                    key={t._id}
-                    className="group bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-                  >
-                    <div className="flex flex-col items-center text-center">
-                      {/* Avatar */}
-                      <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-blue-100 shadow-sm mb-4 transition-transform duration-300 group-hover:scale-105">
-                        <Image
-                          src={
-                            t.avatar
-                              ? `${t.avatar}`
-                              : "/default-avatar.png"
-                          }
-                          alt={t.name}
-                          className="w-full h-full object-cover"
-                          width={80}
-                          height={80}
-                        />
-                      </div>
-
-                      {/* Name */}
-                      <h3 className="text-lg font-semibold text-gray-800 group-hover:text-blue-600 transition-colors duration-300">
-                        {t.name}
-                      </h3>
-
-                      {/* CTA */}
-                      <button className="mt-4 text-sm px-4 py-1.5 rounded-lg border border-blue-500 text-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-300">
-                        عرض التفاصيل
-                      </button>
-                    </div>
-                  </Link>
-                ))}
+      <div className="container mx-auto px-4 py-12">
+        {/* --- Hero Section --- */}
+        <div className="relative mb-16 flex flex-col items-center">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-64 bg-blue-400/10 blur-[100px] -z-10" />
+          
+          <div className="relative group">
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-600 to-indigo-400 rounded-full blur-md opacity-20 group-hover:opacity-40 transition-opacity" />
+            <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-full p-1.5 bg-white shadow-2xl border border-slate-100">
+              <div className="w-full h-full rounded-full overflow-hidden relative bg-slate-50">
+                {subject.image?.startsWith("http") ? (
+                  <Image src={subject.image} alt={subject.name} fill className="object-cover" priority />
+                ) : (
+                  <div className="flex items-center justify-center h-full text-slate-300"><FaGraduationCap size={40} /></div>
+                )}
               </div>
-            ) : (
-              <p className="text-gray-500 text-center mt-10">
-                لا يوجد معلمين متاحين حالياً.
-              </p>
-            )}
+            </div>
+          </div>
+
+          <h2 className="mt-8 text-3xl md:text-4xl font-black text-slate-800 tracking-tight">
+            مادة {subject.name}
+          </h2>
+          
+          <div className="mt-4 flex items-center gap-2 px-4 py-1.5 bg-white border border-slate-200 rounded-full shadow-sm">
+            <FaUserTie className="text-blue-500 text-sm" />
+            <span className="text-slate-600 font-bold text-sm">
+              {subject.teachers?.length || 0} معلمين متميزين
+            </span>
+          </div>
+        </div>
+
+        {/* --- Grid Section --- */}
+        {subject.teachers && subject.teachers.length > 0 ? (
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {subject.teachers.map((t: any) => (
+              <Link
+                key={t._id}
+                href={`/get-teachers/${t._id}?name=${t.name}`}
+                className="group relative flex flex-col bg-white border border-slate-200/60 rounded-[2rem] overflow-hidden hover:shadow-[0_20px_50px_rgba(0,0,0,0.08)] transition-all duration-500 hover:-translate-y-2"
+              >
+                {/* Visual Accent */}
+                <div className="h-24 bg-slate-50 relative overflow-hidden">
+                   <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full -mr-16 -mt-16 group-hover:bg-blue-500/10 transition-colors" />
+                </div>
+
+                {/* Teacher Avatar */}
+                <div className="absolute top-8 right-6">
+                  <div className="w-20 h-20 rounded-2xl border-4 border-white shadow-md overflow-hidden bg-white group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500">
+                    {t.avatar?.startsWith("http") ? (
+                      <Image src={t.avatar} alt={t.name} width={80} height={80} className="object-cover w-full h-full" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-2xl font-bold bg-indigo-50 text-indigo-400">
+                        {t.name.charAt(0)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="pt-8 pb-6 px-6 flex flex-col items-start gap-1">
+                  <span className="text-[10px] font-bold text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded">نخبة المعلمين</span>
+                  <h3 className="text-slate-800 font-black text-xl mt-1">
+                    أ/ {t.name}
+                  </h3>
+                  <p className="text-slate-400 text-xs leading-relaxed line-clamp-1">
+                    خبير في تدريس منهج {subject.name} للثانوية العامة
+                  </p>
+
+                  <div className="mt-6 w-full flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-sm font-bold text-blue-600">
+                      <span>عرض الصفحة</span>
+                      <FaArrowLeft className="text-[10px] group-hover:-translate-x-2 transition-transform duration-300" />
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <FaArrowLeft className="text-[10px]" />
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
           </div>
         ) : (
-          <p className="flex items-center justify-center">
-            <Spiner />
-          </p>
+          <div className="text-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200">
+             <p className="text-slate-400 font-bold">لا يوجد معلمين متاحين حالياً لهذه المادة.</p>
+          </div>
         )}
       </div>
     </div>
   );
 };
 
-const Page = () => {
-  return (
-    <Suspense
-      fallback={
-        <div className="flex justify-center items-center h-[80vh]">
-          <Spiner />
-        </div>
-      }
-    >
-      <SubjectPageContent />
-    </Suspense>
-  );
-};
+const Page = () => (
+  <Suspense fallback={<div className="flex justify-center items-center h-[80vh]"><Spiner /></div>}>
+    <SubjectPageContent />
+  </Suspense>
+);
 
 export default Page;

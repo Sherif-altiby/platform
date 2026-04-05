@@ -17,8 +17,13 @@ import { validateRegistration } from "../validations/ApiValidations.js";
 import isAdmin from "../middlewares/isAdmin.js";
 import { checkQuiz } from "../controller/quizController.js";
 import { login, register, forgotPassword, logout, ressetPassword, userChangePassword, verifyForgotPasswordCode } from "../controller/authController.js";
-import { getAllSubjects, getSubjectDetails } from "../controller/subjectController.js";
+import { getAllSubjects, getStudentCoursesByTeacher, getSubjectDetails, getSubjectsByTeacher } from "../controller/subjectController.js";
 import { addToList } from "../controller/listCoontroller.js";
+import { requestCourseAccess } from "../controller/courseController.js";
+import { getCourseLessons } from "../controller/lessonContriller.js";
+import upload from "../middlewares/multer.js";
+import { getLevels } from "../controller/levelController.js";
+import { userRateTeacher } from "../controller/ratingController.js";
 
 const  userRouter = Router();
 
@@ -35,8 +40,8 @@ userRouter.get('/get-users', auth, isAdmin,  getAllUsers)
 userRouter.get('/get-teachers',  getAllTeachers)
 userRouter.get('/get-subjects',  getAllSubjects)
 userRouter.post('/get-subject-details',  getSubjectDetails)
-userRouter.get('/get-video', auth,  getVideo)
-userRouter.post('/get-video-by-level', auth,  getVideoByLevel)
+// userRouter.get('/get-video', auth,  getVideo)
+// userRouter.post('/get-video-by-level', auth,  getVideoByLevel)
 userRouter.post('/add-comment', auth,  addComment)
 userRouter.get('/get-main-comments', auth,  getAvilableComments)
 userRouter.get('/check', auth,  checkAuth)
@@ -49,5 +54,15 @@ userRouter.get('/get-statics-num',  getPlatformStatics)
 
 
 userRouter.post('/add-to-list', auth, addToList);
+
+userRouter.post('/get-teacher-subjects', auth,  getSubjectsByTeacher)
+
+userRouter.post('/teacher-subject-courses', auth, getStudentCoursesByTeacher)
+userRouter.post('/request-access-course', auth ,upload.single('avatar'),  requestCourseAccess)
+userRouter.get('/course-lessons/:courseId', auth, getCourseLessons)
+
+userRouter.get('/get-levels', auth, getLevels)
+
+userRouter.post('/rate-teacher', auth, userRateTeacher)
 
 export default userRouter

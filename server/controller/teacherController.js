@@ -4,9 +4,7 @@ import { PdfModel } from "../models/pdfModel.js";
 import { VideoModel } from "../models/videoModel.js";
 import { Quizz } from "../models/quizzModel.js";
 import cloudinary from "../utils/uploadPdf.js";
-import { Course } from "../models/model.js";
-import { Subject } from "../models/model.js";
-import uploadImageClodinary from "../utils/uploadImages.js";
+
 
 export const getTeacherById = async (req, res) => {
   try {
@@ -176,87 +174,7 @@ export const teacherUpdateVideo = async (req, res) => {
   }
 };
 
-export const teacherUploadQuiz = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        errors: errors.array(),
-        error: true,
-        status: false,
-      });
-    }
 
-    const teacherId = req.userId;
-    const { title, level, questions } = req.body;
-
-    const teacher = await Teacher.findById(teacherId);
-    if (!teacher) {
-      return res.status(404).json({
-        message: "Teacher not found",
-        error: true,
-        status: false,
-      });
-    }
-
-    const isQuizeExist = await Quizz.findOne({ title });
-    if (isQuizeExist) {
-      return res.status(400).json({
-        message: "Quiz already exists",
-        error: true,
-        status: false,
-      });
-    }
-
-    // Shuffle answers for each question
-    const shuffledQuestions = questions.map((question) => {
-      const { answers, correctAnswer, title } = question;
-
-      // Add a flag to each answer to identify the correct one
-      const answersWithFlag = answers.map((answer) => ({
-        text: answer,
-        isCorrect: answer === correctAnswer,
-      }));
-
-      // Shuffle the answers array
-      const shuffled = answersWithFlag.sort(() => 0.5 - Math.random());
-
-      // Remove isCorrect flag and just keep answers array
-      const shuffledAnswers = shuffled.map((item) => item.text);
-
-      // Update correctAnswer with the new position
-      const newCorrectAnswer = shuffled.find((item) => item.isCorrect).text;
-
-      return {
-        title,
-        answers: shuffledAnswers,
-        correctAnswer: newCorrectAnswer,
-      };
-    });
-
-    const quiz = {
-      title,
-      level,
-      teacher,
-      questions: shuffledQuestions,
-    };
-
-    const newQuiz = new Quizz(quiz);
-    await newQuiz.save();
-
-    return res.status(200).json({
-      message: "Quiz added successfully",
-      error: false,
-      status: true,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
 
 export const getTeacherQuizzesByLevel = async (req, res) => {
   try {
@@ -269,7 +187,7 @@ export const getTeacherQuizzesByLevel = async (req, res) => {
       });
     }
 
-    const quizzes = await Quizz.find({ level, teacher: teacherId });
+    const quizzes = await Quizz.find({ level, teacher: teacherId }).populate("course", "title _id").populate("subject", "name _id");
     if (!quizzes) {
       return res.status(404).json({
         message: "No quizzes founded",
@@ -407,7 +325,7 @@ export const uploadPdf = async (req, res) => {
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
-        }
+        },
       );
       uploadStream.end(req.file.buffer);
     });
@@ -524,39 +442,39 @@ export const teacherStatics = async (req, res) => {
 
     const teacherVideosLength = teacherVideos.length;
     const firstLevelVideosLength = teacherVideos.filter(
-      (video) => video.level === "first"
+      (video) => video.level === "first",
     ).length;
     const secondLevelVideosLength = teacherVideos.filter(
-      (video) => video.level === "second"
+      (video) => video.level === "second",
     ).length;
     const thirdLevelVideosLength = teacherVideos.filter(
-      (video) => video.level === "third"
+      (video) => video.level === "third",
     ).length;
 
     const teacherQuizzes = await Quizz.find({ teacher: teacherId });
 
     const teacherQuizzesLength = teacherQuizzes.length;
     const firstLevelQuizzesLength = teacherQuizzes.filter(
-      (quiz) => quiz.level === "first"
+      (quiz) => quiz.level === "first",
     ).length;
     const secondLevelQuizzesLength = teacherQuizzes.filter(
-      (quiz) => quiz.level === "second"
+      (quiz) => quiz.level === "second",
     ).length;
     const thirdLevelQuizzesLength = teacherQuizzes.filter(
-      (quiz) => quiz.level === "third"
+      (quiz) => quiz.level === "third",
     ).length;
 
     const teacherNotes = await PdfModel.find({ teacher: teacherId });
 
     const teacherNotesLength = teacherNotes.length;
     const firstLevelNotesLength = teacherNotes.filter(
-      (note) => note.level === "first"
+      (note) => note.level === "first",
     ).length;
     const secondLevelNotesLength = teacherNotes.filter(
-      (note) => note.level === "second"
+      (note) => note.level === "second",
     ).length;
     const thirdLevelNotesLength = teacherNotes.filter(
-      (note) => note.level === "third"
+      (note) => note.level === "third",
     ).length;
 
     return res.json({
@@ -588,68 +506,48 @@ export const teacherStatics = async (req, res) => {
   }
 };
 
-export const teacherAddCourse = async (req, res) => {
+export const teacherUpdateProfile = async (req, res) => {
   try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        message: "Validation failed",
-        error: true,
-        status: false,
-        details: errors.array(),
-      });
-    }
-
-    // 1. Manually check if the file exists (since express-validator didn't)
-    if (!req.file) {
-      return res.status(400).json({
-        message: "Course image file is required",
-        error: true,
-        status: false,
-      });
-    }
-
-    const { title, subjectId, price, offer, offerExpirt, level } = req.body;
+    
+    const { name, email, phone, about } = req.body;
     const teacherId = req.userId;
 
     const teacher = await Teacher.findById(teacherId);
+
     if (!teacher) {
-      return res.status(404).json({ message: "Teacher not found", error: true, status: false });
+      return res.status(404).json({
+        message: "المعلم غير موجود", 
+        error: true,
+        status: false,
+      });
     }
 
-    const isSubjectExist = await Subject.findById(subjectId);
-    if (!isSubjectExist) {
-      return res.status(404).json({ message: "Subject not found", error: true, status: false });
-    }
-
-    // 2. Upload to Cloudinary
-    const uploaded = await uploadImageClodinary(req.file.buffer);
-
-    const course = new Course({
-      title,
-      subject: subjectId,
-      image: uploaded.secure_url, // Use the URL from Cloudinary
-      price,
-      offer,
-      offerExpirt,
-      level,
-    });
-
-    await course.save();
-
-    isSubjectExist.courses.push(course);
     
-    await isSubjectExist.save();
+    teacher.name = name || teacher.name;
+    teacher.email = email || teacher.email;
+    teacher.phone = phone || teacher.phone;
+    teacher.about = about || teacher.about;
 
-    return res.status(201).json({
-      message: "Course added successfully",
+    // 3. Save the document
+    const updatedTeacher = await teacher.save();
+
+    // 4. Return success
+    return res.status(200).json({
+      message: "تم حفظ البيانات بنجاح",
       error: false,
       status: true,
-      data: course,
+      data: {
+        name: updatedTeacher.name,
+        email: updatedTeacher.email,
+        phone: updatedTeacher.phone,
+        about: updatedTeacher.about,
+      }
     });
+
   } catch (error) {
+    console.error("Update Profile Error:", error);
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
+      message: "حدث خطأ في الخادم، حاول مرة أخرى",
       error: true,
       status: false,
     });

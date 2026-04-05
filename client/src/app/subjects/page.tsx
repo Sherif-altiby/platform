@@ -46,7 +46,6 @@ const Page = () => {
                 link={`/subjects/sub-details?subId=${s._id}&subName=${s.name}`}
                 key={s._id}
                 name={s.name}
-                length={s.teachers.length}
                 avatar={s.image}
               />
             ))}
