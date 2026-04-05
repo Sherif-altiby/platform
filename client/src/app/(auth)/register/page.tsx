@@ -11,12 +11,14 @@ import ButtonLoader from "@/components/ButtonLoader";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { useLevelStore } from "@/store/levelStore";
+import { useEffect } from "react";
 
 const Page = () => {
   const router = useRouter();
   const { userRegister, isRegister } = useAuthUser();
 
   const levels = useLevelStore((s) => s.levels);
+  const fetchLevels= useLevelStore(s => s.fetchLevels)
 
   const {
     register,
@@ -46,6 +48,8 @@ const Page = () => {
       toast.error("حاول مرة اخري");
     }
   };
+
+  useEffect(() => {fetchLevels()}, [])
 
   const inputClass = (hasError: boolean) =>
     `w-full px-4 py-3 rounded-xl border text-sm bg-slate-50 text-slate-700 placeholder-slate-400
