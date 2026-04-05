@@ -61,7 +61,7 @@ userRouter.post('/teacher-subject-courses', auth, getStudentCoursesByTeacher)
 userRouter.post('/request-access-course', auth ,upload.single('avatar'),  requestCourseAccess)
 userRouter.get('/course-lessons/:courseId', auth, getCourseLessons)
 
-userRouter.get('/get-levels', auth, getLevels)
+userRouter.get('/get-levels', getLevels)
 
 userRouter.post('/rate-teacher', auth, userRateTeacher)
 
