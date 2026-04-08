@@ -14,7 +14,7 @@ const sendEmail = async ( { sendTo, subject, html} ) => {
     try{
  
         const { data, error } = await resend.emails.send({
-            from: 'Basira <onboarding@resend.dev>',
+            from: 'Al3bkary <onboarding@resend.dev>',
             to: sendTo,
             subject: subject,
             html: html,

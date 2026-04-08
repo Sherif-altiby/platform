@@ -24,6 +24,9 @@ import { getCourseLessons } from "../controller/lessonContriller.js";
 import upload from "../middlewares/multer.js";
 import { getLevels } from "../controller/levelController.js";
 import { userRateTeacher } from "../controller/ratingController.js";
+import { getWatchList, updateWatchHistory } from "../controller/watchHistoryController.js";
+import { getWatchQuizzesList } from "../controller/watchedQuizzesController.js";
+import { addNoteToHistory, getWatchNotesList } from "../controller/watchedNotesController.js";
 
 const  userRouter = Router();
 
@@ -64,5 +67,11 @@ userRouter.get('/course-lessons/:courseId', auth, getCourseLessons)
 userRouter.get('/get-levels', getLevels)
 
 userRouter.post('/rate-teacher', auth, userRateTeacher)
+
+userRouter.post('/watch-list', auth, updateWatchHistory)
+userRouter.get('/watch-list', auth, getWatchList)
+userRouter.get('/watch-quiz', auth, getWatchQuizzesList)
+userRouter.post('/watch-note', auth, addNoteToHistory)
+userRouter.get('/watch-note', auth, getWatchNotesList)
 
 export default userRouter

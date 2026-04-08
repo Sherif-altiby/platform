@@ -13,7 +13,7 @@ const getYouTubeId = (url: string) => {
   return (match && match[2].length === 11) ? match[2] : null; 
 };
 
-const LessonCard = ({ lesson }: {lesson: Lesson}) => {
+const LessonCard = ({ lesson, teacherId }: {lesson: Lesson, teacherId: string}) => {
   const videoId = getYouTubeId(lesson.videoUrl);
   const encodedUrl = encodeURIComponent(lesson.videoUrl);
 
@@ -70,7 +70,7 @@ const LessonCard = ({ lesson }: {lesson: Lesson}) => {
         {/* 4. Footer: Internal Watch Button */}
         <div className="mt-auto pt-6">
           <Link 
-             href={`/watch/${lesson._id}`}
+             href={`/watch/${lesson._id}?teacherId=${teacherId}`}
              className="w-full py-4 rounded-2xl bg-slate-50 text-slate-900 text-xs font-black flex items-center justify-center gap-2 group-hover:bg-[#0066FF] group-hover:text-white transition-all duration-300 shadow-sm"
           >
             بدء مشاهدة الحصة

@@ -76,7 +76,6 @@ const subjectSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // Adding the courses array here
   courses: [
     {
       type: mongoose.Schema.Types.ObjectId,

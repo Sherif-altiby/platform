@@ -8,16 +8,16 @@ import Spiner from "@/components/Spiner";
 import SubHeader from "@/components/SubHeader";
 import { useLessonStore } from "@/store/LessonsStore";
 import { useQuery } from "@tanstack/react-query";
-import { useSearchParams } from "next/navigation";
+import { useParams, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import { MdSlowMotionVideo } from "react-icons/md";
 
 const page = () => {
   const searchParams = useSearchParams();
   const courseId = searchParams.get("course_id");
+  const { teacherId } = useParams();
 
   const setLessons = useLessonStore((state) => state.setLessons);
-  const lessons = useLessonStore((state) => state.lessons);
 
   const { data, isLoading } = useQuery({
     queryKey: ["lessons", courseId],
@@ -48,7 +48,7 @@ const page = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {data?.map((lesson: any) => (
-              <LessonCard key={lesson._id} lesson={lesson} />
+              <LessonCard key={lesson._id} lesson={lesson} teacherId={teacherId as string}/>
             ))}
           </div>
         )}

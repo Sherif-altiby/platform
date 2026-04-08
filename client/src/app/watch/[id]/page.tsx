@@ -4,9 +4,12 @@ import { MdSlowMotionVideo } from "react-icons/md";
 import SubHeader from "@/components/SubHeader";
 import { useLessonStore } from "@/store/LessonsStore";
 import { useEffect, useState, useMemo } from "react";
-import { useParams, useRouter } from "next/navigation"; // Added router for navigation
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import SectionHeading from "@/components/common/SectionHeading";
-import { FaBars, FaPlay, FaArrowLeft } from "react-icons/fa6"; // Fixed imports
+import { FaBars, FaPlay, FaArrowLeft } from "react-icons/fa6";
+import { useMutation, useQueryClient } from "@tanstack/react-query"; // New
+import { updateWatchHistoryApi } from "@/app/utils/watchListFeatures";
+import { useAuthUser } from "@/store/authStore";
 
 const getEmbedUrl = (url: string) => {
   if (!url) return null;
@@ -19,35 +22,51 @@ const getEmbedUrl = (url: string) => {
 
 export default function LessonPage() {
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
 
-  const lessons = useLessonStore((state) => state.lessons);
+  const searchParams = useSearchParams();
+  const teacherId = searchParams.get("teacherId");
 
-  // Derived state: Automatically find the lesson whenever 'id' or 'lessons' change
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const lessons = useLessonStore((state) => state.lessons);
+  const user = useAuthUser(s => s.user)
+
   const currentLesson = useMemo(() => 
     lessons?.find((lesson) => lesson._id === id), 
   [id, lessons]);
 
   const [embedUrl, setEmbedUrl] = useState<string | null>(null);
 
+  const { mutate: updateHistory } = useMutation({
+    mutationFn:  updateWatchHistoryApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["latest-watched"] });
+    }
+  });
+
   useEffect(() => {
     if (currentLesson) {
       setEmbedUrl(getEmbedUrl(currentLesson.videoUrl));
+      
+      updateHistory({
+        userId: user?._id || "",
+        lessonId: currentLesson._id,
+        courseId: currentLesson.course,
+        teacherId: teacherId || ""
+      });
     }
-
-    console.log("lessons", lessons)
-  }, [currentLesson]);
+  }, [currentLesson, updateHistory]);
+  
 
   return (
     <main className="ctm-height bg-gray-50 flex flex-col font-kufi" dir="rtl">
-      {/* 1. Header */}
       <SubHeader currentTitle={currentLesson?.title || "جاري التحميل..."} />
-
-      {/* 2. Main Content Grid */}
+      
       <div className="flex-1 w-full max-w-[1920px] mx-auto px-4 md:px-6 lg:px-8 py-8 grid grid-cols-1 xl:grid-cols-[1fr,400px] gap-8">
         
-        {/* --- LEFT SIDE: Video Player --- */}
+        {/* Video Section */}
         <section className="flex flex-col gap-6">
           <div className="bg-white p-2 rounded-3xl shadow-lg border border-gray-100 overflow-hidden">
             <div className="relative aspect-video w-full rounded-2xl overflow-hidden bg-gray-900 shadow-inner">
@@ -62,20 +81,19 @@ export default function LessonPage() {
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center p-8 bg-gray-900 text-red-300">
                   <MdSlowMotionVideo className="text-6xl mb-4 opacity-20" />
-                  <p className="text-sm font-bold">  جاري التحميل...</p>
+                  <p className="text-sm font-bold">جاري التحميل...</p>
                 </div>
               )}
             </div>
           </div>
           
-          {/* Title and Description under video */}
           <div className="px-4">
             <h1 className="text-2xl font-black text-slate-800">{currentLesson?.title}</h1>
             <p className="text-slate-500 mt-2 leading-relaxed">{currentLesson?.description}</p>
           </div>
         </section>
 
-        {/* --- RIGHT SIDE: Course Playlist --- */}
+        {/* Sidebar Content */}
         <aside className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 xl:sticky xl:top-24 h-[calc(100vh-150px)] flex flex-col">
           <SectionHeading 
             title="محتوى الدورة" 
@@ -86,7 +104,6 @@ export default function LessonPage() {
           <div className="flex flex-col gap-3 mt-6 overflow-y-auto custom-scrollbar pr-2">
             {lessons?.map((lesson, index) => {
               const isActive = lesson._id === id;
-              
               return (
                 <button
                   key={lesson._id}
@@ -108,7 +125,7 @@ export default function LessonPage() {
                       {lesson.title}
                     </span>
                     <span className={`text-[10px] mt-1 ${isActive ? 'text-indigo-100' : 'text-slate-400'}`}>
-                      مدة الحصة: متغيرة
+                      مشاهدة الآن
                     </span>
                   </div>
 

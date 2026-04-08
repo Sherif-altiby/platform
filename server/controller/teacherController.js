@@ -3,7 +3,6 @@ import { Teacher } from "../models/teacherModel.js";
 import { PdfModel } from "../models/pdfModel.js";
 import { VideoModel } from "../models/videoModel.js";
 import { Quizz } from "../models/quizzModel.js";
-import cloudinary from "../utils/uploadPdf.js";
 
 
 export const getTeacherById = async (req, res) => {
@@ -175,7 +174,6 @@ export const teacherUpdateVideo = async (req, res) => {
 };
 
 
-
 export const getTeacherQuizzesByLevel = async (req, res) => {
   try {
     const { teacherId, level } = req.body;
@@ -284,155 +282,6 @@ export const deleteQuize = async (req, res) => {
   }
 };
 
-export const uploadPdf = async (req, res) => {
-  try {
-    const { level, title } = req.body;
-    const teacherId = req.userId;
-
-    // Validate input
-    if (!level || !title) {
-      return res.status(400).json({
-        success: false,
-        message: "Level and title are required",
-      });
-    }
-
-    // Check for existing PDF
-    const existingPdf = await PdfModel.findOne({ title });
-    if (existingPdf) {
-      return res.status(409).json({
-        success: false,
-        message: "PDF with this title already exists",
-      });
-    }
-
-    // Validate file upload
-    if (!req.file?.buffer) {
-      return res.status(400).json({
-        success: false,
-        message: "No PDF file uploaded",
-      });
-    }
-
-    // Upload to Cloudinary using buffer
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "raw",
-          format: "pdf",
-          folder: "pdf_uploads",
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        },
-      );
-      uploadStream.end(req.file.buffer);
-    });
-
-    // Create new PDF record
-    const newPdf = new PdfModel({
-      teacher: teacherId,
-      title,
-      level,
-      pdf: result.secure_url,
-    });
-
-    await newPdf.save();
-
-    return res.status(201).json({
-      success: true,
-      message: "PDF uploaded successfully",
-      data: {
-        id: newPdf._id,
-        title: newPdf.title,
-        level: newPdf.level,
-        url: newPdf.pdf,
-        directUrl: newPdf.pdfDirectUrl,
-        createdAt: newPdf.createdAt,
-      },
-    });
-  } catch (error) {
-    console.error("PDF upload error:", error);
-    return res.status(500).json({
-      success: false,
-      message: error.message || "Internal server error",
-    });
-  }
-};
-
-export const getPdfByLevel = async (req, res) => {
-  try {
-    const { level, teacherId } = req.body;
-    if (!teacherId) {
-      return res.status(400).json({
-        message: "Complete all data",
-        error: true,
-        status: false,
-      });
-    }
-
-    const pdf = await PdfModel.find({ teacher: teacherId, level });
-    if (!pdf) {
-      return res.status(404).json({
-        message: "Pdf not found",
-        error: true,
-        status: false,
-      });
-    }
-
-    return res.status(200).json({
-      error: false,
-      status: true,
-      data: pdf,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
-
-export const deletePdf = async (req, res) => {
-  try {
-    const { pdfId } = req.body;
-    const teacherId = req.userId;
-
-    if (!pdfId) {
-      return res.status(400).json({
-        message: "Provide video id",
-        error: true,
-        status: false,
-      });
-    }
-
-    const deletedPdf = await PdfModel.findOneAndDelete({
-      teacher: teacherId,
-      _id: pdfId,
-    });
-    if (!deletedPdf) {
-      return res.status(404).json({
-        message: "Pdf not found",
-        error: true,
-        status: false,
-      });
-    }
-
-    return res.json({
-      message: "Pdf deleted successfully",
-      error: true,
-      status: false,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
 
 export const teacherStatics = async (req, res) => {
   try {
@@ -508,7 +357,7 @@ export const teacherStatics = async (req, res) => {
 
 export const teacherUpdateProfile = async (req, res) => {
   try {
-    
+
     const { name, email, phone, about } = req.body;
     const teacherId = req.userId;
 
@@ -516,13 +365,13 @@ export const teacherUpdateProfile = async (req, res) => {
 
     if (!teacher) {
       return res.status(404).json({
-        message: "المعلم غير موجود", 
+        message: "المعلم غير موجود",
         error: true,
         status: false,
       });
     }
 
-    
+
     teacher.name = name || teacher.name;
     teacher.email = email || teacher.email;
     teacher.phone = phone || teacher.phone;

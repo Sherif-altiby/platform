@@ -206,6 +206,7 @@ export const getStudentCoursesByTeacher = async (req, res) => {
     }
 
     const student = await User.findById(studentId);
+
     if (!student) {
       return res.status(404).json({ message: "الطالب غير موجود" });
     }
@@ -245,7 +246,6 @@ export const getStudentCoursesByTeacher = async (req, res) => {
       data: results,
     });
   } catch (error) {
-    console.error("Error fetching student courses:", error);
-    return res.status(500).json({ message: "حدث خطأ في الخادم" });
+     return res.status(500).json({ message: "حدث خطأ في الخادم" });
   }
 };

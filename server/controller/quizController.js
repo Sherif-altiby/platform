@@ -3,7 +3,8 @@ import { Quizz } from "../models/quizzModel.js";
 import { Teacher } from "../models/teacherModel.js";
 import { Course, Subject } from "../models/model.js";
 import { Level } from "../models/levelModel.js";
-import { Result } from "../models/quizModel.js";
+import { Result } from "../models/resultModel.js";
+import { QuizzesHistory } from "../models/watchedQuizMode.js";
 
 export const teacherUploadQuiz = async (req, res) => {
   try {
@@ -157,16 +158,11 @@ export const deleteQuiz = async (req, res) => {
     }
 };
 
-
-
-
-
 export const checkQuiz = async (req, res) => {
   try {
     const { quizId, answers } = req.body;
-    const studentId = req.userId; // القادم من middleware الحماية (Auth)
+    const studentId = req.userId; 
 
-    // 1. التحقق من وجود quizId
     if (!quizId) {
       return res.status(400).json({
         message: "Quiz ID is required",
@@ -175,7 +171,6 @@ export const checkQuiz = async (req, res) => {
       });
     }
 
-    // 2. جلب الاختبار
     const quiz = await Quizz.findById(quizId);
     if (!quiz) {
       return res.status(404).json({
@@ -185,7 +180,6 @@ export const checkQuiz = async (req, res) => {
       });
     }
 
-    // 3. التحقق من عدد الإجابات
     if (!answers || answers.length !== quiz.questions.length) {
       return res.status(400).json({
         message: "Please answer all questions",
@@ -194,7 +188,6 @@ export const checkQuiz = async (req, res) => {
       });
     }
 
-    // 4. معالجة الإجابات وحساب الدرجة
     let correctCount = 0;
     const processedAnswers = [];
 
@@ -214,32 +207,43 @@ export const checkQuiz = async (req, res) => {
 
     const finalScore = (correctCount / quiz.questions.length) * 100;
 
-    // 5. حفظ أو تحديث النتيجة في قاعدة البيانات (Upsert)
-    // نبحث عن سجل بنفس الطالب ونفس الاختبار
     const updatedResult = await Result.findOneAndUpdate(
       { student: studentId, quiz: quizId }, 
       {
         student: studentId,
         quiz: quizId,
-        course: quiz.course, // مأخوذ من بيانات الـ quiz
+        course: quiz.course, 
         score: finalScore,
         totalQuestions: quiz.questions.length,
         correctAnswersCount: correctCount,
         answers: processedAnswers,
       },
       { 
-        new: true,      // لإرجاع البيانات الجديدة بعد التحديث
-        upsert: true,   // إذا لم يجد سجل، قم بإنشاء واحد جديد
+        new: true,      
+        upsert: true,   
         runValidators: true 
       }
     );
 
-    // 6. إرجاع النتيجة للمستخدم
+    await QuizzesHistory.findOneAndUpdate(
+      { userId: studentId, quizId: quizId }, 
+      {
+        userId: studentId,
+        teacherId: quiz.teacher, 
+        courseId: quiz.course,
+        quizId: quizId,
+        score: correctCount,  
+        total: quiz.questions.length,  
+        updatedAt: new Date(),
+      },
+      { upsert: true, new: true }
+    );
+
     return res.status(200).json({
       message: "Quiz processed and saved successfully",
       error: false,
       status: true,
-      data: updatedResult, // نرسل بيانات الموديل كاملة
+      data: updatedResult, 
     });
 
   } catch (error) {
@@ -248,5 +252,82 @@ export const checkQuiz = async (req, res) => {
       error: true,
       status: false,
     });
+  }
+};
+
+export const getTeacherQuizResults = async (req, res) => {
+  try {
+      const { quizId } = req.params;
+      const teacherId = req.userId; 
+
+      const quiz = await Quizz.findById(quizId);
+      
+      if (!quiz) {
+          return res.status(404).json({ 
+              message: "الاختبار غير موجود", 
+              error: true, 
+              status: false 
+          });
+      }
+
+      if (quiz.teacher.toString() !== teacherId) {
+          return res.status(403).json({ 
+              message: "غير مسموح لك بالوصول لنتائج هذا الاختبار", 
+              error: true, 
+              status: false 
+          });
+      }
+
+      const allResults = await Result.find({ quiz: quizId })
+          .populate("student", "name") 
+
+      return res.status(200).json({
+          message: "تم جلب النتائج بنجاح",
+          error: false,
+          status: true,
+          count: allResults.length,
+          data: allResults
+      });
+
+  } catch (error) {
+      console.error("Error fetching results:", error);
+      return res.status(500).json({
+          message: error.message || "حدث خطأ داخلي في السيرفر",
+          error: true,
+          status: false
+      });
+  }
+};
+
+export const getTeacherQuizzesSummary = async (req, res) => {
+  try {
+      const teacherId = req.userId;  
+
+      const totalQuizzes = await Quizz.countDocuments({ teacher: teacherId });
+
+   
+      const teacherQuizzes = await Quizz.find({ teacher: teacherId }).select("_id");
+      const quizIds = teacherQuizzes.map(q => q._id);
+
+      const totalSubmissions = await Result.countDocuments({ 
+          quiz: { $in: quizIds } 
+      });
+
+      return res.status(200).json({
+          success: true,
+          message: "تم جلب إحصائيات الاختبارات بنجاح",
+          stats: {
+              totalQuizzes,       
+              totalSubmissions   
+          }
+      });
+
+  } catch (error) {
+      console.error("Error in quizzes summary:", error);
+      return res.status(500).json({
+          success: false,
+          message: "حدث خطأ أثناء جلب البيانات",
+          error: error.message
+      });
   }
 };

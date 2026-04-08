@@ -7,7 +7,7 @@ import Image from "next/image";
 import { useState, useRef } from "react";
 import ResponsiveMenu from "./ResponsiveMenu";
 import { IoIosNotificationsOutline } from "react-icons/io";
-import { CiUser } from "react-icons/ci";
+import { CiSettings, CiUser } from "react-icons/ci";
 import { useAuthUser } from "@/store/authStore";
    
  
@@ -74,6 +74,12 @@ const Nav = () => {
                   className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 text-xl"
                 >
                   <CiUser />
+                </Link>
+                <Link
+                  href="/settings"
+                  className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200 text-xl"
+                >
+                  <CiSettings />
                 </Link>
               </div>
             )}

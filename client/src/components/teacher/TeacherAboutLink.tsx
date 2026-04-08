@@ -25,7 +25,7 @@ const TeacherAboutLink = ({teacherId, name, level}: {teacherId: string, name: st
 
               {/* Notes */}
               <Link
-                href={`/get-teachers/notes?teacherName=${name}&teacherId=${teacherId}`}
+                href={`/notes?teacherName=${name}&teacherId=${teacherId}`}
                 className="group relative bg-white border border-gray-100 rounded-2xl p-6 shadow-sm hover:shadow-xl transition-all duration-400 hover:-translate-y-1 overflow-hidden opacity-0 animate-fadeInUp"
               >
                 <div className="absolute inset-0 bg-gradient-to-br from-amber-500 to-orange-400 opacity-0 group-hover:opacity-100 transition-opacity duration-400 rounded-2xl" />

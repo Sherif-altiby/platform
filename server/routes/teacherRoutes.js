@@ -1,11 +1,8 @@
 import { Router } from "express";
 import auth from "../middlewares/auth.js";
 import { 
-          getPdfByLevel, 
           getQuizeById, 
           getTeacherQuizzesByLevel, 
-          uploadPdf,
-          deletePdf,
           getTeacherById,
           deleteQuize,
           teacherStatics,
@@ -20,7 +17,8 @@ import { addCourse, deleteCourse, getSubjectCourses, updateCourse } from "../con
 import { addLesson, deleteLesson, getTeacherCourseLessons } from "../controller/lessonContriller.js";
 import { getTeacherStats } from "../controller/staticsController.js";
 import { getTeacherRatings } from "../controller/ratingController.js";
-import { deleteQuiz, getTeacherQuizzes, teacherUploadQuiz } from "../controller/quizController.js";
+import { deleteQuiz, getTeacherQuizResults, getTeacherQuizzes, getTeacherQuizzesSummary, teacherUploadQuiz } from "../controller/quizController.js";
+import { createNote, deleteNote, getNoteByLevel, getTeacherNotes } from "../controller/noteController.js";
 
 
 const teacherRouter = Router();
@@ -34,13 +32,16 @@ teacherRouter.post('/upload-quiz', auth, isTeacher, uploadQuizValidation, teache
 teacherRouter.get('/quizzes', auth, isTeacher, getTeacherQuizzes)
 teacherRouter.delete('/quiz-delete/:quizId', auth, isTeacher, deleteQuiz)
 teacherRouter.post('/get-quiz-by-level', auth, getTeacherQuizzesByLevel);
+teacherRouter.get('/quiz-results/:quizId', auth,isTeacher, getTeacherQuizResults);
+teacherRouter.get('/quizzes-summary', auth, isTeacher, getTeacherQuizzesSummary)
 
 teacherRouter.get('/get-quiz-by-id/:id', auth, getQuizeById);
 teacherRouter.delete('/delete-quiz', auth, isTeacher, deleteQuize);
 
-teacherRouter.post('/upload-pdf', auth, isTeacher, uploadPdfMulter.single('pdf'), uploadPdf);
-teacherRouter.post('/get-pdf-by-level', auth, getPdfByLevel);
-teacherRouter.delete('/delete-pdf', auth, isTeacher, deletePdf);
+teacherRouter.post('/upload-pdf', auth, isTeacher, uploadPdfMulter.single('pdf'), createNote);
+teacherRouter.post('/get-pdf-by-level', auth, getNoteByLevel);
+teacherRouter.delete('/delete-pdf', auth, isTeacher, deleteNote);
+teacherRouter.get('/teacher-pdf', auth, isTeacher, getTeacherNotes);
 
 teacherRouter.get('/statics', auth, isTeacher, teacherStatics)
 

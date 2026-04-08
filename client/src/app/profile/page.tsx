@@ -1,122 +1,155 @@
-"use client"
+"use client";
 
-import { Axios } from "@/axios/Axios"
-import MainButton from "@/components/MainButton"
-import SubHeader from "@/components/SubHeader"
-import { useEffect, useState } from "react"
-import { toast } from "react-toastify"
-import ChangePassword from "./ChangePassword"
-import AddComment from "@/components/addComment"
-import { useQueryClient } from "@tanstack/react-query"
-import { UserTypes } from "@/types/Types"
-import { FaUser } from "react-icons/fa"
-import { useLevelStore } from "@/store/levelStore"
+import LatestLesson from "@/components/latest-viewd/LatestLesson";
+import LatestNote from "@/components/latest-viewd/LatestNote";
+import LatestQuiz from "@/components/latest-viewd/LatestQuiz";
+import { useQuery } from "@tanstack/react-query";
+import { FaPlayCircle, FaUserSlash } from "react-icons/fa";
+import { FaArrowRight, FaChevronLeft, FaClipboardCheck } from "react-icons/fa6";
+import { PiFileText } from "react-icons/pi";
+import {
+  getNoteWatchHistoryApi,
+  getWatchHistoryApi,
+  getWatchQuizzesHistoryApi,
+} from "../utils/watchListFeatures";
+import LatestLessonSkeleton from "@/skeletons/LatestLessonSkeleton";
+import ProfileWelcom from "@/components/profile/ProfileWelcom";
+import LatestQuizSkeleton from "@/skeletons/LatestQuizSkeleton";
+import LatestNoteSkeleton from "@/skeletons/LatestNoteSkeleton";
 
-const Page = () => {
-  const queryClient = useQueryClient();
-  const user = queryClient.getQueryData(["user"]) as UserTypes
+const ProfilePage = () => {
+  const subscribedTeachers = [
+    {
+      id: 1,
+      name: "د. أحمد زويل",
+      subject: "كيمياء",
+      image: "https://ui-avatars.com/api/?name=AZ&background=0D8ABC&color=fff",
+    },
+    {
+      id: 2,
+      name: "مستر محمد علي",
+      subject: "فيزياء",
+      image: "https://ui-avatars.com/api/?name=MA&background=6366f1&color=fff",
+    },
+  ];
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState<number | string>("");
-  const [parentPhone, setParentPhone] = useState<number | string>("");
-  const [level, setLevel] = useState("");
+  const { data: watchedList, isLoading: isWatchedListLoading } = useQuery({
+    queryKey: ["latest-watched"],
+    queryFn: getWatchHistoryApi,
+  });
 
-  useEffect(() => {
-    if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
-      setPhone(user.phone || "");
-      setLevel(user.level || "");
-      setParentPhone(user.parentPhone || "")
-    }
-  }, [user]);
+  const { data: watchedQuizzesList, isLoading: isWatchedQuizzesListLoading } =
+    useQuery({
+      queryKey: ["latest-quizzes"],
+      queryFn: getWatchQuizzesHistoryApi,
+    });
 
-  const [loading, setLoading] = useState(false)
-
- const levels = useLevelStore(s => s.levels)
-
-  const updateProfile = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setLoading(true)
-    try {
-      const res = await Axios.post('user/update-profile', { name, phone, email, level , parentPhone})
-      toast.success(res.data.message)
-    } catch {
-      toast.error("حدث خطأ")
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const inputClass = "border border-gray-200 bg-gray-50 rounded-xl px-4 py-2.5 block w-full text-gray-800 text-sm transition-all duration-300 focus:outline-none focus:border-indigo-400 focus:bg-white focus:ring-2 focus:ring-indigo-50"
-  const labelClass = "block text-sm font-medium text-gray-600 mb-1.5"
+  const { data: watchedNotesList, isLoading: isWatchedNotesListLoading } =
+    useQuery({
+      queryKey: ["latest-notes"],
+      queryFn: getNoteWatchHistoryApi,
+    });
 
   return (
-    <div className="ctm-height bg-gray-50">
-      <SubHeader currentTitle="الملف الشخصي" />
+    <div className="min-h-screen bg-[#F8FAFC] p-4 lg:p-8" dir="rtl">
+      <div className="max-w-7xl mx-auto space-y-8">
+        <ProfileWelcom />
 
-      <div className="container py-12 flex flex-col items-center gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2 space-y-8">
+            <section className="space-y-4">
+              <div className="flex items-center justify-between px-2">
+                <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+                  <FaPlayCircle className="text-indigo-600" /> آخر الدروس
+                  المشاهدة
+                </h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {isWatchedListLoading
+                  ? [1, 2, 3].map((__, index) => (
+                      <LatestLessonSkeleton key={index} />
+                    ))
+                  : watchedList.map((lesson: any) => (
+                      <LatestLesson lesson={lesson} key={lesson._id} />
+                    ))}
+              </div>
+            </section>
 
-        {/* Update Profile */}
-        <div className="w-full max-w-[700px] bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          {/* Card header */}
-          <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
-            <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
-              <FaUser className="text-white text-sm" />
-            </div>
-            <h2 className="text-lg font-bold text-gray-900">تعديل الملف الشخصي</h2>
+            <section className="space-y-4">
+              <div className="flex items-center justify-between px-2">
+                <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+                  <FaClipboardCheck className="text-emerald-600" /> نتائج
+                  الاختبارات الأخيرة
+                </h2>
+              </div>
+              <div className="">
+                {isWatchedQuizzesListLoading
+                  ? [1, 2, 3].map((__, index) => (
+                      <LatestQuizSkeleton key={index} />
+                    ))
+                  : watchedQuizzesList.map((quiz: any) => (
+                      <LatestQuiz quiz={quiz} key={quiz._id} />
+                    ))}
+              </div>
+            </section>
           </div>
 
-          <form onSubmit={updateProfile} className="p-6 flex flex-col gap-5">
-            <div className="flex items-start flex-col md:flex-row gap-5">
-              <div className="w-full md:w-1/2">
-                <label className={labelClass} htmlFor="name">الاسم</label>
-                <input type="text" id="name" value={name} onChange={(e) => setName(e.target.value)} className={inputClass} />
+          <div className="space-y-8">
+            <section className="space-y-4">
+              <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+                <PiFileText className="text-orange-500" /> أحدث المذكرات
+              </h2>
+              <div className="space-y-3">
+                {isWatchedNotesListLoading
+                  ? [1, 2, 3].map((__, index) => (
+                      <LatestNoteSkeleton key={index} />
+                    ))
+                  : watchedNotesList.map((note: any) => (
+                      <LatestNote note={note} key={note._id} />
+                    ))}
               </div>
-              <div className="w-full md:w-1/2">
-                <label className={labelClass} htmlFor="email">البريد الإلكتروني</label>
-                <input type="text" id="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
-              </div>
-            </div>
+            </section>
 
-            <div className="flex items-start flex-col md:flex-row gap-5">
-              <div className="w-full md:w-1/2">
-                <label className={labelClass} htmlFor="phone">رقم الهاتف</label>
-                <input type="number" id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} />
+            <section className="space-y-4">
+              <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+                <FaUserSlash className="text-blue-600" /> معلميك المشترك معهم
+              </h2>
+              <div className="bg-white p-5 rounded-3xl border border-slate-100 space-y-4">
+                {subscribedTeachers.map((teacher) => (
+                  <div
+                    key={teacher.id}
+                    className="flex items-center justify-between group"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={teacher.image}
+                        alt={teacher.name}
+                        className="w-10 h-10 rounded-full object-cover border-2 border-white shadow-sm"
+                      />
+                      <div>
+                        <p className="text-sm font-bold text-slate-800 group-hover:text-blue-600 transition-colors">
+                          {teacher.name}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-bold">
+                          {teacher.subject}
+                        </p>
+                      </div>
+                    </div>
+                    <button className="p-2 text-slate-300 hover:text-blue-600 transition-colors">
+                      <FaChevronLeft size={20} />
+                    </button>
+                  </div>
+                ))}
+                <button className="w-full py-3 bg-slate-50 text-slate-500 rounded-xl text-xs font-black hover:bg-slate-100 transition-all">
+                  عرض جميع المدرسين
+                </button>
               </div>
-
-              <div className="w-full md:w-1/2">
-                <label className={labelClass} htmlFor="parentPhone">رقم هاتف ولي الامر</label>
-                <input type="number" id="parentPhone" value={parentPhone} onChange={(e) => setParentPhone(e.target.value)} className={inputClass} />
-              </div>
-              
-            </div>
-
-            <div className="w-full md:w-1/2">
-                <label className={labelClass} htmlFor="level">الصف الدراسي</label>
-                <select id="level" value={level} onChange={(e) => setLevel(e.target.value)} className={inputClass}>
-                  {levels.map((l) => (
-                    <option value={l._id} key={l._id}>{l.name}</option>
-                  ))}
-                </select>
-              </div>
-
-            <div className="pt-1">
-              <MainButton loading={loading} text="حفظ التغييرات" />
-            </div>
-          </form>
+            </section>
+          </div>
         </div>
-
-        {/* Change Password */}
-        <ChangePassword />
-
-        {/* Add Comment */}
-        <AddComment />
-
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Page
+export default ProfilePage;
