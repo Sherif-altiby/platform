@@ -1,6 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { FaArrowLeft } from "react-icons/fa";
+import { FaArrowLeft } from "react-icons/fa6"; // Using Fa6 for a cleaner look
 
 interface SubjectCardProps {
   link: string;
@@ -12,41 +14,50 @@ const SubjectCard = ({ link, name, avatar }: SubjectCardProps) => {
   return (
     <Link
       href={link}
-      className="group relative flex flex-col items-center bg-white border border-gray-100 rounded-3xl p-6 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 overflow-hidden"
+      className="group relative flex flex-col bg-white border border-slate-200/60 rounded-[2rem] p-5 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(79,70,229,0.1)] hover:-translate-y-2 overflow-hidden"
     >
-      {/* Top accent bar */}
-      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 to-teal-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-t-3xl" />
+      {/* Interactive Background Glow */}
+      <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-indigo-500/5 blur-3xl group-hover:bg-indigo-500/20 transition-colors duration-500" />
+      
+      <div className="flex flex-col items-center relative z-10">
+        {/* Image Container with "Squircle" shape */}
+        <div className="relative w-24 h-24 p-1 rounded-[1.8rem] bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-100 shadow-inner overflow-hidden flex items-center justify-center transition-transform duration-500 group-hover:scale-105">
+          {avatar?.startsWith("http") ? (
+            <div className="relative w-full h-full rounded-[1.5rem] overflow-hidden shadow-sm">
+              <Image
+                src={avatar}
+                alt={`${name} subject`}
+                fill
+                className="object-cover transform group-hover:scale-110 transition-transform duration-700"
+                sizes="96px"
+              />
+            </div>
+          ) : (
+            <div className="text-3xl font-black text-indigo-500/40">
+              {name.charAt(0)}
+            </div>
+          )}
+        </div>
 
-      {/* Avatar */}
-      <div className="relative w-20 h-20 rounded-2xl border-4 border-white shadow-md overflow-hidden bg-indigo-50 rotate-2 group-hover:rotate-0 transition-transform duration-500">
-        {avatar?.startsWith("http") ? (
-          <Image
-            src={avatar}
-            alt={`${name} subject`}
-            fill
-            className="object-cover"
-            sizes="80px"
-            loading="lazy"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-2xl font-bold text-indigo-400">
-            {name.charAt(0)}
+        {/* Content Section */}
+        <div className="mt-6 text-center">
+          <h3 className="text-xl font-extrabold text-slate-800 tracking-tight group-hover:text-indigo-600 transition-colors duration-300">
+            {name}
+          </h3>
+          <p className="mt-1.5 text-xs text-slate-400 font-medium uppercase tracking-widest">
+            المنهج التعليمي
+          </p>
+        </div>
+
+        {/* Action Bar */}
+        <div className="mt-6 w-full flex items-center justify-between px-2 py-3 bg-slate-50 rounded-2xl group-hover:bg-indigo-50 transition-colors duration-500">
+          <span className="text-xs font-bold text-slate-500 group-hover:text-indigo-600 transition-colors">
+            استكشف الدروس
+          </span>
+          <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-white text-indigo-500 shadow-sm border border-slate-100 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+             <FaArrowLeft className="text-[10px] group-hover:-translate-x-0.5 transition-transform" />
           </div>
-        )}
-      </div>
-
-      {/* Name */}
-      <h3 className="mt-4 text-lg font-bold text-gray-900 text-center group-hover:text-indigo-600 transition-colors duration-300">
-        {name}
-      </h3>
-
-      {/* Divider */}
-      <div className="w-full h-px bg-gray-100 my-4" />
-
-      {/* CTA */}
-      <div className="flex items-center gap-2 text-sm font-semibold text-indigo-400 group-hover:text-indigo-600 transition-colors duration-300">
-        <span>عرض التفاصيل</span>
-        <FaArrowLeft className="text-xs group-hover:-translate-x-1 transition-transform duration-300" />
+        </div>
       </div>
     </Link>
   );

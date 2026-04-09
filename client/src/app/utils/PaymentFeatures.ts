@@ -32,3 +32,29 @@ export const PayWithVodafone = async (courseId: string, avatar: File) => {
     throw error;
   }
 };
+
+
+
+export const handlePayment = async (amount: number) => {
+  try {
+      const response = await fetch(`${API}payment/pay`, {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+          },
+          credentials: "include",
+          body: JSON.stringify({ amount: amount })
+      });
+
+      const data = await response.json();
+
+      if (data.url) {
+
+          window.location.href = data.url;
+      } else {
+          console.error("Payment failed to initialize", data);
+      }
+  } catch (error) {
+      console.error("Error:", error);
+  }
+};

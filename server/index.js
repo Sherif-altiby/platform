@@ -11,6 +11,7 @@ import teacherRouter from "./routes/teacherRoutes.js";
 import path from "path"
 import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
+import paymentRouter from "./routes/paymentRoutes.js";
 
 
 dotenv.config();
@@ -61,6 +62,7 @@ app.use(limiter);
 app.use('/api/user', userRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/teacher', teacherRouter)
+app.use('/api/payment', paymentRouter)
 
 
 

@@ -6,6 +6,7 @@ import SectionHeading from "@/components/common/SectionHeading";
 import CourseCard from "@/components/course/CourseCard";
 import Spiner from "@/components/Spiner";
 import SubHeader from "@/components/SubHeader";
+import CourseSkeleton from "@/skeletons/CourseSkeleton";
 import { Course } from "@/types/Types";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
@@ -35,8 +36,8 @@ const CoursesSection = () => {
         />
 
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Spiner />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map((__, index) => <CourseSkeleton key={index}/>)}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

@@ -15,8 +15,8 @@ const PaymenWay = ({
   icon: IconType;
   title: string
 }) => {
-  // Check if THIS specific button is the active one
-  const isActive = method === way;
+  
+   const isActive = method === way;
 
   return (
     <button

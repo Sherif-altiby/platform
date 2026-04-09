@@ -1,17 +1,29 @@
 const TeacherSkeleton = () => {
   return (
-    <>
-      {Array.from({ length: 5 }, (_, index) => (
-        <div
-          key={index}
-          className="bg-teacherCardBg p-5 rounded-xl border border-teacherCardBg transition-all duration-300 hover:bg-white w-full animate-pulse"
-        >
-          <div className="bg-gray-300 rounded-md w-full h-[200px]"></div>
-          <div className="mt-4 h-6 bg-gray-300 w-3/4 mx-auto rounded"></div>
-          <div className="mt-3 h-5 bg-gray-300 w-1/2 mx-auto rounded"></div>
+    <div className="flex flex-col bg-white relative border border-gray-100 w-full rounded-3xl overflow-hidden shadow-sm animate-pulse">
+      <div className="relative h-24 bg-gray-200" />
+
+      <div className="absolute top-10 left-1/2 -translate-x-1/2">
+        <div className="w-20 h-20 rounded-2xl border-4 border-white shadow-lg bg-gray-300 rotate-3" />
+      </div>
+
+      {/* Body skeleton */}
+      <div className="pt-14 pb-5 px-5 flex flex-col items-center gap-4 flex-1">
+        {/* Name skeleton */}
+        <div className="h-5 w-2/3 bg-gray-200 rounded-md" />
+
+        {/* Subjects skeleton */}
+        <div className="flex flex-wrap justify-center gap-1.5 w-full">
+          <div className="h-6 w-16 bg-gray-100 rounded-full" />
+          <div className="h-6 w-20 bg-gray-100 rounded-full" />
+          <div className="h-6 w-14 bg-gray-100 rounded-full" />
         </div>
-      ))}
-    </>
+
+        <div className="w-full h-px bg-gray-100 mt-1" />
+
+        <div className="h-4 w-24 bg-gray-200 rounded-md" />
+      </div>
+    </div>
   );
 };
 

@@ -9,6 +9,7 @@ import { TeacherTypes } from "@/types/Types";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import SectionHeading from "@/components/common/SectionHeading";
 import SectionNotfound from "@/components/common/SectionNotfound";
+import TeacherSkeleton from "@/skeletons/TeacherSkeleton";
 
 const Page = () => {
   const { data: teachers, isLoading } = useQuery({
@@ -33,8 +34,8 @@ const Page = () => {
 
         {/* Content */}
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
-            <Spiner />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+           {  [1, 2, 3, 4].map((__, index) => <TeacherSkeleton key={index}/>)}
           </div>
         ) : teachers?.length ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

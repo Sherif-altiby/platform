@@ -239,3 +239,10 @@ input[type="number"]::-webkit-outer-spin-button {
 .animate-fadeInRight {
   animation: fadeInRight 0.8s ease-out forwards;
 }
+
+
+@keyframes loading {
+  0% { transform: translateX(-100%); width: 30%; }
+  50% { width: 60%; }
+  100% { transform: translateX(400%); width: 30%; }
+}
