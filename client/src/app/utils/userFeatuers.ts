@@ -3,7 +3,9 @@ export const checkUser = async () => {
     credentials: "include",
   });
 
-  if (!res.ok) throw new Error("Failed to fetch user");
+  if (!res.ok) {
+      location.href = '/login'
+  };
   return res.json();
 };
 

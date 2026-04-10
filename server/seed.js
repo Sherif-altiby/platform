@@ -1,142 +1,171 @@
-import mongoose from "mongoose";
-import bcrypt from "bcrypt";
-import dotenv from "dotenv";
-import { User, Subject, Course } from "./models/model.js";
-import { Teacher } from "./models/teacherModel.js";
-import { VideoModel } from "./models/videoModel.js";
-import { PdfModel } from "./models/pdfModel.js";
-import { Quizz } from "./models/quizzModel.js";
-import { Comment } from "./models/commentsModel.js";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import { Course, Subject, User } from './models/model.js';
+import { Lesson } from './models/lessonCourse.js';
+import { Level } from './models/levelModel.js';
+import { Rating } from './models/ratingModel.js';
+import { PdfModel } from './models/pdfModel.js';
+import { Quizz } from './models/quizzModel.js';
+import { Subscription } from './models/subscriptionModel.js';
+import { Comment } from './models/commentsModel.js';
+
+
 
 dotenv.config();
 
-const MONGO_DB = process.env.MONGO_DB || "mongodb://localhost:27017/education_db";
+const MONGO_URI = process.env.MONGO_DB  
 
-async function seed() {
-  try {
-    await mongoose.connect(MONGO_DB);
-    console.log("✅ Connected to MongoDB");
+const seedDatabase = async () => {
+    try {
+        await mongoose.connect(MONGO_URI);
+        console.log("Connected to database for seeding...");
 
-    // 1. Clear existing data
-    await Promise.all([
-      User.deleteMany(),
-      Teacher.deleteMany(),
-      Subject.deleteMany(),
-      Course.deleteMany(),
-      VideoModel.deleteMany(),
-      PdfModel.deleteMany(),
-      Quizz.deleteMany(),
-      Comment.deleteMany(),
-    ]);
-    console.log("🗑️  Cleared existing data");
+        // 1. تنظيف قاعدة البيانات (اختياري)
+        await Promise.all([
+            User.deleteMany(), Subject.deleteMany(), Course.deleteMany(),
+            Level.deleteMany(), Lesson.deleteMany(), Quizz.deleteMany(),
+            PdfModel.deleteMany(), Comment.deleteMany(), Subscription.deleteMany(),
+            Rating.deleteMany()
+        ]);
 
-    // 2. Seed Subjects
-    const subjects = await Subject.insertMany([
-      { name: "Mathematics", image: "https://cdn-icons-png.flaticon.com/512/2991/2991148.png" },
-      { name: "Physics",     image: "https://cdn-icons-png.flaticon.com/512/2906/2906274.png" },
-      { name: "Chemistry",   image: "https://cdn-icons-png.flaticon.com/512/3141/3141631.png" },
-      { name: "Biology",     image: "https://cdn-icons-png.flaticon.com/512/3774/3774278.png" },
-      { name: "English",     image: "https://cdn-icons-png.flaticon.com/512/323/323329.png"   },
-    ]);
-    console.log("📚 Subjects seeded");
+        // 2. إنشاء المستويات (Levels)
+        const levels = await Level.insertMany([
+            { name: "الصف الأول الثانوي" },
+            { name: "الصف الثاني الثانوي" },
+            { name: "الصف الثالث الثانوي" }
+        ]);
 
-    // 3. Seed Courses (Standalone Model)
-    const coursesData = [
-      { title: "Algebra Basics", subject: subjects[0]._id, price: 100, image: "algebra.png" },
-      { title: "Calculus I", subject: subjects[0]._id, price: 150, image: "calculus.png" },
-      { title: "Quantum Mechanics", subject: subjects[1]._id, price: 200, image: "quantum.png" },
-      { title: "Organic Chemistry", subject: subjects[2]._id, price: 120, image: "organic.png" },
-      { title: "Cell Biology", subject: subjects[3]._id, price: 90, image: "cells.png" },
-      { title: "Shakespeare Literature", subject: subjects[4]._id, price: 80, image: "english.png" },
-    ];
-    const seededCourses = await Course.insertMany(coursesData);
-    console.log("🎓 Courses seeded");
+        // 3. إنشاء المعلمين (Teachers) - افترضنا وجود موديل Teacher
+        // إذا لم يكن موجوداً، يتم التعامل معه كمستخدم برتبة معينة
+        const teacher1Id = new mongoose.Types.ObjectId();
+        const teacher2Id = new mongoose.Types.ObjectId();
 
-    // 4. Update Subjects with the embedded courses array (keeping them in sync)
-    for (const sub of subjects) {
-      const relatedCourses = seededCourses
-        .filter(c => c.subject.toString() === sub._id.toString())
-        .map(c => ({
-          title: c.title,
-          description: `Mastering ${c.title} for the ${sub.name} curriculum.`,
-          price: c.price,
-        }));
-      
-      await Subject.findByIdAndUpdate(sub._id, { $set: { courses: relatedCourses } });
+        // 4. إنشاء المواد الدراسية (Subjects)
+        const subjects = await Subject.insertMany([
+            { name: "الفيزياء", image: "physics.png", teachers: [teacher1Id] },
+            { name: "الكيمياء", image: "chemistry.png", teachers: [teacher2Id] }
+        ]);
+
+        // 5. إنشاء المستخدمين (طلاب)
+        const students = await User.insertMany([
+            {
+                name: "أحمد محمد",
+                email: "ahmed@example.com",
+                password: "password123", // يجب تشفيره في الحقيقة
+                level: levels[0].name,
+                phone: 0o1000000001,
+                parentPhone: 0o1100000001,
+                role: "student"
+            },
+            {
+                name: "سارة علي",
+                email: "sara@example.com",
+                password: "password123",
+                level: levels[2].name,
+                phone: 0o1000000002,
+                parentPhone: 0o1100000002,
+                role: "student"
+            }
+        ]);
+
+        // 6. إنشاء الكورسات (Courses)
+        const courses = await Course.insertMany([
+            {
+                title: "دورة الفيزياء الكهربية",
+                subject: subjects[0]._id,
+                price: 200,
+                level: levels[0].name,
+                status: "active",
+                image: "elec.png"
+            },
+            {
+                title: "أساسيات الكيمياء العضوية",
+                subject: subjects[1]._id,
+                price: 150,
+                level: levels[2].name,
+                status: "active",
+                image: "organic.png"
+            }
+        ]);
+
+        // تحديث المواد لتشمل الكورسات
+        subjects[0].courses.push(courses[0]._id);
+        subjects[1].courses.push(courses[1]._id);
+        await subjects[0].save();
+        await subjects[1].save();
+
+        // 7. إنشاء الدروس (Lessons)
+        await Lesson.insertMany([
+            {
+                course: courses[0]._id,
+                title: "المقدمة وقانون أوم",
+                videoUrl: "https://video.com/1",
+                description: "شرح مبسط لقانون أوم"
+            },
+            {
+                course: courses[1]._id,
+                title: "تركيب ذرة الكربون",
+                videoUrl: "https://video.com/2",
+                description: "مدخل للكيمياء العضوية"
+            }
+        ]);
+
+        // 8. إنشاء الاختبارات (Quizzes)
+        const quiz = await Quizz.create({
+            teacher: teacher1Id,
+            subject: subjects[0]._id,
+            course: courses[0]._id,
+            title: "اختبار الفيزياء الأسبوعي",
+            level: levels[0].name,
+            duration: 30,
+            questions: [
+                {
+                    title: "ما هي وحدة قياس التيار؟",
+                    answers: ["أوم", "فولت", "أمبير", "وات"],
+                    correctAnswer: "أمبير"
+                }
+            ]
+        });
+
+        // ربط الاختبار بالكورس
+        courses[0].quizzes = quiz._id;
+        await courses[0].save();
+
+        // 9. إنشاء المذكرات (PDFs)
+        await PdfModel.create({
+            teacher: teacher1Id,
+            subject: subjects[0]._id,
+            course: courses[0]._id,
+            title: "ملخص قوانين الكهرباء",
+            level: levels[0].name,
+            pdf: "file_url_path.pdf"
+        });
+
+        // 10. إنشاء اشتراكات وتعليقات (Subscriptions & Comments)
+        await Subscription.create({
+            studentId: students[0]._id,
+            teacherId: teacher1Id
+        });
+
+        await Comment.create({
+            user: students[0]._id,
+            comment: "شرح ممتاز جداً!",
+            rate: 5,
+            show: true
+        });
+
+        await Rating.create({
+            user: students[0]._id,
+            teacher: teacher1Id,
+            rating: 5
+        });
+
+        console.log("Database seeded successfully! 🌱");
+        process.exit();
+    } catch (error) {
+        console.error("Error seeding database:", error);
+        process.exit(1);
     }
-    console.log("🔗 Courses linked to Subjects");
+};
 
-    // 5. Seed Teachers
-    const hashedPw = await bcrypt.hash("password123", 10);
-    const teachers = await Teacher.insertMany([
-      {
-        name: "Ahmed Hassan",
-        email: "ahmed.hassan@school.com",
-        password: hashedPw,
-        phone: 1001000001,
-        about: "Math teacher with 10 years of experience.",
-        avatar: "https://randomuser.me/api/portraits/men/1.jpg",
-        subjects: [subjects[0]._id],
-      },
-      {
-        name: "Sara Ali",
-        email: "sara.ali@school.com",
-        password: hashedPw,
-        phone: 1001000002,
-        about: "Physics and Chemistry specialist.",
-        avatar: "https://randomuser.me/api/portraits/women/2.jpg",
-        subjects: [subjects[1]._id, subjects[2]._id],
-      },
-    ]);
-    console.log("👩‍🏫 Teachers seeded");
-
-    // 6. Seed Students with Course Permissions
-    const students = await User.insertMany([
-      {
-        name: "Omar Khaled",
-        email: "omar.khaled@student.com",
-        password: hashedPw,
-        phone: 2001000001,
-        level: "first",
-        subscribedTeachers: [teachers[0]._id],
-        // Access granted to Algebra Basics only
-        permittedCourses: [seededCourses[0]._id] 
-      },
-      {
-        name: "Nour Ibrahim",
-        email: "nour.ibrahim@student.com",
-        password: hashedPw,
-        phone: 2001000002,
-        level: "second",
-        subscribedTeachers: [teachers[1]._id],
-        // Access granted to Quantum Mechanics
-        permittedCourses: [seededCourses[2]._id]
-      }
-    ]);
-    console.log("🎓 Students seeded with permissions");
-
-    // 7. Seed Videos, PDFs, and Quizzes (using seeded subjects/teachers)
-    await VideoModel.create({
-      teacher: teachers[0]._id,
-      title: "Introduction to Algebra",
-      level: "first",
-      link: "https://youtube.com/...",
-      description: "Basic concepts.",
-    });
-
-    await Quizz.create({
-      teacher: teachers[0]._id,
-      title: "Algebra Basics Quiz",
-      level: "first",
-      questions: [{ title: "Solve 2x=4", answers: ["1", "2"], correctAnswer: "2" }],
-    });
-
-    console.log("✅ Seed completed successfully!");
-  } catch (err) {
-    console.error("❌ Seed failed:", err);
-  } finally {
-    await mongoose.disconnect();
-  }
-}
-
-seed();
+seedDatabase();
