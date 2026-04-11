@@ -23,7 +23,9 @@ const app = express();
         "https://platform-mu-steel.vercel.app",
         "https://platform-db7k.vercel.app",
         "http://localhost:3000",
-        "http://localhost:3001"
+        "http://localhost:3001",
+        "platform-git-main-sherif-altibys-projects.vercel.app",
+        "platform-kvh641tih-sherif-altibys-projects.vercel.app"
       ],
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
