@@ -20,23 +20,33 @@ export const useAuthUser = create<useAuthInterface>()(
 
       userLogin: async (email: string, password: string) => {
         set(() => ({ isLogin: true }));
-
+      
         try {
-          const res = await Axios.post("user/login", { email, password });
-          
-          // سيتم حفظ المستخدم تلقائياً في localStorage بفضل persist
-          set(() => ({
-            user: res.data.data.user,
-          }));
-
-          toast.success("تم تسجيل الدخول بنجاح");
-          return res.data;
-        } catch (error) {
-          if (error instanceof AxiosError) {
-            toast.error(error?.response?.data.message);
-          } else {
-            toast.error("البريد الالكتروني او كلمة المرور خطأ");
+          const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}user/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ email, password }),
+            credentials: "include", 
+          });
+      
+          const data = await response.json();
+      
+          if (!response.ok) {
+            throw new Error(data.message || "البريد الالكتروني او كلمة المرور خطأ");
           }
+      
+          set(() => ({
+            user: data.data.user,
+          }));
+      
+          toast.success("تم تسجيل الدخول بنجاح");
+          return data;
+      
+        } catch (error: any) {
+          toast.error(error.message || "حدث خطأ غير متوقع");
+          console.error("Login Error:", error);
         } finally {
           set(() => ({ isLogin: false }));
         }
