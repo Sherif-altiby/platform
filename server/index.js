@@ -25,7 +25,8 @@ const app = express();
         "http://localhost:3000",
         "http://localhost:3001",
         "platform-git-main-sherif-altibys-projects.vercel.app",
-        "platform-kvh641tih-sherif-altibys-projects.vercel.app"
+        "platform-kvh641tih-sherif-altibys-projects.vercel.app",
+        "https://teacher-dashboard-taupe.vercel.app"
       ],
       credentials: true,
       methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

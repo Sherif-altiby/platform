@@ -22,7 +22,7 @@ export const useAuthUser = create<useAuthInterface>()(
         set(() => ({ isLogin: true }));
 
         try {
-          // نطلب الرابط المحلي الخاص بـ Next.js Route Handler
+
           const response = await fetch("/api/auth/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
