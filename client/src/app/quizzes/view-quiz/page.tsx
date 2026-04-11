@@ -1,8 +1,9 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Axios } from "@/axios/Axios";
+
 import { getQuiz } from "@/app/utils/quizFeatures";
 import SubHeader from "@/components/SubHeader";
 import Spiner from "@/components/Spiner";
@@ -69,13 +70,18 @@ const QuizContent = () => {
           : "لا يوجد إجابة";
       });
 
-      const res = await Axios.post("/user/check-quiz", {
-        quizId,
-        answers: finalAnswers,
-      });
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}user/check-quiz`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({quizId, answers})
+      })
 
-      // ملاحظة: السيرفر يرسل النتيجة داخل كائن data
-      setResult(res.data.data);
+      const data = await res.json()
+
+      setResult(data.data);
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (error) {
       toast.error("حدث خطأ أثناء التصحيح");
@@ -180,7 +186,7 @@ const QuizContent = () => {
             </button>
           </div>
         ) : (
-          /* Results View - المظهر المحدث بناءً على بيانات السيرفر */
+
           <QuizRezult result={result} />
         )}
       </div>
