@@ -22,7 +22,7 @@ export const useAuthUser = create<useAuthInterface>()(
         set(() => ({ isLogin: true }));
       
         try {
-          const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/api/user/login`, {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}api/user/login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
