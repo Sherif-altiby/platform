@@ -8,8 +8,6 @@ import connectDB from "./config/connectDB.js";
 import userRouter from "./routes/userRoutes.js";
 import adminRouter from "./routes/adminRoutes.js";
 import teacherRouter from "./routes/teacherRoutes.js";
-import path from "path"
-import { fileURLToPath } from 'url';
 import rateLimit from 'express-rate-limit';
 import paymentRouter from "./routes/paymentRoutes.js";
 
@@ -18,7 +16,6 @@ dotenv.config();
 
 const app = express();  
 
-const __filename = fileURLToPath(import.meta.url);
 
   app.use(
     cors({
