@@ -71,7 +71,7 @@ const ProfilePage = () => {
                   : watchedList.map((lesson: any) => (
                       <LatestLesson lesson={lesson} key={lesson._id} />
                     ))}
-                {!watchedList.length && <ContentNotFound text="لا يوجد دروس" />}
+                {!watchedList && <ContentNotFound text="لا يوجد دروس" />}
               </div>
             </section>
 
@@ -90,7 +90,7 @@ const ProfilePage = () => {
                   : watchedQuizzesList.map((quiz: any) => (
                       <LatestQuiz quiz={quiz} key={quiz._id} />
                     ))}
-                {!watchedQuizzesList.length && (
+                {!watchedQuizzesList && (
                   <ContentNotFound text="لا يوجد اختبارات" />
                 )}
               </div>
@@ -111,7 +111,7 @@ const ProfilePage = () => {
                       <LatestNote note={note} key={note._id} />
                     ))}
 
-                {!watchedNotesList.length && (
+                {!watchedNotesList && (
                   <ContentNotFound text="لا يوجد مذكرات" />
                 )}
               </div>
