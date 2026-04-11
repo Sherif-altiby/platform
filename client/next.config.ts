@@ -34,7 +34,8 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://basira-server.vercel.app", // Replace with your backend URL
+
+        destination: "https://platform-gamma-one.vercel.app/api/:path*", 
       },
     ];
   },
