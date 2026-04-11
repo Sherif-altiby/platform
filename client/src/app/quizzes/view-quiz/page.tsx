@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-
+import { toast } from "react-toastify";
 import { getQuiz } from "@/app/utils/quizFeatures";
 import SubHeader from "@/components/SubHeader";
 import Spiner from "@/components/Spiner";
 import Question from "./Question";
-import { toast } from "react-toastify";
-import { FaListOl, FaClock } from "react-icons/fa";
+import QuizResult from "@/components/results/QuizRezult";
+import QuizHeader from "@/components/quiz/QuizHeader";
 import { QuizResultData } from "@/types/Types";
-import QuizRezult from "@/components/results/QuizRezult";
 
 const QuizContent = () => {
   const searchParams = useSearchParams();
@@ -19,36 +18,64 @@ const QuizContent = () => {
 
   const [answers, setAnswers] = useState<string[]>([]);
   const [result, setResult] = useState<QuizResultData | null>(null);
-  const [timeLeft, setTimeLeft] = useState<number>(600);
+  const [timeLeft, setTimeLeft] = useState<number>(0);
   const [isTimeUp, setIsTimeUp] = useState(false);
 
   const { data: quiz, isLoading } = useQuery({
     queryKey: ["quiz", quizId],
     queryFn: async () => {
       const res = await getQuiz(quizId as string);
-      setTimeLeft(res.data.duration * 60);
+      const durationInSeconds = res.data.duration * 60;
+
+      if (typeof window !== "undefined") {
+        const savedEndTime = localStorage.getItem(`quiz_end_time_${quizId}`);
+        let endTime;
+
+        if (savedEndTime) {
+          endTime = parseInt(savedEndTime);
+        } else {
+          // أول مرة يفتح فيها الاختبار: نحسب وقت النهاية ونخزنه
+          endTime = Date.now() + durationInSeconds * 1000;
+          localStorage.setItem(`quiz_end_time_${quizId}`, endTime.toString());
+        }
+
+        const remaining = Math.max(
+          0,
+          Math.floor((endTime - Date.now()) / 1000),
+        );
+        setTimeLeft(remaining);
+      }
+
       return res.data;
     },
     enabled: !!quizId,
+    refetchOnWindowFocus: false, // لمنع إعادة الجلب عند التنقل بين التابات
   });
 
+  // 2. محرك التايمر (يعتمد على الفرق بين الوقت الحالي والوقت المستهدف)
   useEffect(() => {
-    if (result || isLoading || isTimeUp) return;
+    if (result || isLoading || isTimeUp || !quizId) return;
 
     const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setIsTimeUp(true);
-          handleAutoSubmit();
-          return 0;
-        }
-        return prev - 1;
-      });
+      const savedEndTime = localStorage.getItem(`quiz_end_time_${quizId}`);
+      if (!savedEndTime) return;
+
+      const endTime = parseInt(savedEndTime);
+      const now = Date.now();
+      const difference = Math.floor((endTime - now) / 1000);
+
+      if (difference <= 0) {
+        clearInterval(timer);
+        setTimeLeft(0);
+        setIsTimeUp(true);
+        handleAutoSubmit();
+      } else {
+        setTimeLeft(difference);
+      }
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [result, isLoading, isTimeUp]);
+  }, [result, isLoading, isTimeUp, quizId]);
 
   const handleAutoSubmit = () => {
     toast.info("انتهى الوقت! يتم الآن تصحيح إجاباتك...");
@@ -56,6 +83,7 @@ const QuizContent = () => {
   };
 
   const handleSubmit = async () => {
+    // التحقق من الإجابة على كل الأسئلة (فقط إذا لم ينتهِ الوقت)
     if (
       !isTimeUp &&
       answers.filter(Boolean).length < (quiz?.questions.length || 0)
@@ -64,133 +92,90 @@ const QuizContent = () => {
     }
 
     try {
-      const finalAnswers = quiz?.questions.map((_: any, index: number) => {
-        return answers[index] && answers[index].trim() !== ""
-          ? answers[index]
-          : "لا يوجد إجابة";
-      });
-
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}user/check-quiz`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}user/check-quiz`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ quizId, answers }),
         },
-        body: JSON.stringify({quizId, answers})
-      })
+      );
 
-      const data = await res.json()
+      const data = await res.json();
 
-      setResult(data.data);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (res.ok) {
+        setResult(data.data);
+        // تنظيف التايمر من المتصفح بعد النجاح
+        localStorage.removeItem(`quiz_end_time_${quizId}`);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } else {
+        toast.error(data.message || "حدث خطأ أثناء التصحيح");
+      }
     } catch (error) {
-      toast.error("حدث خطأ أثناء التصحيح");
+      toast.error("حدث خطأ في الاتصال بالسيرفر");
     }
   };
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs < 10 ? "0" : ""}${secs}`;
-  };
-
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center min-h-[60vh]">
-        <Spiner />
-      </div>
-    );
 
   return (
-    <div className="min-h-screen bg-[#eee] pb-10">
-      <SubHeader currentTitle={quiz?.title || "الاختبار"} />
+    <Suspense
+      fallback={
+        <div className="flex justify-center items-center min-h-[60vh]">
+          <Spiner />
+        </div>
+      }
+    >
+      <div className="min-h-screen bg-[#eee] pb-10">
+        <SubHeader currentTitle={quiz?.title || "الاختبار"} />
 
-      <div className="container max-w-4xl mx-auto px-4 mt-10">
-        {!result ? (
-          <div className="space-y-6">
-            {/* Header Cards (Timer & Progress) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 bg-emerald-50 rounded-lg text-emerald-600">
-                    <FaListOl />
-                  </div>
-                  <div>
-                    <p className="text-xs text-gray-400 font-medium">التقدم</p>
-                    <p className="text-sm font-bold text-gray-700">
-                      {answers.filter(Boolean).length} /{" "}
-                      {quiz?.questions.length}
-                    </p>
-                  </div>
-                </div>
-                <div className="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-emerald-500 transition-all duration-500"
-                    style={{
-                      width: `${(answers.filter(Boolean).length / (quiz?.questions.length || 1)) * 100}%`,
+        <div className="container max-w-4xl mx-auto px-4 mt-10">
+          {!result ? (
+            <div className="space-y-6">
+              {/* عرض التايمر والتقدم */}
+              <QuizHeader answers={answers} quiz={quiz} timeLeft={timeLeft} />
+
+              {/* قائمة الأسئلة */}
+              <div className="grid gap-6">
+                {quiz?.questions.map((q: any, idx: number) => (
+                  <Question
+                    key={idx}
+                    index={idx}
+                    question={q}
+                    selectedAnswer={answers[idx]}
+                    onAnswerChange={(val) => {
+                      if (isTimeUp) return;
+                      const newAns = [...answers];
+                      newAns[idx] = val;
+                      setAnswers(newAns);
                     }}
                   />
-                </div>
+                ))}
               </div>
 
-              <div
-                className={`bg-white p-6 rounded-lg shadow-sm border border-gray-100 flex items-center gap-4 transition-colors ${timeLeft < 60 ? "border-red-200 bg-red-50" : ""}`}
-              >
-                <div
-                  className={`p-3 rounded-2xl ${timeLeft < 60 ? "bg-red-500 text-white animate-pulse" : "bg-blue-50 text-blue-600"}`}
-                >
-                  <FaClock />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-400 font-medium">
-                    الوقت المتبقي
-                  </p>
-                  <p
-                    className={`text-xl font-black ${timeLeft < 60 ? "text-red-600" : "text-gray-700"}`}
-                  >
-                    {formatTime(timeLeft)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Questions Section */}
-            <div className="grid gap-6">
-              {quiz?.questions.map((q: any, idx: number) => (
-                <Question
-                  key={idx}
-                  index={idx}
-                  question={q}
-                  selectedAnswer={answers[idx]}
-                  onAnswerChange={(val) => {
-                    if (isTimeUp) return;
-                    const newAns = [...answers];
-                    newAns[idx] = val;
-                    setAnswers(newAns);
-                  }}
-                />
-              ))}
-            </div>
-
-            <button
-              onClick={handleSubmit}
-              disabled={isTimeUp}
-              className={`w-full py-5 rounded-lg font-semibold text-lg transition-all shadow-xl
+              <button
+                onClick={handleSubmit}
+                disabled={isTimeUp}
+                className={`w-full py-5 rounded-lg font-semibold text-lg transition-all shadow-xl
                 ${
                   isTimeUp
-                    ? "bg-gray-300 cursor-not-allowed"
+                    ? "bg-gray-300 cursor-not-allowed text-gray-500"
                     : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-200 active:scale-95"
                 }`}
-            >
-              {isTimeUp ? "جاري المعالجة..." : "إنهاء الاختبار"}
-            </button>
-          </div>
-        ) : (
-
-          <QuizRezult result={result} />
-        )}
+              >
+                {isTimeUp
+                  ? "جاري معالجة الإجابات..."
+                  : "إنهاء الاختبار وإظهار النتيجة"}
+              </button>
+            </div>
+          ) : (
+            <QuizResult result={result} />
+          )}
+        </div>
       </div>
-    </div>
+    </Suspense>
   );
 };
 

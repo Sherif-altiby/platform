@@ -75,7 +75,7 @@ export const getCourseLessons = async (courseId: string) => {
     });
 
     const result = await response.json();
-    console.log(result);
+
     return result.data;
   } catch (error) {
     throw error;
