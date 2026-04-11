@@ -2,7 +2,6 @@
 
 import SubHeader from "../../components/SubHeader";
 import TeacherCard from "./TeacherCard";
-import Spiner from "@/components/Spiner";
 import { useQuery } from "@tanstack/react-query";
 import { getTeachers } from "../utils/teacherFeatuers";
 import { TeacherTypes } from "@/types/Types";
