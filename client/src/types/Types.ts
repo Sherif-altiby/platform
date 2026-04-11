@@ -138,7 +138,7 @@ export interface useAuthInterface {
   redirectUser: boolean;
   isVerifingCode: boolean;
 
-  userLogin: (email: string, password: string) => Promise<CombinedType>;
+  userLogin: (email: string, password: string) => Promise<any>;
   userRegister: (
     name: string,
     email: string,

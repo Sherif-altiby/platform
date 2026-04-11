@@ -23,44 +23,23 @@ export const useAuthUser = create<useAuthInterface>()(
         set(() => ({ isLogin: true }));
 
         try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER_URL}user/login`,
-            {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ email, password }),
-              credentials: "include",
-            },
-          );
-
-          const data = await response.json();
-
-          if (!response.ok) {
-            throw new Error(
-              data.message || "البريد الالكتروني او كلمة المرور خطأ",
-            );
-          }
-
-          set(() => ({
-            user: data.data.user,
-          }));
-
-          const cookieStore = await cookies();
-          cookieStore.set("refreshToken", data.data.refreshToken, {
-            httpOnly: true,  
-            secure: true,
-            sameSite: "lax",  
-            maxAge: 7 * 24 * 60 * 60,  
-            path: "/",  
+          // نطلب الرابط المحلي الخاص بـ Next.js Route Handler
+          const response = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password }),
           });
-
-          toast.success("تم تسجيل الدخول بنجاح");
-          return data;
+      
+          const data = await response.json();
+      
+          if (!response.ok) {
+            throw new Error(data.message || "فشل تسجيل الدخول");
+          }
+      
+          set(() => ({ user: data.data.user }));
+          toast.success("تم تسجيل الدخول");
         } catch (error: any) {
-          toast.error(error.message || "حدث خطأ غير متوقع");
-          console.error("Login Error:", error);
+          toast.error(error.message);
         } finally {
           set(() => ({ isLogin: false }));
         }
