@@ -1,132 +1,46 @@
 "use client";
-
-import { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { FaStar } from "react-icons/fa";
+import { FaStar, FaQuoteRight } from "react-icons/fa";
 
 const TestmonialsCard = ({ text, name }: { text: string; name: string }) => {
-  const cardRef = useRef<HTMLDivElement>(null);
-  const textRef = useRef<HTMLParagraphElement>(null);
-  const nameRef = useRef<HTMLHeadingElement>(null);
-  const starsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-
-      // Card: fade + slide up on mount
-      gsap.from(cardRef.current, {
-        opacity: 0,
-        y: 50,
-        duration: 0.8,
-        ease: "power3.out",
-      });
-
-      // Text: fade in with slight delay
-      gsap.from(textRef.current, {
-        opacity: 0,
-        y: 20,
-        duration: 0.7,
-        delay: 0.3,
-        ease: "power2.out",
-      });
-
-      // Name: slide in from right
-      gsap.from(nameRef.current, {
-        opacity: 0,
-        x: 30,
-        duration: 0.6,
-        delay: 0.5,
-        ease: "power2.out",
-      });
-
-      // Stars: stagger pop in one by one
-      gsap.from(".star-icon", {
-        opacity: 0,
-        scale: 0,
-        duration: 0.3,
-        stagger: 0.1,
-        delay: 0.7,
-        ease: "back.out(2)",
-      });
-
-    }, cardRef);
-
-    // Hover animations
-    const card = cardRef.current;
-
-    const onEnter = () => {
-      gsap.to(card, {
-        y: -10,
-        scale: 1.03,
-        boxShadow: "0 20px 40px rgba(0,0,0,0.12)",
-        duration: 0.3,
-        ease: "power2.out",
-      });
-      gsap.to(".star-icon", {
-        rotation: 20,
-        scale: 1.3,
-        color: "#facc15",
-        stagger: 0.05,
-        duration: 0.3,
-        ease: "back.out(2)",
-      });
-    };
-
-    const onLeave = () => {
-      gsap.to(card, {
-        y: 0,
-        scale: 1,
-        boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-        duration: 0.3,
-        ease: "power2.inOut",
-      });
-      gsap.to(".star-icon", {
-        rotation: 0,
-        scale: 1,
-        stagger: 0.05,
-        duration: 0.3,
-      });
-    };
-
-    card?.addEventListener("mouseenter", onEnter);
-    card?.addEventListener("mouseleave", onLeave);
-
-    return () => {
-      ctx.revert();
-      card?.removeEventListener("mouseenter", onEnter);
-      card?.removeEventListener("mouseleave", onLeave);
-    };
-  }, []);
-
   return (
-    <div
-      ref={cardRef}
-      className="bg-white rounded-2xl p-6 border-t-4 border-primary3 cursor-pointer"
-      style={{ boxShadow: "0 4px 12px rgba(0,0,0,0.06)" }}
-    >
-      <p
-        ref={textRef}
-        className="text-gray-600 text-center text-base mb-4 leading-relaxed italic"
-      >
-        {`"${text}"`}
-      </p>
+    <div className="group relative bg-white rounded-3xl p-8 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(37,99,235,0.1)] border border-slate-100 flex flex-col h-full min-h-[320px]">
+      
+      {/* أيقونة الاقتباس - لمسة جمالية */}
+      <div className="absolute top-6 left-8 opacity-[0.05] group-hover:opacity-10 transition-opacity duration-500">
+        <FaQuoteRight size={60} className="text-blue-600" />
+      </div>
 
-      <div className="text-center mt-4">
-        <h4
-          ref={nameRef}
-          className="text-lg font-semibold text-primary3 mb-2"
-        >
-          {name}
-        </h4>
-
-        <div ref={starsRef} className="flex justify-center gap-1 text-yellow-400">
-          {[...Array(5)].map((_, index) => (
-            <FaStar key={index} className="star-icon" />
+      <div className="relative z-10 flex flex-col h-full">
+        {/* التقييم بالنجوم */}
+        <div className="flex gap-1 text-orange-400 mb-6">
+          {[...Array(5)].map((_, i) => (
+            <FaStar key={i} size={14} className="group-hover:scale-110 transition-transform duration-300" style={{ transitionDelay: `${i * 50}ms` }} />
           ))}
         </div>
+
+        {/* نص الرأي */}
+        <p className="text-slate-600 leading-relaxed text-right text-lg italic mb-8 flex-grow">
+          {text}
+        </p>
+
+        {/* بيانات الطالب */}
+        <div className="flex items-center justify-end gap-4 border-t border-slate-50 pt-6">
+          <div className="text-right">
+            <h4 className="font-black text-slate-800 group-hover:text-blue-600 transition-colors">
+              {name}
+            </h4>
+            <p className="text-[10px] text-blue-500 font-bold uppercase tracking-widest">طالب بالمنصة</p>
+          </div>
+          {/* دائرة افتراضية للصورة (Avatar) */}
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold shadow-lg shadow-blue-200">
+            {name.charAt(0)}
+          </div>
+        </div>
       </div>
+
+      {/* خط ملون يظهر عند الـ Hover في الأسفل */}
+      <div className="absolute bottom-0 right-1/2 translate-x-1/2 w-0 h-1 bg-gradient-to-r from-blue-600 to-orange-500 transition-all duration-500 group-hover:w-[80%] rounded-full" />
     </div>
   );
 };
-
 export default TestmonialsCard;

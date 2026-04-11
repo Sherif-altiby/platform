@@ -1,174 +1,116 @@
 "use client";
 
-import { getPlatformStatics } from '@/app/utils/userFeatuers';
-import { useQuery } from '@tanstack/react-query';
-import React, { useEffect, useRef } from 'react';
-import { FaUsers, FaChalkboardTeacher, FaBook } from 'react-icons/fa';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { FaUsers, FaChalkboardTeacher, FaBook } from "react-icons/fa";
 
-gsap.registerPlugin(ScrollTrigger);
-
-const StatsSection: React.FC = () => {
-  const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const card1Ref = useRef<HTMLDivElement>(null);
-  const card2Ref = useRef<HTMLDivElement>(null);
-  const card3Ref = useRef<HTMLDivElement>(null);
-  const usersNumRef = useRef<HTMLParagraphElement>(null);
-  const teachersNumRef = useRef<HTMLParagraphElement>(null);
-  const lessonsNumRef = useRef<HTMLParagraphElement>(null);
-
-  // Track previous values to avoid re-animating from 0
-  const prevUsers = useRef(0);
-  const prevTeachers = useRef(0);
-  const prevLessons = useRef(0);
-
-  const { data } = useQuery({
-    queryKey: ['usersNum'],
-    queryFn: async () => {
-      const res = await getPlatformStatics();
-      return res.data;
+const StatsSection = () => {
+  const statsData = [
+    {
+      label: "إجمالي المستخدمين",
+      value: "50K+",
+      icon: <FaUsers />,
+      desc: "طالب نشط يتعلمون يومياً",
+      color: "text-blue-600",
+      bgColor: "bg-blue-50",
     },
-    staleTime: 1000 * 60 * 5, // cache for 5 minutes — prevents refetch on route change
-  });
-
-  // Animate counter from previous value to new value
-  const animateCounter = (
-    ref: React.RefObject<HTMLParagraphElement | null>,
-    from: number,
-    to: number
-  ) => {
-    if (!ref.current || to === from) return;
-    const obj = { val: from };
-    gsap.to(obj, {
-      val: to,
-      duration: 2,
-      ease: 'power2.out',
-      onUpdate: () => {
-        if (ref.current) {
-          ref.current.textContent = Math.ceil(obj.val).toString();
-        }
-      },
-    });
-  };
-
-  useEffect(() => {
-    if (!data) return;
-
-    const { users, teachers, lessons } = data;
-
-    animateCounter(usersNumRef, prevUsers.current, users);
-    animateCounter(teachersNumRef, prevTeachers.current, teachers);
-    animateCounter(lessonsNumRef, prevLessons.current, lessons);
-
-    prevUsers.current = users;
-    prevTeachers.current = teachers;
-    prevLessons.current = lessons;
-  }, [data]);
-
-  // Entrance animations — run once on mount only
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(titleRef.current, {
-        opacity: 0,
-        y: -60,
-        duration: 1,
-        ease: 'bounce.out',
-        scrollTrigger: {
-          trigger: titleRef.current,
-          start: 'top 90%',
-        },
-      });
-
-      gsap.from([card1Ref.current, card2Ref.current, card3Ref.current], {
-        opacity: 0,
-        y: 80,
-        scale: 0.8,
-        duration: 0.9,
-        stagger: 0.2,
-        ease: 'back.out(1.5)',
-        scrollTrigger: {
-          trigger: card1Ref.current,
-          start: 'top 90%',
-        },
-      });
-
-      gsap.to('.stats-blob', {
-        scale: 1.2,
-        opacity: 0.4,
-        duration: 3,
-        ease: 'sine.inOut',
-        yoyo: true,
-        repeat: -1,
-      });
-    }, sectionRef);
-
-    // Hover animations
-    const cards = [card1Ref, card2Ref, card3Ref];
-    const cleanups: (() => void)[] = [];
-
-    cards.forEach((ref) => {
-      const el = ref.current;
-      const onEnter = () => gsap.to(el, { y: -12, scale: 1.05, duration: 0.3, ease: 'power2.out' });
-      const onLeave = () => gsap.to(el, { y: 0, scale: 1, duration: 0.3, ease: 'power2.inOut' });
-
-      el?.addEventListener('mouseenter', onEnter);
-      el?.addEventListener('mouseleave', onLeave);
-      cleanups.push(() => {
-        el?.removeEventListener('mouseenter', onEnter);
-        el?.removeEventListener('mouseleave', onLeave);
-      });
-    });
-
-    return () => {
-      ctx.revert();
-      cleanups.forEach((fn) => fn());
-    };
-  }, []);
+    {
+      label: "إجمالي المعلمين",
+      value: "120+",
+      icon: <FaChalkboardTeacher />,
+      desc: "خبير تعليمي معتمد",
+      color: "text-orange-600",
+      bgColor: "bg-orange-50",
+    },
+    {
+      label: "إجمالي الدروس",
+      value: "1.5K+",
+      icon: <FaBook />,
+      desc: "ساعة فيديو عالية الجودة",
+      color: "text-emerald-600",
+      bgColor: "bg-emerald-50",
+    },
+  ];
 
   return (
-    <section
-      ref={sectionRef}
-      className="bg-gradient-to-r from-blue-500 to-teal-500 text-white py-20 relative overflow-hidden"
-    >
-      <div className="stats-blob absolute -top-20 -left-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
-      <div className="stats-blob absolute -bottom-20 -right-20 w-80 h-80 rounded-full bg-white/10 blur-3xl pointer-events-none" />
+    <section className="py-24 bg-[#F1F5F9] relative overflow-hidden">
+      {/* شبكة هندسية خلفية متناسقة مع الهيرو */}
+      <div className="absolute inset-0 opacity-[0.4] pointer-events-none">
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern
+              id="statsGrid"
+              width="60"
+              height="60"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 60 0 L 0 0 0 60"
+                fill="none"
+                stroke="#CBD5E1"
+                strokeWidth="0.5"
+              />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#statsGrid)" />
+        </svg>
+      </div>
 
-      <div className="container mx-auto text-center relative z-10">
-        <h2 ref={titleRef} className="text-5xl font-bold text-white mb-8">
-          عن المنصة
-        </h2>
+      <div className="container mx-auto px-6 relative z-10">
+        <div className="text-center max-w-2xl mx-auto mb-16">
+          <h2 className="text-blue-600 font-bold tracking-widest uppercase text-sm mb-3">
+            إحصائياتنا بالأرقام
+          </h2>
+          <p className="text-4xl md:text-5xl font-black text-slate-900 mb-6">
+            ثقة تبنى على <span className="text-orange-500">نتائج حقيقية</span>
+          </p>
+          <div className="h-1.5 w-24 bg-blue-600 mx-auto rounded-full" />
+        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {statsData.map((stat, index) => (
+            <div
+              key={index}
+              className="stat-card group relative bg-white border border-slate-200 p-10 rounded-[2.5rem] shadow-sm hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 overflow-hidden text-right"
+            >
+              {/* تأثير لوني عند الـ Hover */}
+              <div
+                className={`absolute top-0 right-0 w-2 h-full ${stat.bgColor.replace("bg-", "bg-opacity-10 bg-")} transition-all group-hover:w-full -z-0 opacity-0 group-hover:opacity-100 duration-500`}
+              />
 
-          <div ref={card1Ref} className="bg-white text-gray-800 p-8 rounded-xl shadow-lg cursor-pointer">
-            <div className="flex items-center justify-center mb-4 text-4xl text-indigo-600">
-              <FaUsers />
+              <div className="relative z-10">
+                <div
+                  className={`${stat.bgColor} ${stat.color} w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mb-8 transform group-hover:rotate-12 transition-transform duration-500 shadow-sm`}
+                >
+                  {stat.icon}
+                </div>
+
+                <h3 className="text-slate-500 font-bold text-lg mb-2">
+                  {stat.label}
+                </h3>
+
+                <div className="flex items-baseline gap-2 justify-end mb-4">
+                  <p className="text-5xl font-black text-slate-900 tracking-tighter">
+                    {stat.value}
+                  </p>
+                </div>
+
+                <p className="text-slate-400 font-medium leading-relaxed">
+                  {stat.desc}
+                </p>
+              </div>
+
+              {/* زخرفة SVG صغيرة داخل الكارت */}
+              <div className="absolute -bottom-4 -left-4 text-slate-100 group-hover:text-slate-200 transition-colors">
+                <svg
+                  width="100"
+                  height="100"
+                  viewBox="0 0 100 100"
+                  fill="currentColor"
+                >
+                  <circle cx="20" cy="80" r="40" />
+                </svg>
+              </div>
             </div>
-            <h3 className="text-2xl font-semibold mb-2">إجمالي المستخدمين</h3>
-            <p ref={usersNumRef} className="text-4xl font-bold">0</p>
-            <p className="text-sm text-gray-500">عدد المستخدمين المسجلين في المنصة</p>
-          </div>
-
-          <div ref={card2Ref} className="bg-white text-gray-800 p-8 rounded-xl shadow-lg cursor-pointer">
-            <div className="flex items-center justify-center mb-4 text-4xl text-teal-600">
-              <FaChalkboardTeacher />
-            </div>
-            <h3 className="text-2xl font-semibold mb-2">إجمالي المعلمين</h3>
-            <p ref={teachersNumRef} className="text-4xl font-bold">0</p>
-            <p className="text-sm text-gray-500">عدد المعلمين الذين يقدمون دروسًا</p>
-          </div>
-
-          <div ref={card3Ref} className="bg-white text-gray-800 p-8 rounded-xl shadow-lg cursor-pointer">
-            <div className="flex items-center justify-center mb-4 text-4xl text-purple-600">
-              <FaBook />
-            </div>
-            <h3 className="text-2xl font-semibold mb-2">إجمالي الدروس</h3>
-            <p ref={lessonsNumRef} className="text-4xl font-bold">0</p>
-            <p className="text-sm text-gray-500">عدد الدروس المتوفرة للطلاب</p>
-          </div>
-
+          ))}
         </div>
       </div>
     </section>
