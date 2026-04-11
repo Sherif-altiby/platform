@@ -30,35 +30,19 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  
   async rewrites() {
     return [
       {
         source: "/api/:path*",
+        // Make sure this matches your backend route structure!
         destination: "https://platform-gamma-one.vercel.app/:path*",
       },
     ];
   },
 
-  // Add headers for CORS (optional but recommended)
-  async headers() {
-    return [
-      {
-        source: "/api/:path*",
-        headers: [
-          { key: "Access-Control-Allow-Credentials", value: "true" },
-          { key: "Access-Control-Allow-Origin", value: "*" },
-          {
-            key: "Access-Control-Allow-Methods",
-            value: "GET,POST,PUT,DELETE,OPTIONS",
-          },
-          {
-            key: "Access-Control-Allow-Headers",
-            value: "Content-Type, Authorization",
-          },
-        ],
-      },
-    ];
-  },
+  // You can remove CORS headers since you're using proxy
+  // The backend handles CORS, not Next.js
 };
 
 export default nextConfig;
