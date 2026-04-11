@@ -22,7 +22,7 @@ export const useAuthUser = create<useAuthInterface>()(
         set(() => ({ isLogin: true }));
       
         try {
-          const response = await fetch(`/api/user/login`, {
+          const response = await fetch(`https://platform-gamma-one.vercel.app/api/user/login`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
