@@ -55,20 +55,20 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  accessedCourses: [
-    {
-      course: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
-        required: true,
-      },
-      status: {
-        type: String,
-        enum: ["open", "close", "pending"],
-        default: "close",
-      },
-    },
-  ],
+  // accessedCourses: [
+  //   {
+  //     course: {
+  //       type: mongoose.Schema.Types.ObjectId,
+  //       ref: "Course",
+  //       required: true,
+  //     },
+  //     status: {
+  //       type: String,
+  //       enum: ["open", "close", "pending"],
+  //       default: "close",
+  //     },
+  //   },
+  // ],
 });
 
 const subjectSchema = new mongoose.Schema({

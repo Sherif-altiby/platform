@@ -94,6 +94,7 @@ export type UserTypes = {
   notifications: string[];
   level: string;
   isBlocked: boolean;
+  avatar: string
 };
 
 export type LoginDataTypes = {

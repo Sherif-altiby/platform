@@ -11,6 +11,7 @@ import SectionNotfound from "@/components/common/SectionNotfound";
 import TeacherSkeleton from "@/skeletons/TeacherSkeleton";
 
 const Page = () => {
+
   const { data: teachers, isLoading } = useQuery({
     queryKey: ["teachers"],
     queryFn: async () => {
@@ -18,7 +19,8 @@ const Page = () => {
       return res.data as TeacherTypes[];
     },
   });
-
+  
+ 
   return (
     <div className="ctm-height bg-gray-50">
       <SubHeader currentTitle="المدرسين" />

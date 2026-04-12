@@ -64,14 +64,20 @@ const ProfilePage = () => {
                 </h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {isWatchedListLoading
-                  ? [1, 2, 3].map((__, index) => (
-                      <LatestLessonSkeleton key={index} />
-                    ))
-                  : watchedList.map((lesson: any) => (
+                {isWatchedListLoading ? (
+                  [1, 2, 3].map((__, index) => (
+                    <LatestLessonSkeleton key={index} />
+                  ))
+                ) : (
+                  <>
+                    {watchedList?.map((lesson: any) => (
                       <LatestLesson lesson={lesson} key={lesson._id} />
                     ))}
-                {!watchedList && <ContentNotFound text="لا يوجد دروس" />}
+                    {(!watchedList || watchedList.length === 0) && (
+                      <ContentNotFound text="لا يوجد دروس" />
+                    )}
+                  </>
+                )}
               </div>
             </section>
 
@@ -83,15 +89,20 @@ const ProfilePage = () => {
                 </h2>
               </div>
               <div className="">
-                {isWatchedQuizzesListLoading
-                  ? [1, 2, 3].map((__, index) => (
-                      <LatestQuizSkeleton key={index} />
-                    ))
-                  : watchedQuizzesList.map((quiz: any) => (
+                {isWatchedQuizzesListLoading ? (
+                  [1, 2, 3].map((__, index) => (
+                    <LatestQuizSkeleton key={index} />
+                  ))
+                ) : (
+                  <>
+                    {watchedQuizzesList?.map((quiz: any) => (
                       <LatestQuiz quiz={quiz} key={quiz._id} />
                     ))}
-                {!watchedQuizzesList && (
-                  <ContentNotFound text="لا يوجد اختبارات" />
+                    {(!watchedQuizzesList ||
+                      watchedQuizzesList.length === 0) && (
+                      <ContentNotFound text="لا يوجد اختبارات" />
+                    )}
+                  </>
                 )}
               </div>
             </section>
@@ -103,16 +114,21 @@ const ProfilePage = () => {
                 <PiFileText className="text-orange-500" /> أحدث المذكرات
               </h2>
               <div className="space-y-3">
-                {isWatchedNotesListLoading
-                  ? [1, 2, 3].map((__, index) => (
-                      <LatestNoteSkeleton key={index} />
-                    ))
-                  : watchedNotesList.map((note: any) => (
+                {isWatchedNotesListLoading ? (
+                  [1, 2, 3].map((__, index) => (
+                    <LatestNoteSkeleton key={index} />
+                  ))
+                ) : (
+                  <>
+                    {watchedNotesList?.map((note: any) => (
                       <LatestNote note={note} key={note._id} />
                     ))}
 
-                {!watchedNotesList && (
-                  <ContentNotFound text="لا يوجد مذكرات" />
+                    {/* التعديل هنا: التحقق من طول المصفوفة */}
+                    {(!watchedNotesList || watchedNotesList.length === 0) && (
+                      <ContentNotFound text="لا يوجد مذكرات" />
+                    )}
+                  </>
                 )}
               </div>
             </section>

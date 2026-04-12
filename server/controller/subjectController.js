@@ -1,3 +1,4 @@
+import { CourseAccess } from "../models/courseAccessModel.js";
 import { Course, Subject, User } from "../models/model.js";
 import { Teacher } from "../models/teacherModel.js";
 import uploadImageClodinary from "../utils/uploadImages.js";
@@ -104,49 +105,98 @@ export const getAllSubjects = async (req, res) => {
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,
-      status: false,
+      status: false, 
     });
   }
 };
 
-export const getSubjectDetails = async (req, res) => {
+
+ 
+export const getSubjectCourses = async (req, res) => {
   try {
     const { subId } = req.body;
+    const studentId = req.userId;
 
+    // 1. التحقق من وجود معرف المادة
     if (!subId) {
       return res.status(400).json({
-        message: "Provide sub Id",
-        error: true,
-        status: false,
+        success: false,
+        message: "Subject ID is required"
       });
     }
 
-    const subDetails = await Subject.findById(subId)
-      .populate("teachers", "name avatar about")
-      .populate("courses");
-
-    if (!subDetails) {
+    // 2. جلب بيانات الطالب لمعرفة مستواه الدراسي (Level)
+    const user = await User.findById(studentId).select("level");
+    if (!user) {
       return res.status(404).json({
-        message: "Not found",
-        error: true,
-        status: false,
+        success: false,
+        message: "User not found"
       });
     }
 
-    return res.json({
-      error: false,
-      status: true,
-      data: subDetails,
+    // 3. جلب الكورسات التي تنتمي لهذه المادة "و" تطابق مستوى الطالب
+    const courses = await Course.find({ 
+      subject: subId,
+      level: user.level // الربط بمستوى الطالب
+    })
+      .populate("subject")
+      .lean();
+
+    if (!courses || courses.length === 0) {
+      return res.status(200).json({
+        success: true,
+        message: "No courses found for your level in this subject",
+        data: []
+      });
+    }
+
+    // 4. جلب سجلات الوصول (CourseAccess) الخاصة بهذا الطالب لهذه الكورسات فقط
+    const courseIds = courses.map(c => c._id.toString());
+    const courseAccessRecords = await CourseAccess.find({
+      student: studentId,
+      course: { $in: courseIds }
+    }).lean();
+
+    // 5. إنشاء Map للمقارنة السريعة O(1)
+    const accessMap = new Map(
+      courseAccessRecords.map(record => [
+        record.course.toString(),
+        record.status
+      ])
+    );
+
+    // 6. الدمج: الأولوية لبيانات سجل الوصول، ثم حالة الكورس الأصلية
+    const coursesWithStatus = courses.map(course => {
+      const courseIdStr = course._id.toString();
+      
+      let finalStatus = course.status; // الحالة الافتراضية من موديل الكورس
+
+      // إذا وُجد سجل في CourseAccess (سواء كان pending أو open)، نأخذه كأولوية
+      if (accessMap.has(courseIdStr)) {
+        finalStatus = accessMap.get(courseIdStr);
+      }
+
+      return {
+        ...course,
+        status: finalStatus
+      };
     });
+
+    return res.status(200).json({
+      success: true,
+      message: "Courses fetched successfully for your level",
+      data: coursesWithStatus
+    });
+
   } catch (error) {
+    console.error("Error fetching student courses:", error);
     return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
+      success: false,
+      message: "Internal server error",
+      error: error.message
     });
   }
 };
-
 export const getSubjectsByTeacher = async (req, res) => {
   try {
     const { teacherId } = req.body;
@@ -183,19 +233,22 @@ export const getStudentCoursesByTeacher = async (req, res) => {
     const { teacherId, subjectId } = req.body;
     const studentId = req.userId;
 
+    // 1. التحقق من البيانات المرسلة
     if (!teacherId || !subjectId) {
       return res.status(400).json({
-        message: "يرجى إكمال جميع البيانات",
+        message: "يرجى إرسال معرف المعلم ومعرف المادة",
         error: true,
         status: false,
       });
     }
 
+    // 2. التحقق من وجود المعلم
     const teacher = await Teacher.findById(teacherId);
     if (!teacher) {
       return res.status(404).json({ message: "المعلم غير موجود" });
     }
 
+    // 3. التحقق من أن المعلم يدرس هذه المادة فعلاً
     const subjectExistsForTeacher = await Subject.findOne({
       _id: subjectId,
       teachers: teacherId,
@@ -205,12 +258,13 @@ export const getStudentCoursesByTeacher = async (req, res) => {
       return res.status(403).json({ message: "هذا المعلم لا يدرس هذه المادة" });
     }
 
+    // 4. جلب بيانات الطالب (لمعرفة المستوى فقط)
     const student = await User.findById(studentId);
-
     if (!student) {
       return res.status(404).json({ message: "الطالب غير موجود" });
     }
 
+    // 5. جلب الكورسات المتوافقة مع المادة والمستوى
     const courses = await Course.find({
       subject: subjectId,
       level: student.level,
@@ -218,11 +272,17 @@ export const getStudentCoursesByTeacher = async (req, res) => {
       .populate("subject", "name")
       .sort({ createdAt: -1 });
 
-    const results = courses.map((course) => {
-      const isCourseGloballyOpen = course.status === "open";
+    // 6. جلب جميع سجلات الوصول لهذا الطالب من الموديل الجديد
+    const allAccessRecords = await CourseAccess.find({ student: studentId });
 
-      const accessRecord = student.accessedCourses.find(
-        (acc) => acc.course.toString() === course._id.toString(),
+    // 7. دمج الحالات (Logic Mapping)
+    const results = courses.map((course) => {
+      const courseObj = course.toObject();
+      const isCourseGloballyOpen = courseObj.status === "open";
+
+      // البحث عن سجل الوصول لهذا الكورس تحديداً
+      const accessRecord = allAccessRecords.find(
+        (acc) => acc.course.toString() === courseObj._id.toString()
       );
 
       let finalStatus = "close";
@@ -230,12 +290,12 @@ export const getStudentCoursesByTeacher = async (req, res) => {
       if (isCourseGloballyOpen) {
         finalStatus = "open";
       } else if (accessRecord) {
-        finalStatus = accessRecord.status;
+        finalStatus = accessRecord.status; // ستكون إما open أو pending
       }
 
       return {
-        ...course._doc,
-        status: finalStatus,
+        ...courseObj,
+        accessStatus: finalStatus, // نستخدم اسم حقل مختلف لتمييزه عن حالة الكورس الأصلية
         teacherPhone: teacher.phone,
       };
     });
@@ -246,6 +306,7 @@ export const getStudentCoursesByTeacher = async (req, res) => {
       data: results,
     });
   } catch (error) {
-     return res.status(500).json({ message: "حدث خطأ في الخادم" });
+    console.error("Error in getStudentCoursesByTeacher:", error);
+    return res.status(500).json({ message: "حدث خطأ في الخادم" });
   }
 };

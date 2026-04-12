@@ -246,3 +246,32 @@ input[type="number"]::-webkit-outer-spin-button {
   50% { width: 60%; }
   100% { transform: translateX(400%); width: 30%; }
 }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(5px, 10px); }
+}
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(10deg); }
+}
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+@keyframes spin-slow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
+.animate-bounce-slow { animation: bounce-slow 4s ease-in-out infinite; }
+.animate-pulse-slow { animation: pulse-slow 3s linear infinite; }
+.animate-spin-slow { 
+    animation: spin-slow 20s linear infinite; 
+    transform-origin: center; 
+}

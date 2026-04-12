@@ -4,13 +4,11 @@ import { getSubjectCourses } from "@/app/utils/subjectFearuers";
 import ContentNotFound from "@/components/common/ContentNotFound";
 import SectionHeading from "@/components/common/SectionHeading";
 import CourseCard from "@/components/course/CourseCard";
-import Spiner from "@/components/Spiner";
 import SubHeader from "@/components/SubHeader";
 import CourseSkeleton from "@/skeletons/CourseSkeleton";
 import { Course } from "@/types/Types";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
-import { useState } from "react";
 import { PiGraduationCapLight } from "react-icons/pi";
 
 const CoursesSection = () => {
@@ -18,9 +16,10 @@ const CoursesSection = () => {
   const teacherId = params?.teacherId as string;
   const subjectId = params?.subId as string;
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["teacher-subject-course"],
-    queryFn: () => getSubjectCourses(teacherId, subjectId),
+  const { data = [], isLoading } = useQuery({
+    queryKey: ["teacher-subject-course", teacherId, subjectId],
+    queryFn: () => getSubjectCourses(teacherId, subjectId),  
+    enabled: !!teacherId && !!subjectId,
   });
 
   return (
@@ -37,7 +36,9 @@ const CoursesSection = () => {
 
         {isLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((__, index) => <CourseSkeleton key={index}/>)}
+            {[1, 2, 3, 4].map((__, index) => (
+              <CourseSkeleton key={index} />
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
@@ -46,7 +47,7 @@ const CoursesSection = () => {
                 <CourseCard course={course} key={course._id} />
               ))
             ) : (
-               <ContentNotFound text="لا يوجد كورسات حاليا" />
+              <ContentNotFound text="لا يوجد كورسات حاليا" />
             )}
           </div>
         )}

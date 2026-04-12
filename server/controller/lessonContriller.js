@@ -1,3 +1,4 @@
+import { CourseAccess } from "../models/courseAccessModel.js";
 import { Lesson } from "../models/lessonCourse.js";
 import { Course, User } from "../models/model.js";
 import { Teacher } from "../models/teacherModel.js";
@@ -114,11 +115,14 @@ export const deleteLesson = async (req, res) => {
   }
 };
 
+
+
 export const getCourseLessons = async (req, res) => {
   try {
     const { courseId } = req.params;
     const userId = req.userId;
 
+    // 1. التأكد من وجود الكورس وحالته العامة
     const course = await Course.findById(courseId);
     
     if (!course) {
@@ -128,6 +132,7 @@ export const getCourseLessons = async (req, res) => {
       });
     }
 
+    // 2. إذا كان الكورس مفتوحاً للجميع (Free/Open)، أرسل الدروس فوراً
     if (course.status === "open") {
       const lessons = await Lesson.find({ course: courseId }).sort({ createdAt: 1 });
       return res.status(200).json({
@@ -136,26 +141,25 @@ export const getCourseLessons = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId);
+    // 3. إذا كان الكورس مغلقاً، نتحقق من وجود صلاحية وصول للطالب في الموديل الجديد
+    const accessRecord = await CourseAccess.findOne({
+      student: userId,
+      course: courseId
+    });
 
-    if (!user) {
-      return res.status(404).json({ message: "المستخدم غير موجود" });
-    }
-
-    const accessRecord = user.accessedCourses.find(
-      (acc) => acc.course.toString() === courseId
-    );
-
+    // 4. التحقق من حالة الصلاحية (يجب أن تكون موجودة وحالتها "open")
     if (!accessRecord || accessRecord.status !== "open") {
-      const statusLabel = accessRecord ? accessRecord.status : "close";
+      // نحدد الحالة لإرسالها للفرونت إند (pending أو close)
+      const currentStatus = accessRecord ? accessRecord.status : "close";
 
       return res.status(403).json({
         success: false,
-        message: "عذراً، هذا الكورس غير مفعل لك حالياً. يرجى التواصل مع الإدارة.",
-        status: statusLabel,
+        message: "عذراً، هذا الكورس غير مفعل لك حالياً. يرجى الاشتراك أو انتظار التفعيل.",
+        status: currentStatus,
       });
     }
 
+    // 5. إذا وصل الكود هنا، فهذا يعني أن الطالب لديه صلاحية "open"
     const lessons = await Lesson.find({ course: courseId }).sort({ createdAt: 1 });
 
     return res.status(200).json({
@@ -171,6 +175,7 @@ export const getCourseLessons = async (req, res) => {
     });
   }
 };
+
 
 export const getTeacherCourseLessons = async (req, res) => {
  try {

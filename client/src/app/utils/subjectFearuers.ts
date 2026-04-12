@@ -45,26 +45,22 @@ export const getTeacherSubjects = async (teacherId: string) => {
   }
 };
 
-export const getSubjectCourses = async (
-  teacherId: string,
-  subjectId: string,
-) => {
-  try {
-    const res = await fetch(`${API}user/teacher-subject-courses`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ teacherId, subjectId }),
-      credentials: "include",
-    });
+export const getSubjectCourses = async (teacherId: string, subjectId: string) => {
+  const res = await fetch(`${API}user/teacher-subject-courses`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ teacherId, subjectId }),
+    credentials: "include",
+  });
 
-    const data = await res.json();
+  console.log(res)
 
-    return data.data;
-  } catch (error) {
-    throw error;
-  }
+  const result = await res.json();
+
+  const finalData = result.data || result; 
+
+  if (!finalData) return []; 
+  return finalData;
 };
 
 export const getCourseLessons = async (courseId: string) => {
