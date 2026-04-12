@@ -126,7 +126,7 @@ export const getSubjectCourses = async (req, res) => {
     }
 
     // 2. جلب بيانات الطالب لمعرفة مستواه الدراسي (Level)
-    const user = await User.findById(studentId).select("level");
+    const user = await User.findById(studentId).select("level")
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -141,6 +141,8 @@ export const getSubjectCourses = async (req, res) => {
     })
       .populate("subject")
       .lean();
+
+      console.log(user, courses)
 
     if (!courses || courses.length === 0) {
       return res.status(200).json({

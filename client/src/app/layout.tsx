@@ -4,7 +4,6 @@ import Nav from "../components/Nav";
 import Footer from "../components/Footer";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import ClientProvider from "@/components/ClientProvider";
 import Providers from "./utils/provider";
 
 export const metadata: Metadata = {
@@ -24,7 +23,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main>
           <Providers>
           <Nav />
-            {/* <ClientProvider />  */}
                {children}
           </Providers>
           <Footer />
