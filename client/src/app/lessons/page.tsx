@@ -15,8 +15,9 @@ import { MdSlowMotionVideo } from "react-icons/md";
 const page = () => {
   const searchParams = useSearchParams();
   const courseId = searchParams.get("course_id");
-  const { teacherId } = useParams();
+  const teacherId = searchParams.get("teacher_id")
 
+  
   const setLessons = useLessonStore((state) => state.setLessons);
 
   const { data, isLoading } = useQuery({

@@ -92,7 +92,7 @@ const CourseCard = ({ course }: { course: Course }) => {
         <div className="mt-4 pt-4 border-t border-slate-50">
           {isOpen ? (
             <Link
-              href={`/lessons?course_id=${course._id}`}
+              href={`/lessons?course_id=${course._id}&teacher_id=${course.subject.teachers[0]}`}
               className="w-full bg-[#0066FF] text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all"
             >
               <span>دخول الكورس</span>

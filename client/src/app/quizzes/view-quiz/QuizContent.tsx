@@ -79,6 +79,7 @@ const QuizContent = () => {
 
   const handleAutoSubmit = () => {
     toast.info("انتهى الوقت! يتم الآن تصحيح إجاباتك...");
+    localStorage.removeItem(`quiz_end_time_${quizId}`);
     handleSubmit();
   };
 
@@ -118,7 +119,6 @@ const QuizContent = () => {
       toast.error("حدث خطأ في الاتصال بالسيرفر");
     }
   };
-
 
   return (
     <Suspense

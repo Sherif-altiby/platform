@@ -2,15 +2,10 @@
 
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Image from "next/image";
-import Link from "next/link";
 import { useQuery } from "@tanstack/react-query";
-
 import SubHeader from "@/components/SubHeader";
 import Spiner from "@/components/Spiner";
 import { getSubjectDetails } from "@/app/utils/subjectFearuers";
-import { FaUserTie, FaGraduationCap } from "react-icons/fa6";
-import TeacherCard from "@/app/get-teachers/TeacherCard";
 import CourseCard from "@/components/course/CourseCard";
 import CourseSkeleton from "@/skeletons/CourseSkeleton";
 

@@ -19,7 +19,7 @@ export const updateWatchHistoryApi = async ({
     credentials: "include",
     body: JSON.stringify({ userId, teacherId, courseId, lessonId }),
   });
-
+  
   const data = await response.json();
 
   if (!response.ok) {

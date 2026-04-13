@@ -47,6 +47,7 @@ export type Course = {
   subject: {
     _id: string;
     name: string;
+    teachers: string[]
   };
   image: string;
   price: number;

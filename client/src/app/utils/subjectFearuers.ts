@@ -53,8 +53,6 @@ export const getSubjectCourses = async (teacherId: string, subjectId: string) =>
     credentials: "include",
   });
 
-  console.log(res)
-
   const result = await res.json();
 
   const finalData = result.data || result; 
