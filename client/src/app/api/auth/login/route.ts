@@ -3,14 +3,12 @@ import { cookies } from "next/headers";
 
 export async function POST(request: Request) {
   const body = await request.json();
-
   // 1. إرسال البيانات للباك إند الحقيقي (الخاص بك)
   const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}user/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
-
   const data = await res.json();
 
   if (!res.ok) {
@@ -18,7 +16,7 @@ export async function POST(request: Request) {
   }
 
   // 2. هنا السحر: استخراج التوكن من رد الباك إند وضبطه في كوكيز Next.js
-  const token = data.data.refreshToken; 
+  const token = data.data.refreshToken;
   const cookieStore = await cookies();
 
   cookieStore.set("refreshToken", token, {
