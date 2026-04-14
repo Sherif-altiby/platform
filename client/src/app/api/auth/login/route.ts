@@ -22,7 +22,7 @@ export async function POST(request: Request) {
   cookieStore.set("refreshToken", token, {
     httpOnly: true,
     secure: true,
-    sameSite: "lax",
+    sameSite: "none",
     path: "/",
     maxAge: 7 * 24 * 60 * 60, // 7 أيام
   });

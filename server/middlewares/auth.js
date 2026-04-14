@@ -7,6 +7,7 @@ const auth = async (req, res, next) => {
         const token =
             req.cookies.refreshToken || 
             req.headers.authorization?.split(" ")[1];
+            
 
 
         if (!token) {
