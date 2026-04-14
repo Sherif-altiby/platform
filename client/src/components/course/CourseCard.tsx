@@ -6,16 +6,19 @@ import { FaPlayCircle } from "react-icons/fa";
 import { FaChevronLeft, FaHourglass } from "react-icons/fa6";
 import Link from "next/link";
 import { usePaymentStore } from "@/store/PaymentStore";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const CourseCard = ({ course }: { course: Course }) => {
+  const params = useParams();
+  const teacherId = params.teacherId as string;
+
   const isClosed = course.status === "close";
   const isPending = course.status === "pending";
   const isOpen = course.status === "open";
 
   const router = useRouter();
 
-  const {setCourseToPay} = usePaymentStore()
+  const { setCourseToPay } = usePaymentStore();
 
   return (
     <div
@@ -92,7 +95,7 @@ const CourseCard = ({ course }: { course: Course }) => {
         <div className="mt-4 pt-4 border-t border-slate-50">
           {isOpen ? (
             <Link
-              href={`/lessons?course_id=${course._id}&teacher_id=${course.subject.teachers[0]}`}
+              href={`/lessons?course_id=${course._id}&teacher_id=${teacherId}`}
               className="w-full bg-[#0066FF] text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all"
             >
               <span>دخول الكورس</span>
@@ -109,13 +112,13 @@ const CourseCard = ({ course }: { course: Course }) => {
           ) : (
             <button
               onClick={() => {
-                router.push('/payment')
+                router.push("/payment");
                 setCourseToPay({
                   _id: course._id,
                   title: course.title,
                   price: course.price - course.offer,
-                  phone: course.phone
-                })
+                  phone: course.phone,
+                });
               }}
               className="w-full bg-slate-900 text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all"
             >
