@@ -1,9 +1,10 @@
 import Image from "next/image";
+import Link from "next/link";
 import { FaChevronLeft } from "react-icons/fa6";
 
 const LatestTeacher = ({ teacher }: { teacher: any }) => {
   return (
-    <div className="flex items-center justify-between group bg-white rounded-xl p-4 my-4">
+    <Link href={`/get-teachers/${teacher._id}`} className="flex items-center justify-between group bg-white rounded-xl p-4 my-4">
       <div className="flex items-center gap-3">
         <Image
         //   src={teacher.image}
@@ -25,7 +26,7 @@ const LatestTeacher = ({ teacher }: { teacher: any }) => {
       <button className="p-2 text-slate-300 hover:text-blue-600 transition-colors">
         <FaChevronLeft size={20} />
       </button>
-    </div>
+    </Link>
   );
 };
 

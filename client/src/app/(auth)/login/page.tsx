@@ -127,7 +127,9 @@ const Login = () => {
             )}
 
             {/* Register link */}
-            <div className="flex items-center justify-center gap-1.5 text-sm text-slate-500 pt-1">
+            <div className="flex items-center justify-center gap-1.5 text-sm text-slate-500 pt-1" onClick={() => {
+              router.push("/register")
+            }} >
               <p>ليس لديك حساب؟</p>
               <Link
                 href="/register"
