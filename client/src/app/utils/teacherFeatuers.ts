@@ -10,11 +10,6 @@ export const getTeacherById = async (teacherId: string) => {
     credentials: "include"
   });
 
-  if (res.status === 401) {
-     if (typeof window !== "undefined") {
-      window.location.href = "/login";
-    }
-  }
 
   if (!res.ok) throw new Error("Failed to fetch user");
   return res.json();

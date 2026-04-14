@@ -33,57 +33,56 @@ function TeacherContent() {
   });
 
   return (
-    // <div className="ctm-height bg-[#f8fafc] pb-20">
-    //   {/* استخدمت || هنا كخيار احتياطي */}
-    //   <SubHeader currentTitle={`أ/ ${name || teacher?.name || "المعلم"}`} />
+    <div className="ctm-height bg-[#f8fafc] pb-20">
+      {/* استخدمت || هنا كخيار احتياطي */}
+      <SubHeader currentTitle={`أ/ ${name || teacher?.name || "المعلم"}`} />
 
-    //   <div className="container max-w-screen-lg mx-auto px-4">
-    //     {isLoading ? (
-    //       <div className="mt-12">
-    //         <SkeletonTeacherInfo />
-    //       </div>
-    //     ) : (
-    //       <div className="animate-in fade-in duration-1000 slide-in-from-bottom-6">
-    //         <div className="relative max-w-4xl mx-auto bg-white rounded-[3rem] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden mt-12 transition-all hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.08)]">
-    //           <TeacherCardGradient />
+      <div className="container max-w-screen-lg mx-auto px-4">
+        {isLoading ? (
+          <div className="mt-12">
+            <SkeletonTeacherInfo />
+          </div>
+        ) : (
+          <div className="animate-in fade-in duration-1000 slide-in-from-bottom-6">
+            <div className="relative max-w-4xl mx-auto bg-white rounded-[3rem] shadow-[0_20px_50px_-20px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden mt-12 transition-all hover:shadow-[0_30px_60px_-20px_rgba(0,0,0,0.08)]">
+              <TeacherCardGradient />
 
-    //           <div className="px-6 md:px-12 pb-12">
-    //             <TeacherAboutAvatar
-    //               avatar={teacher?.avatar || ""}
-    //               name={teacher?.name || ""}
-    //               subjects={teacher?.subjects || []}
-    //             />
+              <div className="px-6 md:px-12 pb-12">
+                <TeacherAboutAvatar
+                  avatar={teacher?.avatar || ""}
+                  name={teacher?.name || ""}
+                  subjects={teacher?.subjects || []}
+                />
 
-    //             <div className="relative w-full h-px bg-gradient-to-r from-transparent via-slate-100 to-transparent my-10" />
+                <div className="relative w-full h-px bg-gradient-to-r from-transparent via-slate-100 to-transparent my-10" />
 
-    //             <div className="max-w-2xl">
-    //               <h5 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4 text-right">
-    //                 نبذة عن المعلم
-    //               </h5>
-    //               <p className="text-slate-600 text-lg leading-[1.8] text-right font-medium">
-    //                 {teacher?.about || "لا يوجد وصف متاح حالياً."}
-    //               </p>
-    //             </div>
-    //           </div>
-    //         </div>
+                <div className="max-w-2xl">
+                  <h5 className="text-slate-400 text-[10px] font-black uppercase tracking-[0.3em] mb-4 text-right">
+                    نبذة عن المعلم
+                  </h5>
+                  <p className="text-slate-600 text-lg leading-[1.8] text-right font-medium">
+                    {teacher?.about || "لا يوجد وصف متاح حالياً."}
+                  </p>
+                </div>
+              </div>
+            </div>
 
-    //         <div className="mt-12">
-    //           <TeacherAboutLink
-    //             teacherId={teacherId}
-    //             name={name || teacher?.name || ""}
-    //             level={user?.level || ""}
-    //           />
-    //         </div>
+            <div className="mt-12">
+              <TeacherAboutLink
+                teacherId={teacherId}
+                name={name || teacher?.name || ""}
+                level={user?.level || ""}
+              />
+            </div>
 
-    //         <div className="mt-8">
-    //           <TeacherRatingSystem teacherId={teacherId} />
-    //         </div>
-    //       </div>
-    //     )}
-    //   </div>
-    // </div>
+            <div className="mt-8">
+              <TeacherRatingSystem teacherId={teacherId} />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
 
-    <div> HHHHHHHHHHHHHH </div>
   );
 }
 
