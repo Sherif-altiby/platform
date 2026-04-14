@@ -37,6 +37,7 @@ export const useAuthUser = create<useAuthInterface>()(
       
           set(() => ({ user: data.data.user }));
           toast.success("تم تسجيل الدخول");
+          location.href = "/"
         } catch (error: any) {
           toast.error(error.message);
         } finally {

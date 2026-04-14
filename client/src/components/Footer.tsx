@@ -78,27 +78,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* 3. التواصل المباشر */}
-          {/* <div className="text-right">
-            <h4 className="text-white font-black text-xl mb-8 flex items-center  gap-2">
-                تواصل سريع
-                <span className="w-2 h-2 bg-orange-500 rounded-full" />
-            </h4>
-            <ul className="space-y-5">
-              <li className="flex items-center  gap-3 text-slate-400 group cursor-pointer hover:text-white transition-colors">
-                <span>support@abqary.com</span>
-                <HiOutlineMail className="text-xl text-blue-500" />
-              </li>
-              <li className="flex items-center  gap-3 text-slate-400 group cursor-pointer hover:text-white transition-colors">
-                <span>+20 100 000 0000</span>
-                <HiOutlinePhone className="text-xl text-orange-500" />
-              </li>
-              <li className="flex items-start  gap-3 text-slate-400">
-                <span className="text-sm">مصر، القاهرة، مدينة نصر <br/> مبنى العباقرة - الدور الثالث</span>
-                <HiOutlineLocationMarker className="text-xl text-emerald-500 mt-1" />
-              </li>
-            </ul>
-          </div> */}
+          
 
           {/* 4. قسم مميز (Trust) */}
           <div className="bg-gradient-to-br from-blue-600/20 to-orange-600/10 p-6 rounded-3xl border border-white/5 text-right flex flex-col items-end justify-center">

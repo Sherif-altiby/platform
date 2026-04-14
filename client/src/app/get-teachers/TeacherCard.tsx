@@ -26,7 +26,8 @@ const TeacherCard = ({ teacher }: { teacher: TeacherTypes }) => {
             src={teacher.avatar}
             alt={`صورة ${teacher.name}`}
             fill
-            className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+            // sizes="250"
+            className="object-conyain group-hover:scale-110 transition-transform duration-700 ease-out"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-4xl font-black text-blue-200 bg-slate-100">

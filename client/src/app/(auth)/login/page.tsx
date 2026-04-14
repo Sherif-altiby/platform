@@ -25,9 +25,6 @@ const Login = () => {
     try {
       const res = await userLogin(data.email, data.password);
       reset();
-      if (res?.status) {
-        router.push("/");
-      }
     } catch (error) {
       console.error("Login error:", error);
     }
@@ -43,23 +40,27 @@ const Login = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 flex items-center justify-center px-4 py-12">
       {/* Card */}
       <div className="w-full max-w-md bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
-
         {/* Top accent bar */}
         <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-violet-500 to-indigo-400" />
 
         <div className="p-8 md:p-10">
-
           {/* Header */}
           <div className="mb-8 text-right">
-            <h1 className="text-2xl font-bold text-slate-800 mb-1">تسجيل الدخول</h1>
-            <p className="text-sm text-slate-400">مرحباً بعودتك، أدخل بياناتك للمتابعة</p>
+            <h1 className="text-2xl font-bold text-slate-800 mb-1">
+              تسجيل الدخول
+            </h1>
+            <p className="text-sm text-slate-400">
+              مرحباً بعودتك، أدخل بياناتك للمتابعة
+            </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-
             {/* Email */}
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-slate-600 text-right" htmlFor="email">
+              <label
+                className="text-sm font-medium text-slate-600 text-right"
+                htmlFor="email"
+              >
                 البريد الإلكتروني
               </label>
               <input
@@ -69,14 +70,19 @@ const Login = () => {
                 {...register("email")}
               />
               {errors.email && (
-                <span className="text-xs text-red-500 text-right">{errors.email.message}</span>
+                <span className="text-xs text-red-500 text-right">
+                  {errors.email.message}
+                </span>
               )}
             </div>
 
             {/* Password */}
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-medium text-slate-600" htmlFor="password">
+                <label
+                  className="text-sm font-medium text-slate-600"
+                  htmlFor="password"
+                >
                   كلمة المرور
                 </label>
                 <Link
@@ -93,7 +99,9 @@ const Login = () => {
                 {...register("password")}
               />
               {errors.password && (
-                <span className="text-xs text-red-500 text-right">{errors.password.message}</span>
+                <span className="text-xs text-red-500 text-right">
+                  {errors.password.message}
+                </span>
               )}
             </div>
 
@@ -128,7 +136,6 @@ const Login = () => {
                 إنشاء حساب
               </Link>
             </div>
-
           </form>
         </div>
       </div>
