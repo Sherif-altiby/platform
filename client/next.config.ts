@@ -2,35 +2,29 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
+    // يسمح بجلب الصور من أي رابط عبر الـ Wildcard (**)
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "hebbkx1anhila5yf.public.blob.vercel-storage.com",
+        hostname: "**", 
       },
       {
-        protocol: "https",
-        hostname: "img.youtube.com",
-      },
-      {
-        protocol: "https",
-        hostname: "res.cloudinary.com",
-        pathname: "/**",
-      },
-      {
-        protocol: "https",
-        hostname: "randomuser.me",
-      },
-      {
-        protocol: "https",
-        hostname: "cdn-icons-png.flaticon.com",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
+        protocol: "http",
+        hostname: "**",
       },
     ],
   },
-  
+
+  // كود الـ Rewrites لحل مشكلة الكوكيز (Proxy)
+  async rewrites() {
+    return [
+      {
+        // سيقوم هذا الكود بتوجيه أي طلب يبدأ بـ /api-backend إلى سيرفر الباك إند الحقيقي
+        source: '/api-backend/:path*',
+        destination: 'https://platform-gamma-one.vercel.app/api/:path*', 
+      },
+    ];
+  },
 };
 
 export default nextConfig;
