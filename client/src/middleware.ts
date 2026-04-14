@@ -14,7 +14,7 @@ export function middleware(request: NextRequest) {
   }
 
   // 2. السماح بمرور الصفحات العامة أو صفحة تسجيل الدخول (بدون شروط)
-  if (isPublicPath || pathname === "/login") {
+  if (isPublicPath || pathname === "/login" ||  pathname === "/register") {
     return NextResponse.next();
   }
 
