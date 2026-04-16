@@ -7,6 +7,7 @@ import {
           deleteQuize,
           teacherStatics,
           teacherUpdateProfile,
+          teacherUpdateAvatar,
         } from "../controller/teacherController.js";
 import { addCourseValidation, uploadQuizValidation,  } from "../validations/ApiValidations.js";
 import isTeacher from "../middlewares/isTeacher.js";
@@ -61,6 +62,8 @@ teacherRouter.put('/change-data',auth, isTeacher, teacherUpdateProfile)
 
 teacherRouter.get('/sub-stats', auth, isTeacher, getTeacherStats)
 teacherRouter.get('/get-rates', auth, isTeacher, getTeacherRatings)
+
+teacherRouter.post('/change-avatar', auth, isTeacher, upload.single('avatar'), teacherUpdateAvatar)
 
 
 export default teacherRouter

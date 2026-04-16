@@ -3,7 +3,8 @@ import { Teacher } from "../models/teacherModel.js";
 import { PdfModel } from "../models/pdfModel.js";
 import { VideoModel } from "../models/videoModel.js";
 import { Quizz } from "../models/quizzModel.js";
-
+import uploadImageClodinary from "../utils/uploadImages.js";
+import destroyImageCloudinary from "../utils/destroyImage.js";
 
 export const getTeacherById = async (req, res) => {
   try {
@@ -173,7 +174,6 @@ export const teacherUpdateVideo = async (req, res) => {
   }
 };
 
-
 export const getTeacherQuizzesByLevel = async (req, res) => {
   try {
     const { teacherId, level } = req.body;
@@ -185,7 +185,9 @@ export const getTeacherQuizzesByLevel = async (req, res) => {
       });
     }
 
-    const quizzes = await Quizz.find({ level, teacher: teacherId }).populate("course", "title _id").populate("subject", "name _id");
+    const quizzes = await Quizz.find({ level, teacher: teacherId })
+      .populate("course", "title _id")
+      .populate("subject", "name _id");
     if (!quizzes) {
       return res.status(404).json({
         message: "No quizzes founded",
@@ -282,7 +284,6 @@ export const deleteQuize = async (req, res) => {
   }
 };
 
-
 export const teacherStatics = async (req, res) => {
   try {
     const teacherId = req.userId;
@@ -357,7 +358,6 @@ export const teacherStatics = async (req, res) => {
 
 export const teacherUpdateProfile = async (req, res) => {
   try {
-
     const { name, email, phone, about } = req.body;
     const teacherId = req.userId;
 
@@ -370,7 +370,6 @@ export const teacherUpdateProfile = async (req, res) => {
         status: false,
       });
     }
-
 
     teacher.name = name || teacher.name;
     teacher.email = email || teacher.email;
@@ -390,9 +389,8 @@ export const teacherUpdateProfile = async (req, res) => {
         email: updatedTeacher.email,
         phone: updatedTeacher.phone,
         about: updatedTeacher.about,
-      }
+      },
     });
-
   } catch (error) {
     console.error("Update Profile Error:", error);
     return res.status(500).json({
@@ -401,4 +399,48 @@ export const teacherUpdateProfile = async (req, res) => {
       status: false,
     });
   }
+};
+
+export const teacherUpdateAvatar = async (req, res) => {
+  try {
+    const teacherId = req.userId;
+
+    const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      return res.status(404).json({
+        message: "المعلم غير موجود",
+        error: true,
+        status: false,
+      });
+    }
+
+    if (!req.file) {
+      return res.status(400).json({
+        message: "Provide avatar image",
+        error: true,
+        status: false,
+      });
+    }
+
+    const destroyAvatar = await destroyImageCloudinary(teacher.avatar);
+
+    const uploaded = await uploadImageClodinary(req.file.buffer);
+
+    await Teacher.updateOne(
+      { _id: teacherId },
+      {
+        $set: {
+          avatar: uploaded.secure_url,
+        },
+      },
+    );
+
+    return res.status(200).json({
+      message: "تم تحديث الصورة الشخصية بنجاح",
+      error: false,
+      status: true,
+      data: {avatar: uploaded.secure_url},
+    });
+  } catch (error) {}
 };

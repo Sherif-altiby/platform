@@ -1,4 +1,4 @@
-import { Subject, User } from "../models/model.js";
+import { User } from "../models/model.js";
 import { Comment } from "../models/commentsModel.js";
 import { Teacher } from "../models/teacherModel.js";
 import { VideoModel } from "../models/videoModel.js";

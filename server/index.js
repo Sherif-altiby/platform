@@ -37,7 +37,9 @@ const app = express();
   app.options("*", cors());
 
  
-app.use(express.json()) 
+app.use(express.json({
+  limit: "20kb"
+})) 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(morgan('combined'))
@@ -47,8 +49,8 @@ app.use(helmet({
 
 
 const limiter = rateLimit({
-  windowMs: 1 * 60 * 1000,
-  max: 10000, // limit each IP to 100 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 100,  
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
