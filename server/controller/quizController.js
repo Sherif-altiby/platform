@@ -193,14 +193,46 @@ export const checkQuiz = async (req, res) => {
 
     for (let i = 0; i < quiz.questions.length; i++) {
       const question = quiz.questions[i];
-      const isCorrect = answers[i] === question.correctAnswer;
-      
+      const studentAnswer = answers[i];
+      const correctAnswer = question.correctAnswer;
+
+      // Parse student answer if it's a JSON string (new format with images)
+      let parsedStudentAnswer = studentAnswer;
+      if (typeof studentAnswer === 'string') {
+        try {
+          parsedStudentAnswer = JSON.parse(studentAnswer);
+        } catch {
+          // If parsing fails, treat it as old format (plain string)
+          parsedStudentAnswer = studentAnswer;
+        }
+      }
+
+      // Check if answer is correct
+      let isCorrect = false;
+
+      // New format: Compare both text and image
+      if (typeof parsedStudentAnswer === 'object' && parsedStudentAnswer !== null) {
+        const studentText = parsedStudentAnswer.text || null;
+        const studentImage = parsedStudentAnswer.image || null;
+        const correctText = correctAnswer.text || null;
+        const correctImage = correctAnswer.image || null;
+
+        // Both text and image must match
+        isCorrect = (studentText === correctText) && (studentImage === correctImage);
+      } 
+      // Old format: Compare as strings
+      else {
+        isCorrect = parsedStudentAnswer === correctAnswer.text || 
+                    parsedStudentAnswer === correctAnswer;
+      }
+
       if (isCorrect) correctCount++;
 
       processedAnswers.push({
         questionTitle: question.title,
-        userAnswer: answers[i],
-        correctAnswer: question.correctAnswer,
+        questionImage: question.titleImage || null,
+        userAnswer: parsedStudentAnswer,
+        correctAnswer: correctAnswer,
         isCorrect: isCorrect,
       });
     }
@@ -234,6 +266,7 @@ export const checkQuiz = async (req, res) => {
         quizId: quizId,
         score: correctCount,  
         total: quiz.questions.length,  
+        percentage: Math.round(finalScore),
         updatedAt: new Date(),
       },
       { upsert: true, new: true }
@@ -243,10 +276,15 @@ export const checkQuiz = async (req, res) => {
       message: "Quiz processed and saved successfully",
       error: false,
       status: true,
-      data: updatedResult, 
+      data: {
+        ...updatedResult.toObject(),
+        percentage: Math.round(finalScore),
+        passed: finalScore >= 50, // You can adjust the passing threshold
+      }, 
     });
 
   } catch (error) {
+    console.error("Error checking quiz:", error);
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,

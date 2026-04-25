@@ -20,6 +20,7 @@ import { getTeacherStats } from "../controller/staticsController.js";
 import { getTeacherRatings } from "../controller/ratingController.js";
 import { deleteQuiz, getTeacherQuizResults, getTeacherQuizzes, getTeacherQuizzesSummary, teacherUploadQuiz } from "../controller/quizController.js";
 import { createNote, deleteNote, getNoteByLevel, getTeacherNotes } from "../controller/noteController.js";
+import { teacherUploadQuizTest } from "../controller/test.js";
 
 
 const teacherRouter = Router();
@@ -29,7 +30,9 @@ teacherRouter.get('/get-teacher/:teacherId', auth, getTeacherById);
 // teacherRouter.delete('/delete-video', auth, isTeacher, teacherDeleteVideo);
 // teacherRouter.put('/update-video', auth, isTeacher, teacherUpdateVideo);
 
-teacherRouter.post('/upload-quiz', auth, isTeacher, uploadQuizValidation, teacherUploadQuiz );
+// teacherRouter.post('/upload-quiz', auth, isTeacher, uploadQuizValidation, teacherUploadQuiz );
+teacherRouter.post('/upload-quiz', auth, isTeacher, upload.any(), teacherUploadQuizTest );
+
 teacherRouter.get('/quizzes', auth, isTeacher, getTeacherQuizzes)
 teacherRouter.delete('/quiz-delete/:quizId', auth, isTeacher, deleteQuiz)
 teacherRouter.post('/get-quiz-by-level', auth, getTeacherQuizzesByLevel);

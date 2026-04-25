@@ -25,6 +25,7 @@ const QuizContent = () => {
     queryKey: ["quiz", quizId],
     queryFn: async () => {
       const res = await getQuiz(quizId as string);
+      console.log(res)
       const durationInSeconds = res.data.duration * 60;
 
       if (typeof window !== "undefined") {
@@ -91,8 +92,19 @@ const QuizContent = () => {
     ) {
       return toast.warn("يرجى الإجابة على جميع الأسئلة أولاً");
     }
-
+  
     try {
+      // تحويل الإجابات من string إلى object إذا لزم الأمر
+      const processedAnswers = answers.map(answer => {
+        try {
+          // محاولة parse إذا كانت JSON string
+          return JSON.parse(answer);
+        } catch {
+          // إذا لم تكن JSON، إرجاعها كما هي (نظام قديم)
+          return answer;
+        }
+      });
+  
       const res = await fetch(
         `${process.env.NEXT_PUBLIC_SERVER_URL}user/check-quiz`,
         {
@@ -101,15 +113,14 @@ const QuizContent = () => {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ quizId, answers }),
+          body: JSON.stringify({ quizId, answers: processedAnswers }),
         },
       );
-
+  
       const data = await res.json();
-
+  
       if (res.ok) {
         setResult(data.data);
-        // تنظيف التايمر من المتصفح بعد النجاح
         localStorage.removeItem(`quiz_end_time_${quizId}`);
         window.scrollTo({ top: 0, behavior: "smooth" });
       } else {

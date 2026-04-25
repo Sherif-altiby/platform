@@ -96,10 +96,10 @@ const Footer = () => {
                © {date.getFullYear()} منصة العبقري. جميع الحقوق محفوظة
             </p>
             <div className="flex items-center gap-2 text-sm text-slate-500">
-              <span>تطوير وإبداع</span>
-              <a href="https://www.linkedin.com/in/sherif-altiby-38b350229/" target="_blank" className="text-white font-bold hover:text-orange-500 transition-colors">
+              <span> تطوير  </span>
+              <Link href="https://www.linkedin.com/in/sherif-altiby-38b350229/" target="_blank" className="text-white font-bold hover:text-orange-500 transition-colors">
                  Sherif Altiby
-              </a>
+              </Link>
             </div>
           </div>
         </div>

@@ -26,18 +26,46 @@ const quizzSchema = new mongoose.Schema({
         required: true,
     },
     duration: {
-        type: Number, 
+        type: Number,
         required: true,
-        default: 10 
+        default: 10
     },
     questions: [
         {
-            _id: false, 
-            title: { type: String, required: true },
-            answers: [{ type: String, required: true }],
-            correctAnswer: { type: String, required: true }
+            _id: false,
+            title: { 
+                type: String, 
+                required: true 
+            },
+            titleImage: { 
+                type: String,  // URL or path to the image
+                required: false 
+            },
+            answers: [
+                {
+                    _id: false,
+                    text: { 
+                        type: String, 
+                        required: false 
+                    },
+                    image: { 
+                        type: String,  // URL or path to the image
+                        required: false 
+                    }
+                }
+            ],
+            correctAnswer: {
+                text: { 
+                    type: String, 
+                    required: false 
+                },
+                image: { 
+                    type: String,  // URL or path to the image
+                    required: false 
+                }
+            }
         }
     ]
 }, { timestamps: true });
 
-export const Quizz =  mongoose.model("Quizz", quizzSchema);
+export const Quizz = mongoose.model("Quizz", quizzSchema);

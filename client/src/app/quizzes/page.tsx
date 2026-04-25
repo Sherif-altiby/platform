@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect } from "react";
+import { Suspense } from "react";
 import SubHeader from "@/components/SubHeader";
 import { useSearchParams } from "next/navigation";
 import Quiz from "./Quiz";
@@ -18,7 +18,7 @@ function QuizzesContent() {
 
 
 
-  const { data: quizzes = [], isLoading, error } = useQuery({
+  const { data: quizzes = [], isLoading } = useQuery({
 
     queryKey: ["quizzesStudents", teacherId, level],
     queryFn: async () => {
