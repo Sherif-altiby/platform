@@ -14,43 +14,43 @@ import paymentRouter from "./routes/paymentRoutes.js";
 
 dotenv.config();
 
-const app = express();  
+const app = express();
 
 
-  app.use(
-    cors({
-      origin: [
-        "https://platform-mu-steel.vercel.app",
-        "https://platform-db7k.vercel.app",
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "platform-git-main-sherif-altibys-projects.vercel.app",
-        "platform-kvh641tih-sherif-altibys-projects.vercel.app",
-        "https://teacher-dashboard-taupe.vercel.app"
-      ],
-      credentials: true,
-      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization"],
-    })
-  );
+app.use(
+  cors({
+    origin: [
+      "https://platform-mu-steel.vercel.app",
+      "https://platform-db7k.vercel.app",
+      "http://localhost:3000",
+      "http://localhost:3001",
+      "platform-git-main-sherif-altibys-projects.vercel.app",
+      "platform-kvh641tih-sherif-altibys-projects.vercel.app",
+      "https://teacher-dashboard-taupe.vercel.app"
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-  app.options("*", cors());
+app.options("*", cors());
 
- 
+
 app.use(express.json({
   limit: "20kb"
-})) 
+}))
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser())
 app.use(morgan('combined'))
 app.use(helmet({
-    crossOriginResourcePolicy: false,
-}));   
+  crossOriginResourcePolicy: false,
+}));
 
 
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,  
+  max: 100,
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -67,12 +67,12 @@ app.use('/api/payment', paymentRouter)
 
 
 
-const PORT = 8080;
+const PORT = 8081;
 
 connectDB().then(() => {
- 
-    app.listen(PORT, () => {
-        console.log('The server is running in port : ', PORT)
-    })
+
+  app.listen(PORT, () => {
+    console.log('The server is running in port : ', PORT)
+  })
 
 })

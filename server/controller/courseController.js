@@ -92,8 +92,25 @@ export const addCourse = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const { courseId } = req.params;
+
+    if (!courseId) {
+      return res.status(400).json({
+        message: "Course ID is required",
+        error: true,
+        status: false,
+      });
+    }
+
     const { title, subjectId, price, offer, offerExpirt, level, status } =
       req.body;
+
+    if (offer >= price) {
+      return res.status(400).json({
+        message: "Offer cannot be greater than or equal to the original price",
+        error: true,
+        status: false,
+      });
+    }
 
     const course = await Course.findById(courseId);
     if (!course) {
@@ -105,7 +122,7 @@ export const updateCourse = async (req, res) => {
     let imageUrl = course.image;
     if (req.file) {
       if (course.image) {
-        await destroyImageCloudinary(course.image);
+        const destroyImage = await destroyImageCloudinary(course.image);
       }
       const uploaded = await uploadImageClodinary(req.file.buffer);
       imageUrl = uploaded.secure_url;

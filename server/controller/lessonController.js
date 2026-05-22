@@ -104,7 +104,6 @@ export const deleteLesson = async (req, res) => {
       message: "Lesson deleted successfully",
       error: false,
       status: true,
-      deleteImg
     });
   } catch (error) {
     return res.status(500).json({
@@ -124,11 +123,11 @@ export const getCourseLessons = async (req, res) => {
 
     // 1. التأكد من وجود الكورس وحالته العامة
     const course = await Course.findById(courseId);
-    
+
     if (!course) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "الكورس غير موجود" 
+      return res.status(404).json({
+        success: false,
+        message: "الكورس غير موجود"
       });
     }
 
@@ -169,20 +168,20 @@ export const getCourseLessons = async (req, res) => {
 
   } catch (error) {
     console.error("Error fetching lessons:", error);
-    res.status(500).json({ 
-      success: false, 
-      message: "حدث خطأ في الخادم أثناء جلب الدروس" 
+    res.status(500).json({
+      success: false,
+      message: "حدث خطأ في الخادم أثناء جلب الدروس"
     });
   }
 };
 
 
 export const getTeacherCourseLessons = async (req, res) => {
- try {
+  try {
     const { courseId } = req.params;
     const teacherId = req.userId;
 
-    if(!courseId) {
+    if (!courseId) {
       return res.status(400).json({ message: " Complete all data " });
     }
 
@@ -205,3 +204,36 @@ export const getTeacherCourseLessons = async (req, res) => {
     res.status(500).json({ message: "حدث خطأ في الخادم أثناء جلب الدروس" });
   }
 }
+
+
+export const teacherUpdateLesson = async (req, res) => {
+  try {
+    const { lessonId } = req.params;
+    const { title, videoUrl, description } = req.body;
+
+    if (!lessonId) {
+      return res.status(400).json({ message: " Complete all data " });
+    }
+
+    const lesson = await Lesson.findById(lessonId);
+
+    if (!lesson) {
+      return res.status(404).json({ message: "Lesson not found." });
+    }
+
+    lesson.title = title || lesson.title;
+    lesson.videoUrl = videoUrl || lesson.videoUrl;
+    lesson.description = description || lesson.description;
+
+    await lesson.save();
+
+    return res.status(200).json({
+      message: "Lesson updated successfully",
+      success: true,
+      data: lesson,
+    });
+  } catch (error) {
+    console.error("Error updating lesson:", error);
+    res.status(500).json({ message: "حدث خطأ في الخادم أثناء تحديث الدرس" });
+  }
+};

@@ -15,13 +15,13 @@ export default function PaymentPage() {
   const [method, setMethod] = useState<"vodafone" | "card" | null>(null);
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false)
-  const course = usePaymentStore(s => s.courseToPay)  
+  const course = usePaymentStore(s => s.courseToPay)
 
   return (
     <div className="min-h-screen bg-slate-50 p-6 flex   justify-center">
       <div className="max-w-2xl w-full">
         <div className="bg-white/50 rounded-xl shadow-xl shadow-slate-200/60 overflow-hidden">
-          <PaymentHeader/>
+          <PaymentHeader />
 
           <div className="p-8">
             {step === 1 ? (
@@ -37,19 +37,19 @@ export default function PaymentPage() {
                   des="تحويل يدوي وتأكيد الطلب "
                 />
 
-                <PaymenWay
+                {/* <PaymenWay
                   title=" بطاقة بنكية "
                   method={method || ""}
                   setMethod={setMethod}
                   icon={CiCreditCard1}
                   way="card"
                   des=" دفع إلكتروني فوري"
-                />
+                /> */}
 
                 <button
                   disabled={loading}
                   onClick={() => {
-                    if(method === "vodafone") {
+                    if (method === "vodafone") {
                       setStep(2)
                     } else {
                       handlePayment(course?.price as number)
@@ -64,7 +64,7 @@ export default function PaymentPage() {
               </div>
             ) : (
               <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                  <PayVodafone />  
+                <PayVodafone />
                 <button
                   onClick={() => setStep(1)}
                   className="w-full text-slate-400 font-bold text-sm mt-6 hover:text-slate-600 transition-colors"
