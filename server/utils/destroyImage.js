@@ -16,7 +16,7 @@ const destroyImageCloudinary = async (imageUrl) => {
 
     const publicId = `${folderPart}/${lastPart.split(".")[0]}`;
 
-    const result = await cloudinary.uploader.destroy(publicId);
+    const result = await cloudinary.uploader.destroy(publicId, { invalidate: true });
     return result;
   } catch (error) {
     console.error("Cloudinary Delete Error:", error);

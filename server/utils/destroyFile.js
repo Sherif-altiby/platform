@@ -30,6 +30,7 @@ const destroyPdfCloudinary = async (pdfUrl) => {
     // 3. تنفيذ عملية الحذف مع تحديد نوع المورد كـ "raw"
     const result = await cloudinary.uploader.destroy(publicId, {
       resource_type: "raw",
+      invalidate: true,
     });
 
     console.log("Cloudinary PDF Delete Result:", result);

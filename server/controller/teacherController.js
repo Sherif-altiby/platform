@@ -440,7 +440,8 @@ export const teacherUpdateAvatar = async (req, res) => {
       message: "تم تحديث الصورة الشخصية بنجاح",
       error: false,
       status: true,
-      data: {avatar: uploaded.secure_url},
+      data: { avatar: uploaded.secure_url },
+      destroyAvatar
     });
-  } catch (error) {}
+  } catch (error) { }
 };

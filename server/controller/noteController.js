@@ -88,6 +88,56 @@ export const createNote = async (req, res) => {
     }
 };
 
+export const updateNote = async (req, res) => {
+    try {
+        const { pdfId } = req.body;
+        const teacherId = req.userId;
+
+        if (!pdfId) {
+            return res.status(400).json({
+                message: "يرجى تقديم معرف الملف (PDF ID)",
+                error: true,
+                status: false,
+            });
+        }
+
+        const pdfRecord = await PdfModel.findOne({
+            _id: pdfId,
+            teacher: teacherId,
+        });
+
+        if (!pdfRecord) {
+            return res.status(404).json({
+                message: "الملف غير موجود أو ليس لديك صلاحية حذفه",
+                error: true,
+                status: false,
+            });
+        }
+
+
+        const deleteFrom = await destroyPdfCloudinary(pdfRecord.pdf)
+        await PdfModel.findByIdAndDelete(pdfId);
+
+        await Course.findByIdAndUpdate(pdfRecord.course, {
+            $pull: { notes: pdfId }
+        });
+
+        return res.json({
+            message: "تم حذف المذكرة بنجاح من السحابة وقاعدة البيانات",
+            error: false,
+            status: true,
+            deleteFrom
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: error.message || "حدث خطأ داخلي في الخادم",
+            error: true,
+            status: false,
+        });
+    }
+};
+
 export const deleteNote = async (req, res) => {
     try {
         const { pdfId } = req.body;
@@ -174,40 +224,40 @@ export const getNoteByLevel = async (req, res) => {
 
 export const getTeacherNotes = async (req, res) => {
     try {
-      const teacherId = req.userId; 
-      const { subjectId, courseId, level } = req.query;
-  
-      const query = { teacher: teacherId };
-  
-      if (subjectId && subjectId !== "all") {
-        query.subject = subjectId;
-      }
-  
-      if (courseId && courseId !== "all") {
-        query.course = courseId;
-      }
-  
-      if (level && level !== "all") {
-        query.level = level;  
-      }
-  
-       const quizzes = await PdfModel.find(query)
-        .populate("subject", "name")  
-        .populate("course", "title")   
-        .sort({ createdAt: -1 });
-  
-      return res.status(200).json({
-        message: "تم جلب الاختبارات بنجاح",
-        error: false,
-        status: true,
-        count: quizzes.length,
-        data: quizzes,
-      });
+        const teacherId = req.userId;
+        const { subjectId, courseId, level } = req.query;
+
+        const query = { teacher: teacherId };
+
+        if (subjectId && subjectId !== "all") {
+            query.subject = subjectId;
+        }
+
+        if (courseId && courseId !== "all") {
+            query.course = courseId;
+        }
+
+        if (level && level !== "all") {
+            query.level = level;
+        }
+
+        const quizzes = await PdfModel.find(query)
+            .populate("subject", "name")
+            .populate("course", "title")
+            .sort({ createdAt: -1 });
+
+        return res.status(200).json({
+            message: "تم جلب الاختبارات بنجاح",
+            error: false,
+            status: true,
+            count: quizzes.length,
+            data: quizzes,
+        });
     } catch (error) {
-      return res.status(500).json({
-        message: error.message || "Internal Server Error",
-        error: true,
-        status: false,
-      });
+        return res.status(500).json({
+            message: error.message || "Internal Server Error",
+            error: true,
+            status: false,
+        });
     }
-  };
+};
