@@ -90,9 +90,10 @@ export const createNote = async (req, res) => {
 
 export const updateNote = async (req, res) => {
     try {
-        const { pdfId } = req.body;
+        const { pdfId, title, levelId, subjectId, courseId } = req.body;
         const teacherId = req.userId;
 
+        // 1. التحقق من وجود معرف الملف المراد تحديثه
         if (!pdfId) {
             return res.status(400).json({
                 message: "يرجى تقديم معرف الملف (PDF ID)",
@@ -101,6 +102,7 @@ export const updateNote = async (req, res) => {
             });
         }
 
+        // 2. البحث عن الملف والتأكد من أن المدرس الحالي هو صاحبه
         const pdfRecord = await PdfModel.findOne({
             _id: pdfId,
             teacher: teacherId,
@@ -108,25 +110,76 @@ export const updateNote = async (req, res) => {
 
         if (!pdfRecord) {
             return res.status(404).json({
-                message: "الملف غير موجود أو ليس لديك صلاحية حذفه",
+                message: "الملف غير موجود أو ليس لديك صلاحية تعديله",
                 error: true,
                 status: false,
             });
         }
 
+        const oldCourseId = pdfRecord.course; // الاحتفاظ بمعرف الكورس القديم للمقارنة لاحقاً
 
-        const deleteFrom = await destroyPdfCloudinary(pdfRecord.pdf)
-        await PdfModel.findByIdAndDelete(pdfId);
+        // 3. تجهيز البيانات الجديدة: إذا أرسلت قيمة جديدة نستخدمها، وإلا نترك القديمة كما هي
+        let newPdfUrl = pdfRecord.pdf; // افتراضيًا أبقِ رابط الـ PDF القديم
+        if (req.file) {
+            // رفع ملف PDF جديد إلى Cloudinary
+            const uploadResult = await new Promise((resolve, reject) => {
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        resource_type: "raw",
+                        format: "pdf",
+                        folder: "pdf_uploads",
+                    },
+                    (error, result) => {
+                        if (error) reject(error);
+                        else resolve(result);
+                    }
+                );
+                uploadStream.end(req.file.buffer);
+            });
+            // حذف الـ PDF القديم من Cloudinary
+            await destroyPdfCloudinary(pdfRecord.pdf);
+            newPdfUrl = uploadResult.secure_url;
+        }
+        let levelName = pdfRecord.level;
+if (levelId) {
+    const levelDoc = await Level.findById(levelId);
+    if (levelDoc) {
+        levelName = levelDoc.name;
+    }
+}
+const updateData = {
+    title: title || pdfRecord.title,
+    level: levelName,
+    subject: subjectId || pdfRecord.subject,
+    course: courseId || pdfRecord.course,
+    pdf: newPdfUrl,
+};
 
-        await Course.findByIdAndUpdate(pdfRecord.course, {
-            $pull: { notes: pdfId }
-        });
+        // 4. تحديث المستند في قاعدة البيانات وإرجاع المستند الجديد بعد التعديل
+        const updatedPdf = await PdfModel.findByIdAndUpdate(
+            pdfId,
+            { $set: updateData },
+            { new: true } // لإرجاع البيانات بعد التحديث
+        );
+
+        // 5. منطق ذكي: إذا قام المدرس بتغيير الكورس (courseId)، يجب نقل الـ PDF من الكورس القديم إلى الجديد
+        if (courseId && courseId !== String(oldCourseId)) {
+            // سحب معرف الـ PDF من الكورس القديم
+            await Course.findByIdAndUpdate(oldCourseId, {
+                $pull: { notes: pdfId }
+            });
+
+            // دفع معرف الـ PDF إلى الكورس الجديد
+            await Course.findByIdAndUpdate(courseId, {
+                $addToSet: { notes: pdfId } // استخدمنا $addToSet لمنع التكرار
+            });
+        }
 
         return res.json({
-            message: "تم حذف المذكرة بنجاح من السحابة وقاعدة البيانات",
+            message: "تم تحديث بيانات المذكرة بنجاح",
             error: false,
             status: true,
-            deleteFrom
+            data: updatedPdf
         });
 
     } catch (error) {
