@@ -32,15 +32,18 @@ const Question = ({ question, index, selectedAnswer, onAnswerChange }: Props) =>
 
   // دالة للتحقق من تطابق الإجابة (نص و/أو صورة)
   const isAnswerSelected = (answer: any) => {
-    if (typeof selectedAnswer === 'string') {
+    if (typeof selectedAnswer === 'string' && selectedAnswer !== '') {
+      const currentAnswerText = typeof answer === 'string' ? answer : (answer.text || null);
+      const currentAnswerImage = typeof answer === 'object' ? (answer.image || null) : null;
+
       try {
         const parsed = JSON.parse(selectedAnswer);
         return (
-          parsed.text === (answer.text || answer) &&
-          parsed.image === (answer.image || null)
+          parsed.text === currentAnswerText &&
+          parsed.image === currentAnswerImage
         );
       } catch {
-        return selectedAnswer === answer.text || selectedAnswer === answer;
+        return selectedAnswer === currentAnswerText;
       }
     }
     return false;

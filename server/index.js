@@ -57,7 +57,7 @@ const limiter = rateLimit({
 });
 
 // Apply to all requests
-app.use(limiter);
+// app.use(limiter);
 
 
 app.use('/api/user', userRouter)

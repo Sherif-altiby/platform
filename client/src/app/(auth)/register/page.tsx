@@ -18,7 +18,7 @@ const Page = () => {
   const { userRegister, isRegister } = useAuthUser();
 
   const levels = useLevelStore((s) => s.levels);
-  const fetchLevels= useLevelStore(s => s.fetchLevels)
+  const fetchLevels = useLevelStore((s) => s.fetchLevels);
 
   const {
     register,
@@ -26,7 +26,10 @@ const Page = () => {
     formState: { errors },
     reset,
   } = useForm<RegisterInputs>({
-    mode: "onBlur",
+    // 1. Changed mode to "onSubmit" to hide errors until the submit button is clicked
+    mode: "onSubmit",
+    // 2. Clear/Update errors instantly while typing ONLY after the first submit try
+    reValidateMode: "onChange",
     resolver: zodResolver(registerSchema),
   });
 
@@ -49,7 +52,9 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {fetchLevels()}, [])
+  useEffect(() => {
+    fetchLevels();
+  }, []);
 
   const inputClass = (hasError: boolean) =>
     `w-full px-4 py-3 rounded-xl border text-sm bg-slate-50 text-slate-700 placeholder-slate-400
@@ -160,34 +165,32 @@ const Page = () => {
                   </span>
                 )}
               </div>
-
-              
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label
-                  className="text-sm font-medium text-slate-600 text-right"
-                  htmlFor="level"
-                >
-                  الصف الدراسي
-                </label>
-                <select
-                  id="level"
-                  className={inputClass(!!errors.level)}
-                  {...register("level")}
-                >
-                  {levels.map((l) => (
-                    <option value={l._id} key={l._id}>
-                      {l.name}
-                    </option>
-                  ))}
-                </select>
-                {errors.level && (
-                  <span className="text-xs text-red-500 text-right">
-                    {errors.level.message}
-                  </span>
-                )}
-              </div>
+              <label
+                className="text-sm font-medium text-slate-600 text-right"
+                htmlFor="level"
+              >
+                الصف الدراسي
+              </label>
+              <select
+                id="level"
+                className={inputClass(!!errors.level)}
+                {...register("level")}
+              >
+                {levels.map((l) => (
+                  <option value={l._id} key={l._id}>
+                    {l.name}
+                  </option>
+                ))}
+              </select>
+              {errors.level && (
+                <span className="text-xs text-red-500 text-right">
+                  {errors.level.message}
+                </span>
+              )}
+            </div>
 
             {/* Row 3: Password + Confirm */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">

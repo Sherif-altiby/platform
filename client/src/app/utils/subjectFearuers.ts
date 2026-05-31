@@ -21,7 +21,12 @@ export const getSubjectDetails = async (subId: string) => {
     });
 
     const data = await res.json();
-    return data.data;
+    
+    if (!res.ok || data.success === false || data.error === true) {
+      throw new Error(data.message || "Failed to fetch subject details");
+    }
+    
+    return data.data || [];
   } catch (error) {
     throw error;
   }

@@ -56,9 +56,17 @@ const Hero = () => {
               تفكيرك.
             </p>
 
-              <button className="w-full sm:w-auto px-12 py-4 bg-slate-900 text-white xl:font-black rounded-2xl shadow-xl hover:bg-blue-600 hover:scale-105 transition-all active:scale-95">
-                ابدأ رحلة النجاح
-              </button>
+            <div className="w-full max-w-md p-6 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl shadow-2xl border border-slate-700/50 hover:border-blue-500 transition-all group">
+              <div className="flex justify-between items-center direction-rtl">
+                <div>
+                  <h3 className="text-xl font-bold mb-1 group-hover:text-blue-400 transition-colors">
+                    ابدأ رحلة النجاح
+                  </h3>
+                  <p className="text-sm text-slate-400">اكتشف الفرص المتاحة لك اليوم</p>
+                </div>
+
+              </div>
+            </div>
           </div>
 
           {/* --- الجانب الأيسر: الرسوم التوضيحية SVG (The Portal Effect) --- */}
@@ -267,7 +275,7 @@ const Hero = () => {
       {/* --- شريط الأرقام السفلية (The Stats Bar) --- */}
       <div className="absolute bottom-0 left-0 w-full bg-white/70 border-t border-slate-200 py-8 backdrop-blur-sm hidden md:block z-20">
         <div className="container mx-auto px-6 flex justify-around items-center">
-          {["أفضل المعلمين", "محتوى تفاعلي", "شهادات معتمدة", "تطبيق ذكي"].map(
+          {["أفضل المعلمين", "محتوى تفاعلي", "دروس يومية ", "تطبيق ذكي"].map(
             (item, i) => (
               <div
                 key={i}

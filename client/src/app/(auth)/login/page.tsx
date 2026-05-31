@@ -5,10 +5,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { LoginInputs, loginSchema } from "@/validations/loginValidation";
 import { useAuthUser } from "@/store/authStore";
 import ButtonLoader from "@/components/ButtonLoader";
-import { useRouter } from "next/navigation";
 
 const Login = () => {
-  const router = useRouter();
   const { isLogin, userLogin } = useAuthUser();
 
   const {
@@ -17,7 +15,10 @@ const Login = () => {
     formState: { errors },
     reset,
   } = useForm<LoginInputs>({
-    mode: "onBlur",
+    // 1. Changed mode to "onSubmit" so errors only show after the button is clicked
+    mode: "onSubmit",
+    // 2. Optional: ensures errors clear or re-validate instantly ONLY after the first submit attempt
+    reValidateMode: "onChange",
     resolver: zodResolver(loginSchema),
   });
 
@@ -127,7 +128,7 @@ const Login = () => {
             )}
 
             {/* Register link */}
-            <div className="flex items-center justify-center gap-1.5 text-sm text-slate-500 pt-1"  >
+            <div className="flex items-center justify-center gap-1.5 text-sm text-slate-500 pt-1">
               <p>ليس لديك حساب؟</p>
               <Link
                 href="/register"

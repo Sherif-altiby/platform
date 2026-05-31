@@ -1,78 +1,102 @@
 "use client";
 
-import PayCridet from "@/components/payment/PayCridet";
 import PaymentHeader from "@/components/payment/PaymentHeader";
-import PaymenWay from "@/components/payment/PaymenWay";
 import PayVodafone from "@/components/payment/PayVodafone";
+import PayInstapay from "@/components/payment/PayInstapay"; // 1. Imported the component here
 import { useState } from "react";
-import { CiCreditCard1 } from "react-icons/ci";
-import { FaChevronRight, FaCopy } from "react-icons/fa6";
 import { GiSmartphone } from "react-icons/gi";
-import { handlePayment } from "../utils/PaymentFeatures";
-import { usePaymentStore } from "@/store/PaymentStore";
+import { FaChevronDown } from "react-icons/fa6";
 
 export default function PaymentPage() {
-  const [method, setMethod] = useState<"vodafone" | "card" | null>(null);
-  const [step, setStep] = useState(1);
-  const [loading, setLoading] = useState(false)
-  const course = usePaymentStore(s => s.courseToPay)
+  const [activeAccordion, setActiveAccordion] = useState<"vodafone" | "instapay" | null>("vodafone");
+
+  const toggleAccordion = (type: "vodafone" | "instapay") => {
+    setActiveAccordion(activeAccordion === type ? null : type);
+  };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-6 flex   justify-center">
+    <div className="min-h-screen bg-slate-50 p-6 flex justify-center" dir="rtl">
       <div className="max-w-2xl w-full">
-        <div className="bg-white/50 rounded-xl shadow-xl shadow-slate-200/60 overflow-hidden">
+        <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-100 overflow-hidden">
           <PaymentHeader />
 
-          <div className="p-8">
-            {step === 1 ? (
-              <div className="space-y-6">
-                <h2 className="text-xl font-bold text-slate-800 mb-4 text-center"> اختر وسيلة الدفع </h2>
+          <div className="p-6 md:p-8 space-y-4">
+            <h2 className="text-xl font-bold text-slate-800 mb-6 text-center">اختر وسيلة الدفع</h2>
 
-                <PaymenWay
-                  title="فودافون كاش "
-                  method={method || ""}
-                  setMethod={setMethod}
-                  icon={GiSmartphone}
-                  way="vodafone"
-                  des="تحويل يدوي وتأكيد الطلب "
+            {/* --- Vodafone Cash Accordion Item --- */}
+            <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-sm bg-white">
+              <button
+                onClick={() => toggleAccordion("vodafone")}
+                className={`w-full p-5 flex items-center justify-between text-right transition-colors ${activeAccordion === "vodafone" ? "bg-slate-50/80" : "hover:bg-slate-50/50"
+                  }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-xl transition-colors ${activeAccordion === "vodafone" ? "bg-red-50 text-red-600" : "bg-slate-100 text-slate-600"
+                    }`}>
+                    <GiSmartphone size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-base">فودافون كاش</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">تحويل يدوي وتأكيد الطلب</p>
+                  </div>
+                </div>
+                <FaChevronDown
+                  size={16}
+                  className={`text-slate-400 transition-transform duration-300 ${activeAccordion === "vodafone" ? "rotate-180 text-slate-700" : ""
+                    }`}
                 />
+              </button>
 
-                {/* <PaymenWay
-                  title=" بطاقة بنكية "
-                  method={method || ""}
-                  setMethod={setMethod}
-                  icon={CiCreditCard1}
-                  way="card"
-                  des=" دفع إلكتروني فوري"
-                /> */}
+              <div
+                className={`grid transition-all duration-300 ease-in-out ${activeAccordion === "vodafone" ? "grid-rows-[1fr] opacity-100 border-t border-slate-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="p-6 bg-white">
+                    <PayVodafone />
+                  </div>
+                </div>
+              </div>
+            </div>
 
-                <button
-                  disabled={loading}
-                  onClick={() => {
-                    if (method === "vodafone") {
-                      setStep(2)
-                    } else {
-                      handlePayment(course?.price as number)
-                      setLoading(true)
-                    }
-                  }}
-                  className="w-full bg-[#0066FF] text-white py-5 rounded-2xl font-black mt-4 disabled:opacity-50 disabled:cursor-not-allowed hover:bg-blue-700 transition-all flex items-center justify-center gap-2 shadow-lg shadow-blue-100"
-                >
-                  <span> {loading ? ' يتم تحويلك الب بوابة الدفع ..... ' : 'استمرار'} </span>
-                  <FaChevronRight size={20} className="rotate-180" />
-                </button>
+            {/* --- InstaPay Accordion Item --- */}
+            <div className="border border-slate-100 rounded-2xl overflow-hidden shadow-sm bg-white">
+              <button
+                onClick={() => toggleAccordion("instapay")}
+                className={`w-full p-5 flex items-center justify-between text-right transition-colors ${activeAccordion === "instapay" ? "bg-slate-50/80" : "hover:bg-slate-50/50"
+                  }`}
+              >
+                <div className="flex items-center gap-4">
+                  {/* Styled with native active pink shades */}
+                  <div className={`p-3 rounded-xl transition-colors ${activeAccordion === "instapay" ? "bg-pink-50 text-pink-600" : "bg-slate-100 text-slate-600"
+                    }`}>
+                    <GiSmartphone size={24} />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-slate-800 text-base">انستا باي (InstaPay)</h3>
+                    <p className="text-xs text-slate-400 mt-0.5">تحويل يدوي فوري وتأكيد الطلب</p>
+                  </div>
+                </div>
+                <FaChevronDown
+                  size={16}
+                  className={`text-slate-400 transition-transform duration-300 ${activeAccordion === "instapay" ? "rotate-180 text-slate-700" : ""
+                    }`}
+                />
+              </button>
+
+              <div
+                className={`grid transition-all duration-300 ease-in-out ${activeAccordion === "instapay" ? "grid-rows-[1fr] opacity-100 border-t border-slate-100" : "grid-rows-[0fr] opacity-0"
+                  }`}
+              >
+                <div className="overflow-hidden">
+                  <div className="p-6 bg-white">
+                    {/* 2. Embedded the new PayInstapay component inside the container */}
+                    <PayInstapay />
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="animate-in fade-in slide-in-from-left-4 duration-500">
-                <PayVodafone />
-                <button
-                  onClick={() => setStep(1)}
-                  className="w-full text-slate-400 font-bold text-sm mt-6 hover:text-slate-600 transition-colors"
-                >
-                  العودة لتغيير الوسيلة
-                </button>
-              </div>
-            )}
+            </div>
+
           </div>
         </div>
       </div>

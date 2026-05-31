@@ -105,13 +105,13 @@ export const getAllSubjects = async (req, res) => {
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,
-      status: false, 
+      status: false,
     });
   }
 };
 
 
- 
+
 export const getSubjectCourses = async (req, res) => {
   try {
     const { subId } = req.body;
@@ -135,14 +135,14 @@ export const getSubjectCourses = async (req, res) => {
     }
 
     // 3. جلب الكورسات التي تنتمي لهذه المادة "و" تطابق مستوى الطالب
-    const courses = await Course.find({ 
+    const courses = await Course.find({
       subject: subId,
       level: user.level // الربط بمستوى الطالب
     })
       .populate("subject")
       .lean();
 
-      console.log(user, courses)
+    console.log(user, courses)
 
     if (!courses || courses.length === 0) {
       return res.status(200).json({
@@ -170,7 +170,7 @@ export const getSubjectCourses = async (req, res) => {
     // 6. الدمج: الأولوية لبيانات سجل الوصول، ثم حالة الكورس الأصلية
     const coursesWithStatus = courses.map(course => {
       const courseIdStr = course._id.toString();
-      
+
       let finalStatus = course.status; // الحالة الافتراضية من موديل الكورس
 
       // إذا وُجد سجل في CourseAccess (سواء كان pending أو open)، نأخذه كأولوية
@@ -212,9 +212,9 @@ export const getSubjectsByTeacher = async (req, res) => {
     }
 
     const subjects = await Subject.find({ teachers: teacherId }).populate({
-    path: 'courses',       // الحقل المراد تعبئته
-    select: 'title _id'    // الحقول المحددة التي تريدها من موديل الكورس
-  })
+      path: 'courses',       // الحقل المراد تعبئته
+      select: 'title _id'    // الحقول المحددة التي تريدها من موديل الكورس
+    })
 
     return res.json({
       error: false,

@@ -8,6 +8,7 @@ import SubjectSkeleton from "@/skeletons/SubjectSkeleton";
 import { SubjectTypes } from "@/types/Types";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
+import { useEffect } from "react";
 import { PiBookOpenTextLight } from "react-icons/pi";
 
 const page = () => {
@@ -18,6 +19,11 @@ const page = () => {
     queryKey: ["teacher-subjects"],
     queryFn: () => getTeacherSubjects(teacherId),
   });
+
+
+  useEffect(() => {
+    console.log(data);
+  }, [data]);
 
   return (
     <div className="ctm-height bg-gray-50">
@@ -30,17 +36,17 @@ const page = () => {
           icon={PiBookOpenTextLight}
         />
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4  gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4  gap-5">
           {isLoading
-            ? [1, 2, 3, 4].map((__, index) => <SubjectSkeleton key={index}/>)
+            ? [1, 2, 3, 4].map((__, index) => <SubjectSkeleton key={index} />)
             : data.map((sub: SubjectTypes) => (
-                <SubjectCard
-                  key={sub._id}
-                  link={`subjects/${sub._id}`}
-                  name={sub.name}
-                  avatar={sub.image}
-                />
-              ))}
+              <SubjectCard
+                key={sub._id}
+                link={`subjects/${sub._id}`}
+                name={sub.name}
+                avatar={sub.image}
+              />
+            ))}
         </div>
       </div>
     </div>

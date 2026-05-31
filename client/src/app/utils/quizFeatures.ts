@@ -1,7 +1,7 @@
 export const getQuiz = async (quizId: string) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}teacher/get-quiz-by-id/${quizId}`,
+      `${process.env.NEXT_PUBLIC_SERVER_URL}teacher/quizzes/${quizId}`,
       {
         method: "GET",
         headers: {
