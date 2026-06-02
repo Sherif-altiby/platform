@@ -48,8 +48,6 @@ export const teacherUploadQuiz = async (req, res) => {
       ? JSON.parse(questions)
       : questions;
 
-    console.log("Parsed questions:", parsedQuestions); // Debug log
-
     // Helper function to find file by fieldname
     const findFileByFieldname = (fieldname) => {
       return req.files?.find(file => file.fieldname === fieldname);
@@ -117,11 +115,10 @@ export const teacherUploadQuiz = async (req, res) => {
       })
     );
 
-    console.log("Processed questions:", JSON.stringify(processedQuestions, null, 2)); // Debug log
 
     const newQuiz = new Quizz({
       title,
-      level: foundLevel.name,
+      level: foundLevel._id,
       subject: subjectId,
       course: courseId,
       teacher: teacherId,

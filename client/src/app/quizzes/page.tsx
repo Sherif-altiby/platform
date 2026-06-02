@@ -7,7 +7,6 @@ import Quiz from "./Quiz";
 import Spiner from "@/components/Spiner";
 import { toast } from "react-toastify";
 import { CiSquareQuestion } from "react-icons/ci";
-import { useAuthUser } from "@/store/authStore";
 import { useQuery } from "@tanstack/react-query";
 
 function QuizzesContent() {
@@ -19,37 +18,29 @@ function QuizzesContent() {
 
 
   const { data: quizzes = [], isLoading } = useQuery({
-
     queryKey: ["quizzesStudents", teacherId, level],
     queryFn: async () => {
-       const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}teacher/get-quiz-by-level`, {
+      console.log("QUERY EXECUTED");
+  
+      const url = `${process.env.NEXT_PUBLIC_SERVER_URL}teacher/get-quiz-by-level`;
+  
+      console.log("Calling:", url);
+  
+      const response = await fetch(url, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include", 
+        credentials: "include",
         body: JSON.stringify({
-          teacherId: teacherId,
-          level: level,
+          teacherId,
+          level,
         }),
       });
-
-      if (!response.ok) {
-        throw new Error(`خطأ في السيرفر: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (result.status === false) {
-        toast.error(result.message || "فشل جلب الاختبارات");
-        return [];
-      }
-
-      return result.data ;
+  
+      return (await response.json()).data;
     },
     enabled: !!teacherId && !!level,
-    staleTime: 1000 * 60 * 5, 
-    retry: 1, 
   });
 
 
@@ -91,8 +82,7 @@ function QuizzesContent() {
   );
 }
 
-// المكون الأساسي مع Suspense للتعامل مع useSearchParams في Next.js
-export default function Pages() {
+ export default function Pages() {
   return (
     <Suspense
       fallback={

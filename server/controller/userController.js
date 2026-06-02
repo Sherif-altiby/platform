@@ -359,11 +359,13 @@ export const userUpdateProfile = async (req, res) => {
 
     await user.save();
 
+    const updatedUser = await User.findById(userId).select("-password -refreshToken");
+
     return res.status(200).json({
       message: "تم حفظ البيانات بنجاح",
       error: false,
       status: true,
-      user,
+      user: updatedUser,
     });
   } catch (error) {
     return res.status(500).json({
