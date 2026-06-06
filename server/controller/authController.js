@@ -5,9 +5,9 @@ import { comparePassword, hashPassword } from "../utils/hashPassword.js";
 import generatedAccessToken from "../utils/generateAccessToken.js";
 import generateRefreshToken from "../utils/generateRefreshToken.js";
 import { Teacher } from "../models/teacherModel.js";
-import  sendEmail  from "../config/sendEmail.js";
-import  forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
-import  generateCode  from "../utils/generateCode.js";
+import sendEmail from "../config/sendEmail.js";
+import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
+import generateCode from "../utils/generateCode.js";
 import { Level } from "../models/levelModel.js";
 
 export const register = async (req, res) => {
@@ -25,7 +25,7 @@ export const register = async (req, res) => {
     const { name, email, password, level, phone, parentPhone } = req.body;
 
     const levelExists = await Level.findById(level);
-    
+
     if (!levelExists) {
       return res.status(404).json({
         message: "المستوى الدراسي المحدد غير موجود",
@@ -50,7 +50,7 @@ export const register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      level: levelExists.name,
+      level,
       phone,
       parentPhone
     });
@@ -125,7 +125,7 @@ export const login = async (req, res) => {
 
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true, 
+        secure: true,
         sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",
@@ -165,9 +165,9 @@ export const login = async (req, res) => {
         { $set: { refreshToken: refreshToken } }
       );
 
-       res.cookie("refreshToken", refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: true, 
+        secure: true,
         sameSite: "none",
         maxAge: 7 * 24 * 60 * 60 * 1000,
         path: "/",

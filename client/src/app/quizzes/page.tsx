@@ -24,8 +24,6 @@ function QuizzesContent() {
   
       const url = `${process.env.NEXT_PUBLIC_SERVER_URL}teacher/get-quiz-by-level`;
   
-      console.log("Calling:", url);
-  
       const response = await fetch(url, {
         method: "POST",
         headers: {

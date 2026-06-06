@@ -177,7 +177,7 @@ export const teacherUpdateVideo = async (req, res) => {
 export const getTeacherQuizzesByLevel = async (req, res) => {
   try {
     const { teacherId, level } = req.body;
-    console.log("teacherId, level", teacherId, level);
+
     if (!teacherId || !level) {
       return res.status(400).json({
         message: "Complete all data",
