@@ -64,7 +64,7 @@ export const addCourse = async (req, res) => {
       price,
       offer,
       offerExpirt,
-      level: foundLevel.name,
+      level: foundLevel._id,
       status,
     });
 
@@ -104,7 +104,7 @@ export const updateCourse = async (req, res) => {
     const { title, subjectId, price, offer, offerExpirt, level, status } =
       req.body;
 
-    if (offer >= price) {
+    if (offer >= price  && status !== "open") {
       return res.status(400).json({
         message: "Offer cannot be greater than or equal to the original price",
         error: true,
@@ -141,7 +141,7 @@ export const updateCourse = async (req, res) => {
     let levelName = course.level;
     if (level) {
       const foundLevel = await Level.findById(level);
-      if (foundLevel) levelName = foundLevel.name;
+      if (foundLevel) levelName = foundLevel._id;
     }
 
     const updatedCourse = await Course.findByIdAndUpdate(

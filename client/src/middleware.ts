@@ -32,6 +32,6 @@ export const config = {
     /*
      * استثناء الملفات الثابتة والتقنية لضمان عدم حدوث Redirect لملفات الصور أو السكريبتات
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|images|logo.png|sw.js).*)",
+    "/((?!api|_next/static|_next/image|favicon.ico|main-logo.png|sw.js).*)",
   ],
 };

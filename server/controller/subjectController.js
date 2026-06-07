@@ -235,8 +235,7 @@ export const getStudentCoursesByTeacher = async (req, res) => {
     const { teacherId, subjectId } = req.body;
     const studentId = req.userId;
 
-    // 1. التحقق من البيانات المرسلة
-    if (!teacherId || !subjectId) {
+     if (!teacherId || !subjectId) {
       return res.status(400).json({
         message: "يرجى إرسال معرف المعلم ومعرف المادة",
         error: true,
@@ -273,6 +272,8 @@ export const getStudentCoursesByTeacher = async (req, res) => {
     })
       .populate("subject", "name")
       .sort({ createdAt: -1 });
+
+      console.log("Courses: ", courses)
 
     // 6. جلب جميع سجلات الوصول لهذا الطالب من الموديل الجديد
     const allAccessRecords = await CourseAccess.find({ student: studentId });

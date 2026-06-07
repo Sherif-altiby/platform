@@ -13,12 +13,10 @@ export const teacherUploadQuiz = async (req, res) => {
     const teacherId = req.userId;
     const { title, level, subjectId, courseId, questions, duration } = req.body;
 
-    console.log("Received files:", req.files); // Debug log
-
     if (!duration || isNaN(duration)) {
       return res.status(400).json({
         message: "يرجى تحديد مدة الاختبار بالدقائق بشكل صحيح",
-        error: true
+        error: true,
       });
     }
 
@@ -27,7 +25,7 @@ export const teacherUploadQuiz = async (req, res) => {
       Teacher.findById(teacherId),
       Subject.findById(subjectId),
       Course.findById(courseId),
-      Level.findById(level)
+      Level.findById(level),
     ]);
 
     if (!teacher || !subject || !course || !foundLevel) {
@@ -40,17 +38,18 @@ export const teacherUploadQuiz = async (req, res) => {
 
     const isQuizExist = await Quizz.findOne({ title });
     if (isQuizExist) {
-      return res.status(400).json({ message: "Quiz title already exists", error: true });
+      return res
+        .status(400)
+        .json({ message: "Quiz title already exists", error: true });
     }
 
     // Parse questions if sent as string (from FormData)
-    const parsedQuestions = typeof questions === 'string'
-      ? JSON.parse(questions)
-      : questions;
+    const parsedQuestions =
+      typeof questions === "string" ? JSON.parse(questions) : questions;
 
     // Helper function to find file by fieldname
     const findFileByFieldname = (fieldname) => {
-      return req.files?.find(file => file.fieldname === fieldname);
+      return req.files?.find((file) => file.fieldname === fieldname);
     };
 
     // Process questions with image uploads
@@ -59,10 +58,14 @@ export const teacherUploadQuiz = async (req, res) => {
         let titleImage = null;
 
         // Upload question title image if exists
-        const titleImageFile = findFileByFieldname(`questions[${qIndex}][titleImage]`);
+        const titleImageFile = findFileByFieldname(
+          `questions[${qIndex}][titleImage]`,
+        );
         if (titleImageFile) {
           console.log(`Uploading title image for question ${qIndex}`); // Debug log
-          const uploadResult = await uploadImageClodinary(titleImageFile.buffer);
+          const uploadResult = await uploadImageClodinary(
+            titleImageFile.buffer,
+          );
           titleImage = uploadResult.secure_url;
           console.log(`Title image uploaded: ${titleImage}`); // Debug log
         }
@@ -72,36 +75,29 @@ export const teacherUploadQuiz = async (req, res) => {
           q.answers.map(async (answer, aIndex) => {
             let answerImage = null;
 
-            // Upload answer image if exists
-            const answerImageFile = findFileByFieldname(`questions[${qIndex}][answers][${aIndex}][image]`);
+            const answerImageFile = findFileByFieldname(
+              `questions[${qIndex}][answers][${aIndex}][image]`,
+            );
             if (answerImageFile) {
-              console.log(`Uploading answer image for Q${qIndex} A${aIndex}`); // Debug log
-              const uploadResult = await uploadImageClodinary(answerImageFile.buffer);
+              const uploadResult = await uploadImageClodinary(
+                answerImageFile.buffer,
+              );
               answerImage = uploadResult.secure_url;
-              console.log(`Answer image uploaded: ${answerImage}`); // Debug log
             }
 
             return {
               text: answer.text || null,
-              image: answerImage
+              image: answerImage,
             };
-          })
+          }),
         );
 
-        console.log("Processed answers:", processedAnswers);
+        const lastAnswer = processedAnswers[processedAnswers.length - 1];
+        const correctAnswerImage = lastAnswer?.image || null;
+        const correctAnswerText =
+          q.correctAnswer?.text || lastAnswer?.text || null;
 
-        // Process correct answer image if exists
-        let correctAnswerImage = null;
-        const correctAnswerImageFile = findFileByFieldname(`questions[${qIndex}][correctAnswer][image]`);
-        if (correctAnswerImageFile) {
-          console.log(`Uploading correct answer image for Q${qIndex}`); // Debug log
-          const uploadResult = await uploadImageClodinary(correctAnswerImageFile.buffer);
-          correctAnswerImage = uploadResult.secure_url;
-          console.log(`Correct answer image uploaded: ${correctAnswerImage}`); // Debug log
-        }
-
-        // Shuffle answers
-        const shuffledAnswers = [...processedAnswers].sort(() => 0.5 - Math.random());
+          const shuffledAnswers = [...processedAnswers].sort(() => 0.5 - Math.random());
 
         return {
           title: q.title,
@@ -109,12 +105,11 @@ export const teacherUploadQuiz = async (req, res) => {
           answers: shuffledAnswers,
           correctAnswer: {
             text: q.correctAnswer?.text || null,
-            image: correctAnswerImage
-          }
+            image: correctAnswerImage,
+          },
         };
-      })
+      }),
     );
-
 
     const newQuiz = new Quizz({
       title,
@@ -129,23 +124,22 @@ export const teacherUploadQuiz = async (req, res) => {
     await newQuiz.save();
 
     await Course.findByIdAndUpdate(courseId, {
-      $push: { quizzes: newQuiz._id }
+      $push: { quizzes: newQuiz._id },
     });
 
     return res.status(201).json({
       message: "Quiz added successfully and linked to course",
       error: false,
       status: true,
-      data: newQuiz
+      data: newQuiz,
     });
-
   } catch (error) {
     console.error("Error uploading quiz:", error);
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,
       status: false,
-      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      stack: process.env.NODE_ENV === "development" ? error.stack : undefined,
     });
   }
 };
@@ -190,7 +184,6 @@ export const getTeacherQuizzes = async (req, res) => {
   }
 };
 
-
 export const deleteQuiz = async (req, res) => {
   try {
     const { quizId } = req.params;
@@ -201,7 +194,7 @@ export const deleteQuiz = async (req, res) => {
     if (!quiz) {
       return res.status(404).json({
         status: false,
-        message: "الاختبار غير موجود أو ليس لديك صلاحية لحذفه."
+        message: "الاختبار غير موجود أو ليس لديك صلاحية لحذفه.",
       });
     }
 
@@ -209,14 +202,13 @@ export const deleteQuiz = async (req, res) => {
 
     return res.status(200).json({
       status: true,
-      message: "تم حذف الاختبار بنجاح."
+      message: "تم حذف الاختبار بنجاح.",
     });
-
   } catch (error) {
     return res.status(500).json({
       status: false,
       message: "حدث خطأ أثناء محاولة الحذف.",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -261,7 +253,7 @@ export const checkQuiz = async (req, res) => {
 
       // Parse student answer if it's a JSON string (new format with images)
       let parsedStudentAnswer = studentAnswer;
-      if (typeof studentAnswer === 'string') {
+      if (typeof studentAnswer === "string") {
         try {
           parsedStudentAnswer = JSON.parse(studentAnswer);
         } catch {
@@ -274,18 +266,23 @@ export const checkQuiz = async (req, res) => {
       let isCorrect = false;
 
       // New format: Compare both text and image
-      if (typeof parsedStudentAnswer === 'object' && parsedStudentAnswer !== null) {
+      if (
+        typeof parsedStudentAnswer === "object" &&
+        parsedStudentAnswer !== null
+      ) {
         const studentText = parsedStudentAnswer.text || null;
         const studentImage = parsedStudentAnswer.image || null;
         const correctText = correctAnswer.text || null;
         const correctImage = correctAnswer.image || null;
 
         // Both text and image must match
-        isCorrect = (studentText === correctText) && (studentImage === correctImage);
+        isCorrect =
+          studentText === correctText && studentImage === correctImage;
       }
       // Old format: Compare as strings
       else {
-        isCorrect = parsedStudentAnswer === correctAnswer.text ||
+        isCorrect =
+          parsedStudentAnswer === correctAnswer.text ||
           parsedStudentAnswer === correctAnswer;
       }
 
@@ -316,8 +313,8 @@ export const checkQuiz = async (req, res) => {
       {
         new: true,
         upsert: true,
-        runValidators: true
-      }
+        runValidators: true,
+      },
     );
 
     await QuizzesHistory.findOneAndUpdate(
@@ -332,7 +329,7 @@ export const checkQuiz = async (req, res) => {
         percentage: Math.round(finalScore),
         updatedAt: new Date(),
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     return res.status(200).json({
@@ -345,7 +342,6 @@ export const checkQuiz = async (req, res) => {
         passed: finalScore >= 50, // You can adjust the passing threshold
       },
     });
-
   } catch (error) {
     console.error("Error checking quiz:", error);
     return res.status(500).json({
@@ -367,7 +363,7 @@ export const getTeacherQuizResults = async (req, res) => {
       return res.status(404).json({
         message: "الاختبار غير موجود",
         error: true,
-        status: false
+        status: false,
       });
     }
 
@@ -375,27 +371,28 @@ export const getTeacherQuizResults = async (req, res) => {
       return res.status(403).json({
         message: "غير مسموح لك بالوصول لنتائج هذا الاختبار",
         error: true,
-        status: false
+        status: false,
       });
     }
 
-    const allResults = await Result.find({ quiz: quizId })
-      .populate("student", "name")
+    const allResults = await Result.find({ quiz: quizId }).populate(
+      "student",
+      "name",
+    );
 
     return res.status(200).json({
       message: "تم جلب النتائج بنجاح",
       error: false,
       status: true,
       count: allResults.length,
-      data: allResults
+      data: allResults,
     });
-
   } catch (error) {
     console.error("Error fetching results:", error);
     return res.status(500).json({
       message: error.message || "حدث خطأ داخلي في السيرفر",
       error: true,
-      status: false
+      status: false,
     });
   }
 };
@@ -406,12 +403,13 @@ export const getTeacherQuizzesSummary = async (req, res) => {
 
     const totalQuizzes = await Quizz.countDocuments({ teacher: teacherId });
 
-
-    const teacherQuizzes = await Quizz.find({ teacher: teacherId }).select("_id");
-    const quizIds = teacherQuizzes.map(q => q._id);
+    const teacherQuizzes = await Quizz.find({ teacher: teacherId }).select(
+      "_id",
+    );
+    const quizIds = teacherQuizzes.map((q) => q._id);
 
     const totalSubmissions = await Result.countDocuments({
-      quiz: { $in: quizIds }
+      quiz: { $in: quizIds },
     });
 
     return res.status(200).json({
@@ -419,16 +417,15 @@ export const getTeacherQuizzesSummary = async (req, res) => {
       message: "تم جلب إحصائيات الاختبارات بنجاح",
       stats: {
         totalQuizzes,
-        totalSubmissions
-      }
+        totalSubmissions,
+      },
     });
-
   } catch (error) {
     console.error("Error in quizzes summary:", error);
     return res.status(500).json({
       success: false,
       message: "حدث خطأ أثناء جلب البيانات",
-      error: error.message
+      error: error.message,
     });
   }
 };
@@ -442,56 +439,73 @@ export const teacherUpdateQuiz = async (req, res) => {
     if (!duration || isNaN(duration)) {
       return res.status(400).json({
         message: "يرجى تحديد مدة الاختبار بالدقائق بشكل صحيح",
-        error: true
+        error: true,
       });
     }
 
     // 1. جلب الكويز الحالي للتأكد من وجوده وصلاحية المعلم
     const existingQuiz = await Quizz.findById(quizId);
     if (!existingQuiz) {
-      return res.status(404).json({ message: "الامتحان غير موجود", error: true, status: false });
+      return res
+        .status(404)
+        .json({ message: "الامتحان غير موجود", error: true, status: false });
     }
 
     if (existingQuiz.teacher.toString() !== teacherId) {
-      return res.status(403).json({ message: "غير مسموح لك بتعديل هذا الاختبار", error: true, status: false });
+      return res.status(403).json({
+        message: "غير مسموح لك بتعديل هذا الاختبار",
+        error: true,
+        status: false,
+      });
     }
 
     const [subject, course, foundLevel] = await Promise.all([
       Subject.findById(subjectId),
       Course.findById(courseId),
-      Level.findById(level)
+      Level.findById(level),
     ]);
 
     if (!subject || !course || !foundLevel) {
-      return res.status(404).json({ message: "Subject, Course, or Level not found", error: true, status: false });
+      return res.status(404).json({
+        message: "Subject, Course, or Level not found",
+        error: true,
+        status: false,
+      });
     }
 
     const isQuizExist = await Quizz.findOne({ title, _id: { $ne: quizId } });
     if (isQuizExist) {
-      return res.status(400).json({ message: "عنوان الاختبار مستخدم بالفعل في اختبار آخر", error: true });
+      return res.status(400).json({
+        message: "عنوان الاختبار مستخدم بالفعل في اختبار آخر",
+        error: true,
+      });
     }
 
     // Parse الأسئلة القادمة من الـ FormData
-    const parsedQuestions = typeof questions === 'string' ? JSON.parse(questions) : questions;
+    const parsedQuestions =
+      typeof questions === "string" ? JSON.parse(questions) : questions;
 
     const findFileByFieldname = (fieldname) => {
-      return req.files?.find(file => file.fieldname === fieldname);
+      return req.files?.find((file) => file.fieldname === fieldname);
     };
 
     // 2. معالجة الأسئلة والإجابات المحدثة (حذف القديم ورفع الجديد)
     const processedQuestions = await Promise.all(
       parsedQuestions.map(async (q, qIndex) => {
-
         // --- أ. تحديث صورة عنوان السؤال ---
         let titleImage = q.titleImage || null;
-        const titleImageFile = findFileByFieldname(`questions[${qIndex}][titleImage]`);
+        const titleImageFile = findFileByFieldname(
+          `questions[${qIndex}][titleImage]`,
+        );
 
         if (titleImageFile) {
           // إذا كانت هناك صورة قديمة، احذفها أولاً من Cloudinary
           if (q.titleImage) {
             await destroyImageCloudinary(q.titleImage);
           }
-          const uploadResult = await uploadImageClodinary(titleImageFile.buffer);
+          const uploadResult = await uploadImageClodinary(
+            titleImageFile.buffer,
+          );
           titleImage = uploadResult.secure_url;
         }
 
@@ -499,38 +513,48 @@ export const teacherUpdateQuiz = async (req, res) => {
         const processedAnswers = await Promise.all(
           q.answers.map(async (answer, aIndex) => {
             let answerImage = answer.image || null;
-            const answerImageFile = findFileByFieldname(`questions[${qIndex}][answers][${aIndex}][image]`);
+            const answerImageFile = findFileByFieldname(
+              `questions[${qIndex}][answers][${aIndex}][image]`,
+            );
 
             if (answerImageFile) {
               // إذا كان الخيار يحتوي على صورة قديمة وتم استبدالها، احذف القديمة
               if (answer.image) {
                 await destroyImageCloudinary(answer.image);
               }
-              const uploadResult = await uploadImageClodinary(answerImageFile.buffer);
+              const uploadResult = await uploadImageClodinary(
+                answerImageFile.buffer,
+              );
               answerImage = uploadResult.secure_url;
             }
 
             return {
               text: answer.text || null, // يمكن أن يكون نص أو null إذا كان الخيار صورة فقط
-              image: answerImage
+              image: answerImage,
             };
-          })
+          }),
         );
 
         // --- ج. تحديث صورة الإجابة الصحيحة ---
         let correctAnswerImage = q.correctAnswer?.image || null;
-        const correctAnswerImageFile = findFileByFieldname(`questions[${qIndex}][correctAnswer][image]`);
+        const correctAnswerImageFile = findFileByFieldname(
+          `questions[${qIndex}][correctAnswer][image]`,
+        );
 
         if (correctAnswerImageFile) {
           if (q.correctAnswer?.image) {
             await destroyImageCloudinary(q.correctAnswer.image);
           }
-          const uploadResult = await uploadImageClodinary(correctAnswerImageFile.buffer);
+          const uploadResult = await uploadImageClodinary(
+            correctAnswerImageFile.buffer,
+          );
           correctAnswerImage = uploadResult.secure_url;
         }
 
         // ترتيب الإجابات عشوائياً (الـ Shuffle الخاص بك)
-        const shuffledAnswers = [...processedAnswers].sort(() => 0.5 - Math.random());
+        const shuffledAnswers = [...processedAnswers].sort(
+          () => 0.5 - Math.random(),
+        );
 
         return {
           title: q.title,
@@ -538,10 +562,10 @@ export const teacherUpdateQuiz = async (req, res) => {
           answers: shuffledAnswers,
           correctAnswer: {
             text: q.correctAnswer?.text || null,
-            image: correctAnswerImage
-          }
+            image: correctAnswerImage,
+          },
         };
-      })
+      }),
     );
 
     // 3. إدارة نقل الكويز بين الكورسات إن وجد تغيير
@@ -550,7 +574,7 @@ export const teacherUpdateQuiz = async (req, res) => {
 
     // 4. حفظ البيانات الجديدة في الـ Database
     existingQuiz.title = title;
-    existingQuiz.level = foundLevel.name;
+    existingQuiz.level = foundLevel;
     existingQuiz.subject = subjectId;
     existingQuiz.course = courseId;
     existingQuiz.duration = Number(duration);
@@ -559,7 +583,9 @@ export const teacherUpdateQuiz = async (req, res) => {
     await existingQuiz.save();
 
     if (isCourseChanged) {
-      await Course.findByIdAndUpdate(oldCourseId, { $pull: { quizzes: quizId } });
+      await Course.findByIdAndUpdate(oldCourseId, {
+        $pull: { quizzes: quizId },
+      });
       await Course.findByIdAndUpdate(courseId, { $push: { quizzes: quizId } });
     }
 
@@ -567,15 +593,14 @@ export const teacherUpdateQuiz = async (req, res) => {
       message: "تم تحديث الاختبار بنجاح وحذف الصور المستبدلة المستغنى عنها",
       error: false,
       status: true,
-      data: existingQuiz
+      data: existingQuiz,
     });
-
   } catch (error) {
     console.error("Error updating quiz:", error);
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,
-      status: false
+      status: false,
     });
   }
 };

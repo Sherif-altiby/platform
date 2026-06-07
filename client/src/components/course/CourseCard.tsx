@@ -7,6 +7,8 @@ import { FaChevronLeft, FaHourglass } from "react-icons/fa6";
 import Link from "next/link";
 import { usePaymentStore } from "@/store/PaymentStore";
 import { useParams, useRouter } from "next/navigation";
+import { useLevelStore } from "@/store/levelStore";
+import { useEffect, useState } from "react";
 
 const CourseCard = ({ course }: { course: Course }) => {
   const params = useParams();
@@ -16,9 +18,18 @@ const CourseCard = ({ course }: { course: Course }) => {
   const isPending = course.status === "pending";
   const isOpen = course.status === "open";
 
+  const courseLevel = useLevelStore((s) => s.levels);
+
+  const [currentLevelCourse, setCurrentLevelCourse] = useState("")
+
   const router = useRouter();
 
   const { setCourseToPay } = usePaymentStore();
+
+  useEffect(() => {
+    const currentLevel = courseLevel.find((l) => l._id === course.level);
+    setCurrentLevelCourse(currentLevel?.name as string)
+  }, [course]);
 
   return (
     <div
@@ -61,7 +72,7 @@ const CourseCard = ({ course }: { course: Course }) => {
           ${isClosed ? "bg-slate-500" : isPending ? "bg-amber-500" : "bg-[#0066FF]"}
         `}
         >
-          {course.level}
+          {currentLevelCourse}
         </div>
       </div>
 
