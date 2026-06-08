@@ -58,32 +58,41 @@ const Nav = () => {
 
             {/* Desktop Navigation Links */}
             <div className="hidden lg:flex items-center gap-1.5 bg-gradient-to-br from-slate-50 to-slate-100/50 p-1.5 rounded-2xl border border-slate-200/60 shadow-sm">
-              {navLinks.map((link, index) =>
-                index < 4 ? (
+              {navLinks.map((link, index) => {
+                if (index >= 4) return null;
+
+                // Check if the current path matches the link path
+                const isActive = pathname === link.path;
+
+                return (
                   <Link
+                    key={link.link}
                     href={link.path}
-                    className={`relative group ${
-                      pathname === link.path ? "text-blue-600" : "text-gray-600"
-                    }`}
+                    className={`relative px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 group
+            ${isActive ? "text-blue-600" : "text-slate-700 hover:text-blue-600"}`}
                   >
-                    {/* Hover Background Effect */}
+                    <span className="relative z-10 tracking-tight">
+                      {link.link}
+                    </span>
+
+                    {/* Background Effect (Visible on Hover OR if Active) */}
                     <div
-                      className={`absolute inset-0 bg-white scale-95 opacity-0 transition-all duration-300 rounded-xl shadow-md
-      group-hover:scale-100 group-hover:opacity-100
-      ${pathname === link.path ? "scale-100 opacity-100" : ""}`}
+                      className={`absolute inset-0 bg-white rounded-xl shadow-md transition-all duration-300
+              ${
+                isActive
+                  ? "scale-100 opacity-100"
+                  : "scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100"
+              }`}
                     />
 
-                    {/* Active Indicator */}
+                    {/* Underline Indicator (Visible on Hover OR if Active) */}
                     <div
-                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300
-      ${pathname === link.path ? "w-3/4" : "w-0 group-hover:w-3/4"}`}
+                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-blue-600 to-blue-500 transition-all duration-300 rounded-full
+              ${isActive ? "w-3/4" : "w-0 group-hover:w-3/4"}`}
                     />
-
-                    {/* content */}
-                    <span className="relative z-10">{link.link}</span>
                   </Link>
-                ) : null,
-              )}
+                );
+              })}
             </div>
 
             {/* Right Actions */}
