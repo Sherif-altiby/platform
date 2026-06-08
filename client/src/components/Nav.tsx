@@ -10,11 +10,14 @@ import { IoIosNotificationsOutline } from "react-icons/io";
 import { CiSettings, CiUser } from "react-icons/ci";
 import { useAuthUser } from "@/store/authStore";
 import { FaTimes } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 const Nav = () => {
   const [showMenu, setShowMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { user } = useAuthUser();
+
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,28 +31,26 @@ const Nav = () => {
     <>
       <nav
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-500 ${
-          isScrolled 
-            ? "bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm" 
+          isScrolled
+            ? "bg-white/95 backdrop-blur-xl border-b border-slate-200/60 shadow-sm"
             : "bg-white/80 backdrop-blur-md border-b border-transparent"
         }`}
       >
         <div className="container mx-auto px-4 lg:px-6">
-          <div className={`flex items-center justify-between transition-all duration-500 ${
-            isScrolled ? "h-[70px]" : "h-[80px]"
-          }`}>
-
+          <div
+            className={`flex items-center justify-between transition-all duration-500 ${
+              isScrolled ? "h-[70px]" : "h-[80px]"
+            }`}
+          >
             {/* Logo Section */}
-            <Link 
-              href="/" 
-              className="relative group shrink-0"
-            >
+            <Link href="/" className="relative group shrink-0">
               <div className="relative transform transition-all duration-300 group-hover:scale-105">
-                <Image 
-                  src="/main-logo.png" 
-                  alt="العبقري" 
-                  width={120} 
-                  height={40} 
-                  className="object-contain w-[90px] md:w-[100px]" 
+                <Image
+                  src="/main-logo.png"
+                  alt="العبقري"
+                  width={120}
+                  height={40}
+                  className="object-contain w-[90px] md:w-[100px]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-600/0 via-blue-600/5 to-blue-600/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg blur-xl" />
               </div>
@@ -60,25 +61,33 @@ const Nav = () => {
               {navLinks.map((link, index) =>
                 index < 4 ? (
                   <Link
-                    key={link.link}
                     href={link.path}
-                    className="relative px-6 py-2.5 rounded-xl text-sm font-bold text-slate-700 hover:text-blue-600 transition-all duration-300 group"
+                    className={`relative group ${
+                      pathname === link.path ? "text-blue-600" : "text-gray-600"
+                    }`}
                   >
-                    <span className="relative z-10 tracking-tight">{link.link}</span>
-                    
                     {/* Hover Background Effect */}
-                    <div className="absolute inset-0 bg-white scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100 transition-all duration-300 rounded-xl shadow-md" />
-                    
+                    <div
+                      className={`absolute inset-0 bg-white scale-95 opacity-0 transition-all duration-300 rounded-xl shadow-md
+      group-hover:scale-100 group-hover:opacity-100
+      ${pathname === link.path ? "scale-100 opacity-100" : ""}`}
+                    />
+
                     {/* Active Indicator */}
-                    <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-blue-500 group-hover:w-3/4 transition-all duration-300 rounded-full" />
+                    <div
+                      className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-gradient-to-r from-blue-600 to-blue-500 rounded-full transition-all duration-300
+      ${pathname === link.path ? "w-3/4" : "w-0 group-hover:w-3/4"}`}
+                    />
+
+                    {/* content */}
+                    <span className="relative z-10">{link.link}</span>
                   </Link>
-                ) : null
+                ) : null,
               )}
             </div>
 
             {/* Right Actions */}
             <div className="flex items-center gap-3">
-              
               {/* Logged In User */}
               {user ? (
                 <div className="flex items-center gap-2">
@@ -122,7 +131,7 @@ const Nav = () => {
                     <span className="relative z-10">تسجيل دخول</span>
                     <div className="absolute inset-0 bg-slate-100 scale-0 group-hover:scale-100 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg" />
                   </Link>
-                  
+
                   <Link
                     href="/register"
                     className="relative overflow-hidden flex items-center justify-center text-sm font-bold h-11 rounded-xl px-7 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-md hover:shadow-xl hover:shadow-blue-200/50 transition-all duration-300 group active:scale-95"
@@ -136,8 +145,8 @@ const Nav = () => {
               {/* Mobile Menu Button */}
               <button
                 className={`flex lg:hidden items-center justify-center w-11 h-11 rounded-xl bg-gradient-to-br transition-all duration-300 ${
-                  showMenu 
-                    ? "from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-200" 
+                  showMenu
+                    ? "from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-200"
                     : "from-slate-50 to-slate-100 border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600"
                 }`}
                 onClick={() => setShowMenu(!showMenu)}
