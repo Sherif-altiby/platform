@@ -49,37 +49,48 @@ export const updateWatchHistory = async (req, res) => {
 
 
 export const getWatchList = async (req, res) => {
-    try {
+  try {
+    const userId = req.userId;
 
-      const userId = req.userId  
-  
-      if (!userId) {
-        return res.status(401).json({ status: false, message: "غير مصرح لك بالوصول" });
-      }
-
-      const latestWatched = await watchHistoryModel.find({ userId })
-        .sort({ updatedAt: -1 }) 
-        .limit(3)
-        .populate({
-          path: "lessonId",
-          select: "title thumbnail", 
-        })
-
-        .populate({
-          path: "teacherId",
-          select: "name",
-        })
-
-        .populate({
-          path: "courseId",
-          select: "title", 
-        });
-  
-      res.status(200).json({ 
-        status: true, 
-        data: latestWatched 
+    if (!userId) {
+      return res.status(401).json({
+        status: false,
+        message: "غير مصرح لك بالوصول",
       });
-    } catch (error) {
-      res.status(500).json({ status: false, error: error.message });
     }
+
+    const latestWatched = await watchHistoryModel
+      .find(
+        { userId },
+        "lessonId teacherId courseId updatedAt"
+      )
+      .sort({ updatedAt: -1 })
+      .limit(3)
+      .populate({
+        path: "lessonId",
+        select: "title thumbnail",
+      })
+      .populate({
+        path: "teacherId",
+        select: "name",
+      })
+      .populate({
+        path: "courseId",
+        select: "title",
+      })
+      .lean();
+
+    return res.status(200).json({
+      status: true,
+      data: latestWatched,
+    });
+  } catch (error) {
+    console.error("getWatchList error:", error);
+
+    return res.status(500).json({
+      status: false,
+      message: "حدث خطأ أثناء جلب البيانات",
+      error: error.message,
+    });
+  }
 };
