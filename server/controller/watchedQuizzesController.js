@@ -30,7 +30,7 @@ export const getWatchQuizzesList = async (req, res) => {
         select: "title",
       })
 
-      
+      .lean();
 
     res.status(200).json({
       status: true,
