@@ -1,30 +1,51 @@
-const TeacherSkeleton = () => {
+const TeacherCardSkeleton = () => {
   return (
-    <div className="flex flex-col bg-white relative border border-gray-100 w-full rounded-3xl overflow-hidden shadow-sm animate-pulse">
-      <div className="relative h-24 bg-gray-200" />
-
-      <div className="absolute top-10 left-1/2 -translate-x-1/2">
-        <div className="w-20 h-20 rounded-2xl border-4 border-white shadow-lg bg-gray-300 rotate-3" />
+    <div className="relative flex flex-col bg-white rounded-[2.5rem] p-4 border border-slate-100 overflow-hidden animate-pulse">
+      
+      {/* Image Section */}
+      <div className="relative h-64 w-full rounded-[2rem] overflow-hidden bg-slate-200 mb-6">
+        {/* Badge */}
+        <div className="absolute top-4 right-4 z-20 h-8 w-24 rounded-xl bg-slate-300" />
       </div>
 
-      {/* Body skeleton */}
-      <div className="pt-14 pb-5 px-5 flex flex-col items-center gap-4 flex-1">
-        {/* Name skeleton */}
-        <div className="h-5 w-2/3 bg-gray-200 rounded-md" />
-
-        {/* Subjects skeleton */}
-        <div className="flex flex-wrap justify-center gap-1.5 w-full">
-          <div className="h-6 w-16 bg-gray-100 rounded-full" />
-          <div className="h-6 w-20 bg-gray-100 rounded-full" />
-          <div className="h-6 w-14 bg-gray-100 rounded-full" />
+      {/* Content */}
+      <div className="flex flex-col flex-1 px-2 pb-2">
+        
+        {/* Subjects */}
+        <div className="flex justify-end gap-2 mb-4">
+          <div className="h-6 w-20 rounded-lg bg-slate-200" />
+          <div className="h-6 w-16 rounded-lg bg-slate-200" />
         </div>
 
-        <div className="w-full h-px bg-gray-100 mt-1" />
+        {/* Teacher Name */}
+        <div className="h-7 w-40 rounded-md bg-slate-200 mb-4 ml-auto" />
 
-        <div className="h-4 w-24 bg-gray-200 rounded-md" />
+        {/* About */}
+        <div className="space-y-2 mb-6">
+          <div className="h-3 w-full rounded bg-slate-200" />
+          <div className="h-3 w-5/6 rounded bg-slate-200" />
+        </div>
+
+        {/* Footer */}
+        <div className="mt-auto pt-5 border-t border-slate-100 flex items-center justify-between">
+          
+          {/* View Profile */}
+          <div className="flex items-center gap-2">
+            <div className="h-4 w-4 rounded bg-slate-200" />
+            <div className="h-4 w-24 rounded bg-slate-200" />
+          </div>
+
+          {/* Avatars */}
+          <div className="flex -space-x-2 space-x-reverse">
+            <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white" />
+            <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white" />
+            <div className="w-6 h-6 rounded-full bg-slate-200 border-2 border-white" />
+            <div className="w-6 h-6 rounded-full bg-slate-300 border-2 border-white" />
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default TeacherSkeleton;
+export default TeacherCardSkeleton;
