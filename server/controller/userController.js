@@ -105,9 +105,12 @@ export const getAllUsers = async (req, res) => {
 
 export const getAllTeachers = async (req, res) => {
   try {
-    const allTeachers = await Teacher.find({})
-      .select("-password -refreshToken")
-      .populate("subjects");
+    const allTeachers = await Teacher.find({}, "-password -refreshToken")
+      .populate({
+        path: "subjects",
+        select: "name",
+      })
+      .lean();
 
     return res.json({
       error: false,
