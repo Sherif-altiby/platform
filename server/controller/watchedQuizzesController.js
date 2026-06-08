@@ -1,4 +1,5 @@
 import { QuizzesHistory } from "../models/watchedQuizMode.js";
+ 
 
 export const getWatchQuizzesList = async (req, res) => {
   try {
@@ -29,7 +30,7 @@ export const getWatchQuizzesList = async (req, res) => {
         select: "title",
       })
 
-      .lean();
+      
 
     res.status(200).json({
       status: true,
