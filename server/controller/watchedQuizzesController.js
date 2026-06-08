@@ -1,6 +1,4 @@
 import { QuizzesHistory } from "../models/watchedQuizMode.js";
-import {Quizz} from "../models/quizzModel.js";  
-
 
 export const getWatchQuizzesList = async (req, res) => {
   try {
@@ -29,7 +27,9 @@ export const getWatchQuizzesList = async (req, res) => {
       .populate({
         path: "courseId",
         select: "title",
-      });
+      })
+
+      .lean();
 
     res.status(200).json({
       status: true,
