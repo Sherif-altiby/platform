@@ -8,13 +8,8 @@ export function middleware(request: NextRequest) {
   // تعريف المسارات المتاحة للجميع
   const isPublicPath = pathname === "/";
 
-  // 1. إذا حاول المستخدم دخول صفحة Login وهو مسجل دخول فعلاً
-  if (pathname === "/login" && token) {
-    return NextResponse.redirect(new URL("/", request.url));
-  }
-
-  // 2. السماح بمرور الصفحات العامة أو صفحة تسجيل الدخول (بدون شروط)
-  if (isPublicPath || pathname === "/login" ||  pathname === "/register") {
+  
+  if (isPublicPath ) {
     return NextResponse.next();
   }
 

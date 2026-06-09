@@ -41,6 +41,16 @@ const teacherScema = new mongoose.Schema({
       required: true,
       unique: true,
     },
+    vCash: {
+      type: Number,
+      required: true,
+      unique: true,
+    },
+    instaPay: {
+      type: Number,
+      required: false,
+      unique: true,
+    },
     about: {
         type: String,
         required: true,

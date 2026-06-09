@@ -187,7 +187,7 @@ export const removeTeacherFromSubject = async (req, res) => {
 export const createTeacher = async (req, res) => {
     try {
 
-        const { name, email, password, phone, subId, about} = req.body;
+        const { name, email, password, phone, subId, about, instaPay, vCash} = req.body;
 
         if(!subId){
             return res.status(400).json({
@@ -232,6 +232,8 @@ export const createTeacher = async (req, res) => {
             name,
             email,
             phone,
+            vCash,
+            instaPay,
             avatar: uploaded.secure_url ,
             password: hashedPass,
             subjects: [subject._id],
