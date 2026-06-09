@@ -188,7 +188,11 @@ export const getTeacherQuizzesByLevel = async (req, res) => {
 
     const quizzes = await Quizz.find({ level, teacher: teacherId })
       .populate("course", "title _id")
-      .populate("subject", "name _id");
+      .populate("subject", "name _id")
+      .populate("lessons", "title")
+      .lean();
+
+
     if (!quizzes) {
       return res.status(404).json({
         message: "No quizzes founded",

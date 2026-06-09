@@ -11,7 +11,8 @@ import destroyImageCloudinary from "../utils/destroyImage.js";
 export const teacherUploadQuiz = async (req, res) => {
   try {
     const teacherId = req.userId;
-    const { title, level, subjectId, courseId, questions, duration } = req.body;
+    const { title, level, subjectId, courseId, questions, duration, lessons } =
+      req.body;
 
     if (!duration || isNaN(duration)) {
       return res.status(400).json({
@@ -97,7 +98,9 @@ export const teacherUploadQuiz = async (req, res) => {
         const correctAnswerText =
           q.correctAnswer?.text || lastAnswer?.text || null;
 
-          const shuffledAnswers = [...processedAnswers].sort(() => 0.5 - Math.random());
+        const shuffledAnswers = [...processedAnswers].sort(
+          () => 0.5 - Math.random(),
+        );
 
         return {
           title: q.title,
@@ -111,11 +114,26 @@ export const teacherUploadQuiz = async (req, res) => {
       }),
     );
 
+    let updatedLessons = [];
+
+    if (req.body.lessons) {
+      try {
+        updatedLessons = JSON.parse(req.body.lessons);
+      } catch (error) {
+        return res.status(400).json({
+          error: true,
+          status: false,
+          message: "Invalid lessons format",
+        });
+      }
+    }
+
     const newQuiz = new Quizz({
       title,
       level: foundLevel._id,
       subject: subjectId,
       course: courseId,
+      lessons: updatedLessons,
       teacher: teacherId,
       duration: Number(duration),
       questions: processedQuestions,
@@ -166,6 +184,9 @@ export const getTeacherQuizzes = async (req, res) => {
     const quizzes = await Quizz.find(query)
       .populate("subject", "name")
       .populate("course", "title")
+      .populate("lessons", "title")
+      .lean()
+ 
       .sort({ createdAt: -1 });
 
     return res.status(200).json({

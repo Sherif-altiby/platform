@@ -16,6 +16,12 @@ const quizzSchema = new mongoose.Schema({
         ref: "Course",
         required: true,
     },
+    lessons: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Lesson",
+        },
+      ],
     title: {
         type: String,
         required: true,
