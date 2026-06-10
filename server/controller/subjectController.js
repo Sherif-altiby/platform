@@ -142,8 +142,6 @@ export const getSubjectCourses = async (req, res) => {
       .populate("subject")
       .lean();
 
-    console.log(user, courses)
-
     if (!courses || courses.length === 0) {
       return res.status(200).json({
         success: true,
@@ -272,8 +270,6 @@ export const getStudentCoursesByTeacher = async (req, res) => {
     })
       .populate("subject", "name")
       .sort({ createdAt: -1 });
-
-      console.log("Courses: ", courses)
 
     // 6. جلب جميع سجلات الوصول لهذا الطالب من الموديل الجديد
     const allAccessRecords = await CourseAccess.find({ student: studentId });

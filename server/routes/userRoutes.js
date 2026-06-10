@@ -27,6 +27,8 @@ import { userRateTeacher } from "../controller/ratingController.js";
 import { getWatchList, updateWatchHistory } from "../controller/watchHistoryController.js";
 import { getWatchQuizzesList } from "../controller/watchedQuizzesController.js";
 import { addNoteToHistory, getWatchNotesList } from "../controller/watchedNotesController.js";
+import { requestCourseAccessSchema } from "../validations/courseValidation.js";
+import { validate } from "../validations/validate.js"
 
 const userRouter = Router();
 
@@ -61,7 +63,7 @@ userRouter.get('/get-statics-num', getPlatformStatics)
 userRouter.post('/get-teacher-subjects', auth, getSubjectsByTeacher)
 
 userRouter.post('/teacher-subject-courses', auth, getStudentCoursesByTeacher)
-userRouter.post('/request-access-course', auth, upload.single('avatar'), requestCourseAccess)
+userRouter.post('/request-access-course', auth, upload.single('avatar'), validate(requestCourseAccessSchema), requestCourseAccess)
 userRouter.get('/course-lessons/:courseId', auth, getCourseLessons)
 
 userRouter.get('/get-levels', getLevels)

@@ -21,10 +21,6 @@ const page = () => {
   });
 
 
-  useEffect(() => {
-    console.log(data);
-  }, [data]);
-
   return (
     <div className="ctm-height bg-gray-50">
       <SubHeader currentTitle="المواد الدراسية" />

@@ -123,7 +123,7 @@ const CourseCard = ({ course }: { course: Course }) => {
           ) : (
             <button
               onClick={() => {
-                router.push("/payment");
+                router.push(`/payment?q=${course._id}`);
                 setCourseToPay({
                   _id: course._id,
                   title: course.title,

@@ -1,7 +1,6 @@
 "use client";
 
 import { PayWithVodafone } from "@/app/utils/PaymentFeatures";
-import { usePaymentStore } from "@/store/PaymentStore";
 import { useMutation } from "@tanstack/react-query";
 import { useState } from "react";
 import { FaFileUpload, FaInfoCircle, FaCheckCircle } from "react-icons/fa";
@@ -14,18 +13,17 @@ const handleCopy = (text: any) => {
   toast.success("تم نسخ الرقم بنجاح");
 };
 
-const PayVodafone = () => {
-  const course = usePaymentStore((s) => s.courseToPay);
+const PayVodafone = ({ phone, name, courseId }: { phone: string; name: string, courseId: string }) => {
   const [file, setFile] = useState<File | null>(null);
 
   const mutation = useMutation({
-    mutationFn: () => PayWithVodafone(course?._id as string, file as File),
+    mutationFn: () => PayWithVodafone(courseId , file as File, "vCash"),
     onError: (error: any) => {
       toast.error(error.message || "حدث خطأ ما أثناء الإرسال");
     },
     onSuccess: () => {
       toast.success("تم إرسال إيصال الدفع للمراجعة بنجاح");
-    }
+    },
   });
 
   return (
@@ -34,7 +32,9 @@ const PayVodafone = () => {
       <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl flex items-start gap-3 text-amber-800">
         <FaInfoCircle className="shrink-0 text-amber-500 mt-0.5" size={16} />
         <p className="text-xs font-medium leading-relaxed">
-          يرجى تحويل قيمة الاشتراك بالكامل للرقم الموجود بالأسفل، ثم قم برفع لقطة شاشة (Screenshot) أو صورة واضحة للإيصال لتأكيد عملية الدفع وتفعيل الكورس.
+          يرجى تحويل قيمة الاشتراك بالكامل للرقم الموجود بالأسفل، ثم قم برفع
+          لقطة شاشة (Screenshot) أو صورة واضحة للإيصال لتأكيد عملية الدفع وتفعيل
+          الكورس.
         </p>
       </div>
 
@@ -45,17 +45,28 @@ const PayVodafone = () => {
             رقم محفظة فودافون كاش للتحويل
           </span>
           <span className="text-xl font-black text-slate-800 tracking-wide select-all">
-            {course?.phone || "010XXXXXXXX"}
+            {phone}
           </span>
         </div>
         <button
           type="button"
-          onClick={() => handleCopy(course?.phone)}
+          onClick={() => handleCopy(phone)}
           className="bg-white border border-slate-200 text-[#0066FF] p-2.5 rounded-xl hover:bg-[#0066FF] hover:text-white hover:border-[#0066FF] transition-all active:scale-95 shadow-sm"
           title="نسخ الرقم"
         >
           <FaCopy size={16} />
         </button>
+      </div>
+
+      <div className="bg-slate-50/60 p-4 rounded-xl border border-slate-100 flex items-center justify-between">
+        <div className="flex flex-col">
+          <span className="text-[11px] text-slate-400 font-bold mb-1">
+            اسم محفظة فودافون كاش
+          </span>
+          <span className="text-xl font-black text-slate-800 tracking-wide select-all">
+            {name}
+          </span>
+        </div>
       </div>
 
       {/* Upload Box */}
@@ -73,10 +84,11 @@ const PayVodafone = () => {
           />
 
           <div
-            className={`w-full py-6 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all ${file
+            className={`w-full py-6 border-2 border-dashed rounded-xl flex flex-col items-center justify-center gap-2 transition-all ${
+              file
                 ? "bg-green-50/50 border-green-300"
                 : "bg-slate-50/30 border-slate-200 group-hover:border-[#0066FF] group-hover:bg-slate-50/80"
-              }`}
+            }`}
           >
             {file ? (
               <>

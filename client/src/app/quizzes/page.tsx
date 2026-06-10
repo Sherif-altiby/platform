@@ -20,7 +20,6 @@ function QuizzesContent() {
   const { data: quizzes = [], isLoading } = useQuery({
     queryKey: ["quizzesStudents", teacherId, level],
     queryFn: async () => {
-      console.log("QUERY EXECUTED");
   
       const url = `${process.env.NEXT_PUBLIC_SERVER_URL}teacher/get-quiz-by-level`;
   

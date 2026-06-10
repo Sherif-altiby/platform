@@ -58,51 +58,5 @@ export const uploadVideoValidation = [
     .withMessage("Invalid level"),
 ];
 
-export const uploadQuizValidation = [
-  body("title").notEmpty().withMessage("Title is required"),
-  body("subjectId").isMongoId().withMessage("Invalid Subject ID"),
-  body("courseId").isMongoId().withMessage("Invalid Course ID"),
-  body("level").notEmpty().withMessage("Invalid level"),
-  body("questions")
-    .isArray({ min: 1 })
-    .withMessage("At least one question is required"),
-  body("questions.*.title")
-    .notEmpty()
-    .withMessage("Question title is required"),
-  body("questions.*.answers")
-    .isArray({ min: 4, max: 4 })
-    .withMessage("Provide 4 answers"),
-  body("questions.*.correctAnswer")
-    .notEmpty()
-    .withMessage("Correct answer is required"),
-];
-
-export const addCourseValidation = [
-  body("title").trim().notEmpty().withMessage("Title is required"),
-
-  body("subjectId") // Changed from 'subject' to 'subjectId' to match your controller
-    .trim()
-    .notEmpty()
-    .withMessage("Subject ID is required")
-    .isMongoId()
-    .withMessage("Invalid Subject ID format"),
-
-  body("price")
-    .trim()
-    .notEmpty()
-    .withMessage("Price is required")
-    .isNumeric()
-    .withMessage("Price must be a number"),
-
-  body("level").trim().notEmpty().withMessage("Level is required"),
-
-  body("offer")
-    .optional({ checkFalsy: true })
-    .isNumeric()
-    .withMessage("Offer must be a number"),
-
-  body("offerExpirt")
-    .optional({ checkFalsy: true })
-    .isISO8601()
-    .withMessage("Offer expiration must be a valid date"),
-];
+ 
+ 

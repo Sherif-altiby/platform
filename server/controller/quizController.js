@@ -63,12 +63,10 @@ export const teacherUploadQuiz = async (req, res) => {
           `questions[${qIndex}][titleImage]`,
         );
         if (titleImageFile) {
-          console.log(`Uploading title image for question ${qIndex}`); // Debug log
           const uploadResult = await uploadImageClodinary(
             titleImageFile.buffer,
           );
           titleImage = uploadResult.secure_url;
-          console.log(`Title image uploaded: ${titleImage}`); // Debug log
         }
 
         // Process answers with images

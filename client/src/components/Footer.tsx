@@ -3,17 +3,31 @@
 import Link from "next/link";
 import Image from "next/image";
 import { FaLinkedinIn, FaFacebookF, FaInstagram, FaWhatsapp } from "react-icons/fa";
-import { HiOutlineMail, HiOutlinePhone, HiOutlineLocationMarker } from "react-icons/hi";
-
+import { useMemo } from "react";
+ 
 const Footer = () => {
-  const date = new Date();
+  const year = useMemo(() => new Date().getFullYear(), []);
 
-  const navLinks = [
-    { label: "الرئيسية", href: "/" },
-    { label: "المدرسون", href: "/get-teachers" },
-    { label: "المواد الدراسية", href: "/subjects" },
-    { label: "الملف الشخصي", href: "/profile" },
-  ];
+  // ✅ memoized nav links
+  const navLinks = useMemo(
+    () => [
+      { label: "الرئيسية", href: "/" },
+      { label: "المدرسون", href: "/get-teachers" },
+      { label: "المواد الدراسية", href: "/subjects" },
+      { label: "الملف الشخصي", href: "/profile" },
+    ],
+    []
+  );
+
+  const socialLinks = useMemo(
+    () => [
+      { icon: <FaLinkedinIn />, color: "hover:bg-blue-600" },
+      { icon: <FaInstagram />, color: "hover:bg-pink-600" },
+      { icon: <FaFacebookF />, color: "hover:bg-blue-700" },
+      { icon: <FaWhatsapp />, color: "hover:bg-green-600" },
+    ],
+    []
+  );
 
   return (
     <footer className="relative bg-[#0F172A] text-white pt-24 pb-10 overflow-hidden">
@@ -47,12 +61,7 @@ const Footer = () => {
                 نحن في "العبقري" نؤمن أن القمة تتسع للجميع. مهمتنا هي تمكينك بأفضل الأدوات التعليمية للوصول لهدفك بذكاء.
             </p>
             <div className="flex items-center gap-3 pt-2">
-              {[
-                { icon: <FaLinkedinIn />, color: "hover:bg-blue-600" },
-                { icon: <FaInstagram />, color: "hover:bg-pink-600" },
-                { icon: <FaFacebookF />, color: "hover:bg-blue-700" },
-                { icon: <FaWhatsapp />, color: "hover:bg-green-600" },
-              ].map((s, i) => (
+              {socialLinks.map((s, i) => (
                 <a key={i} href="#" className={`w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 transition-all ${s.color} hover:text-white hover:-translate-y-1`}>
                   {s.icon}
                 </a>
@@ -93,7 +102,7 @@ const Footer = () => {
         <div className="pt-8 border-t border-white/5">
           <div className="flex flex-col md:flex-row-reverse items-center justify-between gap-6">
             <p className="text-slate-500 text-sm font-medium">
-               © {date.getFullYear()} منصة العبقري. جميع الحقوق محفوظة
+               © {year} منصة العبقري. جميع الحقوق محفوظة
             </p>
             <div className="flex items-center gap-2 text-sm text-slate-500">
               <span> تطوير  </span>

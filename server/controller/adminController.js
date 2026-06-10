@@ -3,6 +3,8 @@ import { Teacher } from "../models/teacherModel.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import mongoose from "mongoose";
 import uploadImageClodinary from "../utils/uploadImages.js";
+import { createTeacherService } from "../services/admin/teacherServices.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 
 export const updateSubjectName = async (req, res) => {
@@ -184,82 +186,11 @@ export const removeTeacherFromSubject = async (req, res) => {
 }
 
 
-export const createTeacher = async (req, res) => {
-    try {
-
-        const { name, email, password, phone, subId, about, instaPay, vCash} = req.body;
-
-        if(!subId){
-            return res.status(400).json({
-                message: "provide subjcet id",
-                error: true,
-                status: false,
-            });
-        }
-
-        if (!mongoose.Types.ObjectId.isValid(subId)) {
-            return res.status(400).json({
-              message: "Invalid Subject ID format",
-              error: true,
-              status: false,
-            });
-        }
-
-        const subject = await Subject.findById(subId);
-        if(!subject){
-            return res.status(400).json({
-                message: "Subject not found",
-                error: true,
-                status: false,
-            });
-        }
-
-        const isTeacherExist = await Teacher.findOne({email})
-        if(isTeacherExist){
-            return res.status(400).json({
-                message: "teacher is already exist",
-                error: true,
-                status: false,
-                isTeacherExist
-            });
-        }
-
-        const hashedPass = await hashPassword(password)
-
-        const uploaded = await uploadImageClodinary(req.file.buffer)
-
-        const teacher = new Teacher({
-            name,
-            email,
-            phone,
-            vCash,
-            instaPay,
-            avatar: uploaded.secure_url ,
-            password: hashedPass,
-            subjects: [subject._id],
-            about
-        })
-
-        await teacher.save()
-
-        subject.teachers.push(teacher._id); 
-        await subject.save();
-
-        return res.json({
-            message: "Teacher created successfully",
-            error: false,
-            status: true,
-            data: teacher
-        });
-        
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
-    }
-}
+export const createTeacher = asyncHandler(async (req, res) => {
+    const teacher = await createTeacherService(req.body,req.file);
+  
+    res.status(201).json({ message: "Teacher created successfully", error: false, status: true, data: teacher,});
+});
 
 export const blockUser = async (req, res) => {
     try {

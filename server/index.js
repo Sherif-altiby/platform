@@ -10,6 +10,7 @@ import adminRouter from "./routes/adminRoutes.js";
 import teacherRouter from "./routes/teacherRoutes.js";
 import rateLimit from 'express-rate-limit';
 import paymentRouter from "./routes/paymentRoutes.js";
+import { errorHandler } from "./middlewares/errorHandler.js";
 
 
 dotenv.config();
@@ -65,7 +66,7 @@ app.use('/api/admin', adminRouter)
 app.use('/api/teacher', teacherRouter)
 app.use('/api/payment', paymentRouter)
 
-
+app.use(errorHandler);
 
 const PORT = 8081;
 

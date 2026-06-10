@@ -1,93 +1,20 @@
-import { validationResult } from "express-validator";
-import { Course, Subject, User } from "../models/model.js";
+import { Course, Subject } from "../models/model.js";
 import { Teacher } from "../models/teacherModel.js";
 import uploadImageClodinary from "../utils/uploadImages.js";
 import { List } from "../models/listModel.js";
 import { Level } from "../models/levelModel.js";
 import destroyImageCloudinary from "../utils/destroyImage.js";
 import { CourseAccess } from "../models/courseAccessModel.js";
+import { asyncHandler } from "../utils/asyncHandler.js"
+import { createCourseService } from "../services/teacher/coursesServices.js";
+import { requestCourseAccessService } from "../services/payment/paymentServices.js";
 
-export const addCourse = async (req, res) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        message: "Validation failed",
-        error: true,
-        status: false,
-        details: errors.array(),
-      });
-    }
+export const addCourse = asyncHandler( async (req, res) => {
+    const course = await createCourseService( req.userId, req.body, req.file );
 
-    if (!req.file) {
-      return res.status(400).json({
-        message: "Course image file is required",
-        error: true,
-        status: false,
-      });
-    }
-
-    const { title, subjectId, price, offer, offerExpirt, level, status } =
-      req.body;
-    const teacherId = req.userId;
-
-    const teacher = await Teacher.findById(teacherId);
-    if (!teacher) {
-      return res
-        .status(404)
-        .json({ message: "Teacher not found", error: true, status: false });
-    }
-
-    const isSubjectExist = await Subject.findById(subjectId);
-    if (!isSubjectExist) {
-      return res
-        .status(404)
-        .json({ message: "Subject not found", error: true, status: false });
-    }
-
-    const foundLevel = await Level.findById(level);
-    if (!foundLevel) {
-      return res.status(404).json({
-        message: "المستوى الدراسي غير موجود",
-        error: true,
-        status: false,
-      });
-    }
-
-    // 2. Upload to Cloudinary
-    const uploaded = await uploadImageClodinary(req.file.buffer);
-
-    const course = new Course({
-      title,
-      subject: subjectId,
-      image: uploaded.secure_url,
-      price,
-      offer,
-      offerExpirt,
-      level: foundLevel._id,
-      status,
-    });
-
-    await course.save();
-
-    isSubjectExist.courses.push(course);
-
-    await isSubjectExist.save();
-
-    return res.status(201).json({
-      message: "Course added successfully",
-      error: false,
-      status: true,
-      data: course,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
+    res.status(201).json({ message: "Course added successfully", error: false, status: true, data: course, });
   }
-};
+);
 
 export const updateCourse = async (req, res) => {
   try {
@@ -273,76 +200,10 @@ export const getSubjectCourses = async (req, res) => {
   }
 };
 
-export const requestCourseAccess = async (req, res) => {
-  try {
-    const { courseId } = req.body;
-    const userId = req.userId;
+export const requestCourseAccess = asyncHandler(async (req, res) => {
+  
+    const result = await requestCourseAccessService( req.userId, req.file, req.body );
 
-    // 1. التحقق من وجود البيانات الأساسية
-    if (!courseId) {
-      return res.status(400).json({ message: "معرف الكورس مطلوب" });
-    }
-
-    if (!req.file) {
-      return res.status(400).json({ message: "يرجى إرفاق صورة إيصال الدفع" });
-    }
-
-    // 2. التأكد من وجود الكورس في قاعدة البيانات
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({ message: "الكورس غير موجود" });
-    }
-
-    // 3. التحقق مما إذا كان الطالب قد طلب الكورس مسبقاً (باستخدام الموديل الجديد)
-    const alreadyRequested = await CourseAccess.findOne({
-      student: userId,
-      course: courseId,
-    });
-
-    if (alreadyRequested) {
-      const statusMessage =
-        alreadyRequested.status === "pending"
-          ? "طلبك قيد الانتظار حالياً"
-          : alreadyRequested.status === "open"
-            ? "لديك صلاحية الوصول لهذا الكورس بالفعل"
-            : "تم رفض طلبك مسبقاً، يرجى التواصل مع الدعم";
-
-      return res.status(400).json({
-        message: statusMessage,
-        status: alreadyRequested.status,
-      });
-    }
-
-    // 4. رفع صورة الإيصال إلى Cloudinary
-    const uploaded = await uploadImageClodinary(req.file.buffer);
-
-    // 5. إنشاء سجل الوصول الجديد بحالة "pending"
-    // ملاحظة: أضفنا حقل image هنا إذا كنت تريد حفظ الإيصال في نفس موديل الوصول
-    const newAccessRequest = new CourseAccess({
-      student: userId,
-      course: courseId,
-      status: "pending",
-      receiptImage: uploaded.secure_url, // تأكد من إضافة هذا الحقل للموديل إذا كنت تحتاجه
-    });
-
-    await newAccessRequest.save();
-
-    const newList = await List.create({
-      user: userId,
-      course: courseId,
-      image: uploaded.secure_url,
-    });
-
-    // ملاحظة: لم نعد بحاجة لعمل $push في موديل User لأننا فصلنا البيانات
-
-    res.status(201).json({
-      success: true,
-      message:
-        "تم إرسال طلب الانضمام بنجاح، بانتظار مراجعة الإيصال وتفعيل الكورس",
-      newList,
-    });
-  } catch (error) {
-    console.error("Order Error:", error);
-    res.status(500).json({ message: "حدث خطأ أثناء معالجة الطلب" });
+    res.status(201).json({ success: true, message: "تم إرسال طلب الانضمام بنجاح، بانتظار المراجعة", data: result, });
   }
-};
+);

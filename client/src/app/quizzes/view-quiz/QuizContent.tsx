@@ -25,7 +25,7 @@ const QuizContent = () => {
     queryKey: ["quiz", quizId],
     queryFn: async () => {
       const res = await getQuiz(quizId as string);
-      console.log(res)
+
       const durationInSeconds = res.data.duration * 60;
 
       if (typeof window !== "undefined") {

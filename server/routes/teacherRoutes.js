@@ -5,11 +5,10 @@ import {
   getTeacherQuizzesByLevel,
   getTeacherById,
   deleteQuize,
-  teacherStatics,
+  teacherStatics, 
   teacherUpdateProfile,
   teacherUpdateAvatar,
 } from "../controller/teacherController.js";
-import { addCourseValidation, uploadQuizValidation, } from "../validations/ApiValidations.js";
 import isTeacher from "../middlewares/isTeacher.js";
 import uploadPdfMulter from "../middlewares/pdfMulter.js";
 import upload from "../middlewares/multer.js";
@@ -20,6 +19,8 @@ import { getTeacherStats } from "../controller/staticsController.js";
 import { getTeacherRatings } from "../controller/ratingController.js";
 import { deleteQuiz, getTeacherQuizResults, getTeacherQuizzes, getTeacherQuizzesSummary, teacherUpdateQuiz, teacherUploadQuiz } from "../controller/quizController.js";
 import { createNote, deleteNote, getNoteByLevel, getTeacherNotes, updateNote } from "../controller/noteController.js";
+import { validate } from "../validations/validate.js";
+import { createCourseSchema } from "../validations/courseValidation.js";
 
 
 const teacherRouter = Router();
@@ -45,7 +46,7 @@ teacherRouter.get('/teacher-pdf', auth, isTeacher, getTeacherNotes);
 
 teacherRouter.get('/statics', auth, isTeacher, teacherStatics)
 
-teacherRouter.post('/add-course', auth, isTeacher, upload.single('avatar'), addCourseValidation, addCourse);
+teacherRouter.post('/add-course', auth, isTeacher, upload.single('avatar'), validate(createCourseSchema), addCourse);
 teacherRouter.delete('/delete-course/:courseId', auth, isTeacher, deleteCourse);
 teacherRouter.get('/get-courses/:subjectId', auth, getSubjectCourses);
 teacherRouter.put('/update-course/:courseId', auth, isTeacher, upload.single('image'), updateCourse);

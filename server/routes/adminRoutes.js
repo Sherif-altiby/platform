@@ -15,6 +15,8 @@ import upload from "../middlewares/multer.js";
 import { deleteComment, getComments, showComment } from "../controller/commentController.js";
 import { createSubject, removeSubject } from "../controller/subjectController.js";
 import { createLevel } from "../controller/levelController.js";
+import { createTeacherValidations } from "../validations/teacherValidations.js";
+import { validate } from "../validations/validate.js";
 
 
 const adminRouter = Router();
@@ -22,7 +24,7 @@ const adminRouter = Router();
 adminRouter.post('/add-subject', auth, isAdmin, upload.single('avatar'), createSubject);
 adminRouter.put('/change-subject-name', auth, isAdmin, updateSubjectName);
 
-adminRouter.post('/add-teacher', auth, isAdmin, upload.single('avatar'), createTeacher);
+adminRouter.post('/add-teacher', auth, isAdmin,   upload.single('avatar'), validate(createTeacherValidations) , createTeacher);
 adminRouter.post('/block-user', auth, isAdmin, blockUser);
 adminRouter.post('/unblock-user', auth, isAdmin, unBlockUser);
 adminRouter.post('/block-teacher', auth, isAdmin, blockTeacher);

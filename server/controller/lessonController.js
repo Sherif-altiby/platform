@@ -1,6 +1,6 @@
 import { CourseAccess } from "../models/courseAccessModel.js";
 import { Lesson } from "../models/lessonCourse.js";
-import { Course, User } from "../models/model.js";
+import { Course } from "../models/model.js";
 import { Teacher } from "../models/teacherModel.js";
 
 export const addLesson = async (req, res) => {
@@ -113,8 +113,6 @@ export const deleteLesson = async (req, res) => {
     });
   }
 };
-
-
 
 export const getCourseLessons = async (req, res) => {
   try {
