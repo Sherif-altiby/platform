@@ -13,11 +13,11 @@ const handleCopy = (text: any) => {
   toast.success("تم نسخ الرقم بنجاح");
 };
 
-const PayVodafone = ({ phone, name, courseId }: { phone: string; name: string, courseId: string }) => {
+const PayVodafone = ({ phone, name, courseId, teacherId }: { phone: string; name: string, courseId: string, teacherId: string }) => {
   const [file, setFile] = useState<File | null>(null);
 
   const mutation = useMutation({
-    mutationFn: () => PayWithVodafone(courseId , file as File, "vCash"),
+    mutationFn: () => PayWithVodafone(courseId , teacherId  , file as File, "vCash"),
     onError: (error: any) => {
       toast.error(error.message || "حدث خطأ ما أثناء الإرسال");
     },

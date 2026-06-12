@@ -12,6 +12,11 @@ const listSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    teacher: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Teacher",
+      required: true,
+    },
     image: {
       type: String,
       required: true,

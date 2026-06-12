@@ -18,7 +18,7 @@ import isAdmin from "../middlewares/isAdmin.js";
 import { checkQuiz } from "../controller/quizController.js";
 import { login, register, forgotPassword, logout, ressetPassword, userChangePassword, verifyForgotPasswordCode } from "../controller/authController.js";
 import { getAllSubjects, getStudentCoursesByTeacher, getSubjectCourses, getSubjectsByTeacher } from "../controller/subjectController.js";
-import { addToList } from "../controller/listCoontroller.js";
+import { addToList } from "../controller/listController.js";
 import { requestCourseAccess } from "../controller/courseController.js";
 import { getCourseLessons } from "../controller/lessonController.js";
 import upload from "../middlewares/multer.js";

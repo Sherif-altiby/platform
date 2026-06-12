@@ -294,8 +294,8 @@ export const getStudentCoursesByTeacher = async (req, res) => {
 
       return {
         ...courseObj,
-        accessStatus: finalStatus, // نستخدم اسم حقل مختلف لتمييزه عن حالة الكورس الأصلية
-        teacherPhone: teacher.phone,
+        status: finalStatus, // نستخدم اسم حقل مختلف لتمييزه عن حالة الكورس الأصلية
+        teacherId: teacher._id,
       };
     });
 

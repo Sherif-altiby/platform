@@ -13,5 +13,6 @@ export const createCourseSchema = z.object({
 
 export const requestCourseAccessSchema = z.object({
   courseId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Course ID"),
+  teacherId: z.string().regex(/^[0-9a-fA-F]{24}$/, "Invalid Teacher ID"),
   method: z.enum(["instaPay", "vCash"], {message: "Method must be instaPay or vCash",}),
 });

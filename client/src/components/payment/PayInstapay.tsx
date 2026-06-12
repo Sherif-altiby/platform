@@ -13,12 +13,12 @@ const handleCopy = (text: any) => {
   toast.success("تم نسخ عنوان الدفع بنجاح");
 };
 
-const PayInstapay = ({ phone, name , courseId}: { phone: string; name: string , courseId: string}) => {
+const PayInstapay = ({ phone, name , courseId, teacherId}: { phone: string; name: string , courseId: string, teacherId: string}) => {
   const [file, setFile] = useState<File | null>(null);
 
   const mutation = useMutation({
     // Make sure to adapt this utility function to handle your instapay endpoint payload if needed
-    mutationFn: () => PayWithVodafone(courseId , file as File, "instaPay"),
+    mutationFn: () => PayWithVodafone(courseId , teacherId, file as File, "instaPay"),
     onError: (error: any) => {
       toast.error(error.message || "حدث خطأ ما أثناء الإرسال");
     },

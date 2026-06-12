@@ -6,10 +6,10 @@ import uploadImageClodinary from "../../utils/uploadImages.js";
 
 export const getPaymentInfoService = async (courseId) => {
   const course = await Course.findById(courseId)
-    .select("title teacher price offer _d")
+    .select("title teacher price offer _id")
     .populate({
       path: "teacher",
-      select: "name vCash instaPay",
+      select: "name vCash instaPay _id",
     })
     .lean();
 
@@ -28,6 +28,7 @@ export const getPaymentInfoService = async (courseId) => {
     coursePrice,
     courseId: course._id,
     teacherName: course.teacher.name,
+    teacherId: course.teacher._id,
 
     vCash: {
       number: course.teacher.vCash.number,
@@ -42,10 +43,9 @@ export const getPaymentInfoService = async (courseId) => {
 };
 
 
-
 export const requestCourseAccessService = async (userId, file, data) => {
 
-  const { courseId, method } = data;
+  const { courseId, method, teacherId } = data;
 
   if (!file) {throw new AppError("يرجى إرفاق صورة إيصال الدفع",400);}
 
@@ -73,9 +73,42 @@ export const requestCourseAccessService = async (userId, file, data) => {
 
   const uploaded = await uploadImageClodinary( file.buffer );
 
-  const newAccessRequest = await CourseAccess.create({ student: userId, course: courseId, status: "pending", receiptImage: uploaded.secure_url, });
+  const newAccessRequest = await CourseAccess.create({ student: userId, course: courseId, status: "pending", teacher: teacherId , receiptImage: uploaded.secure_url, });
 
-  const newList = await List.create({ user: userId, course: courseId, method, image: uploaded.secure_url, });
+  const newList = await List.create({ user: userId, course: courseId, method, image: uploaded.secure_url, teacher: teacherId });
 
   return newList;
+};
+
+export const getListsService = async ({ page = 1, limit = 10, method, teacherId}) => {
+  const query = {
+    teacher: teacherId,
+  };
+
+  if (method) {
+    query.method = method;
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [lists, total] = await Promise.all([
+    List.find(query)
+      .populate("user", "name email level")
+      .populate("course", "title image")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+
+    List.countDocuments(query),
+  ]);
+
+  if (!lists) {
+    throw new AppError("No lists found", 404);
+  }
+
+  return {
+    lists,
+    pagination: { total, page, limit, pages: Math.ceil(total / limit), },
+  };
 };

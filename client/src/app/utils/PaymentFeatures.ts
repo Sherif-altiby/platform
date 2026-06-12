@@ -2,11 +2,12 @@ import { toast } from "react-toastify";
 
 const API = process.env.NEXT_PUBLIC_SERVER_URL;
 
-export const PayWithVodafone = async (courseId: string, avatar: File, method: "instaPay" | "vCash") => {
+export const PayWithVodafone = async (courseId: string, teacherId: string,  avatar: File, method: "instaPay" | "vCash") => {
   const formData = new FormData();
   formData.append("courseId", courseId);
   formData.append("avatar", avatar);
   formData.append("method", method);
+  formData.append("teacherId", teacherId);
 
   if (!courseId || !avatar) {
     toast.error("Complete all data");

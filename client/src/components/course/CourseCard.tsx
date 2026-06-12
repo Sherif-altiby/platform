@@ -11,24 +11,22 @@ import { useLevelStore } from "@/store/levelStore";
 import { useEffect, useState } from "react";
 
 const CourseCard = ({ course }: { course: Course }) => {
-  const params = useParams();
-  const teacherId = params.teacherId as string;
 
+  const params = useParams();
+ 
   const isClosed = course.status === "close";
   const isPending = course.status === "pending";
   const isOpen = course.status === "open";
 
   const courseLevel = useLevelStore((s) => s.levels);
 
-  const [currentLevelCourse, setCurrentLevelCourse] = useState("")
+  const [currentLevelCourse, setCurrentLevelCourse] = useState("");
 
   const router = useRouter();
 
-  const { setCourseToPay } = usePaymentStore();
-
   useEffect(() => {
     const currentLevel = courseLevel.find((l) => l._id === course.level);
-    setCurrentLevelCourse(currentLevel?.name as string)
+    setCurrentLevelCourse(currentLevel?.name as string);
   }, [course]);
 
   return (
@@ -86,19 +84,30 @@ const CourseCard = ({ course }: { course: Course }) => {
           {course.title}
         </h3>
 
+        
         {/* Pricing/Status Row */}
         <div className="flex items-center justify-start flex-row-reverse gap-3 mb-4">
-          {isOpen ? (
-            <span className="text-2xl ml-auto font-black text-[#0066FF]">
-              {course.price - course.offer}{" "}
-              <span className="text-xs text-slate-400 font-medium">ج.م</span>
-            </span>
-          ) : (
-            <div
-              className={`text-sm font-bold px-3 py-1 rounded-lg ${isClosed ? "bg-slate-100 text-slate-500" : "bg-amber-100 text-amber-700"}`}
-            >
-              {isClosed ? "غير مشترك" : "طلبك قيد التنفيذ"}
+          {isPending ? (
+            <div className="text-sm font-bold px-3 py-1 rounded-lg bg-amber-100 text-amber-700">
+              طلبك قيد التنفيذ
             </div>
+          ) : (
+            <>
+              <span
+                className={`text-2xl ml-auto font-black ${
+                  isOpen ? "text-[#0066FF]" : "text-slate-700"
+                }`}
+              >
+                {course.price - course.offer}
+                <span className="text-xs text-slate-400 font-medium"> ج.م</span>
+              </span>
+
+              {course.offer > 0 && (
+                <span className="text-sm text-slate-400 line-through">
+                  {course.price} ج.م
+                </span>
+              )}
+            </>
           )}
         </div>
 
@@ -106,7 +115,7 @@ const CourseCard = ({ course }: { course: Course }) => {
         <div className="mt-4 pt-4 border-t border-slate-50">
           {isOpen ? (
             <Link
-              href={`/lessons?course_id=${course._id}&teacher_id=${teacherId}`}
+              href={`/lessons?course_id=${course._id}&teacher_id=${course.teacherId}`}
               className="w-full bg-[#0066FF] text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all"
             >
               <span>دخول الكورس</span>
@@ -124,12 +133,6 @@ const CourseCard = ({ course }: { course: Course }) => {
             <button
               onClick={() => {
                 router.push(`/payment?q=${course._id}`);
-                setCourseToPay({
-                  _id: course._id,
-                  title: course.title,
-                  price: course.price - course.offer,
-                  phone: course.phone,
-                });
               }}
               className="w-full bg-slate-900 text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-slate-800 transition-all"
             >

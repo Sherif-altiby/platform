@@ -14,6 +14,12 @@ const courseAccessSchema = new mongoose.Schema({
     required: true,
     index: true
   },
+  teacher: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Teacher",
+    required: true,
+    index: true
+  },
   status: {
     type: String,
     enum: ["open", "close", "pending"],

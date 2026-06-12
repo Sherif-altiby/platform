@@ -55,6 +55,7 @@ export type Course = {
   level: string;
   status: string;
   phone: number;
+  teacherId?: string
 };
 
 export interface Lesson {

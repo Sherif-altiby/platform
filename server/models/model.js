@@ -94,7 +94,7 @@ const subjectSchema = new mongoose.Schema({
 });
 
 const courseSchema = new mongoose.Schema({
-  title: { type: String, required: true, unique: true },
+  title: { type: String, required: true },
   subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" , required: true},
   teacher: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" , required: true},
   image: {

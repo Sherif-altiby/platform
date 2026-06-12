@@ -8,11 +8,12 @@ import {
   teacherStatics, 
   teacherUpdateProfile,
   teacherUpdateAvatar,
+  getTeacherInfo,
 } from "../controller/teacherController.js";
 import isTeacher from "../middlewares/isTeacher.js";
 import uploadPdfMulter from "../middlewares/pdfMulter.js";
 import upload from "../middlewares/multer.js";
-import { getList, userAccessCourse } from "../controller/listCoontroller.js";
+import { getList, userAccessCourse } from "../controller/listController.js";
 import { addCourse, deleteCourse, getSubjectCourses, updateCourse } from "../controller/courseController.js";
 import { addLesson, deleteLesson, getTeacherCourseLessons, teacherUpdateLesson } from "../controller/lessonController.js";
 import { getTeacherStats } from "../controller/staticsController.js";
@@ -60,6 +61,8 @@ teacherRouter.delete('/delete-lesson/:lessonId', auth, isTeacher, deleteLesson);
 teacherRouter.put('/update-lesson/:lessonId', auth, isTeacher, teacherUpdateLesson);
 
 teacherRouter.put('/change-data', auth, isTeacher, teacherUpdateProfile)
+teacherRouter.get('/me', auth, isTeacher, getTeacherInfo)
+
 
 teacherRouter.get('/sub-stats', auth, isTeacher, getTeacherStats)
 teacherRouter.get('/get-rates', auth, isTeacher, getTeacherRatings)

@@ -5,6 +5,8 @@ import { VideoModel } from "../models/videoModel.js";
 import { Quizz } from "../models/quizzModel.js";
 import uploadImageClodinary from "../utils/uploadImages.js";
 import destroyImageCloudinary from "../utils/destroyImage.js";
+import { asyncHandler  } from "../utils/asyncHandler.js"
+import { getTeacherInfoService, updateTeacherProfileService } from "../services/teacher/teacherSettingsServices.js";
 
 export const getTeacherById = async (req, res) => {
   try {
@@ -361,30 +363,16 @@ export const teacherStatics = async (req, res) => {
   }
 };
 
-export const teacherUpdateProfile = async (req, res) => {
-  try {
-    const { name, email, phone, about } = req.body;
+export const teacherUpdateProfile = asyncHandler(
+  async (req, res) => {
     const teacherId = req.userId;
 
-    const teacher = await Teacher.findById(teacherId);
-
-    if (!teacher) {
-      return res.status(404).json({
-        message: "المعلم غير موجود",
-        error: true,
-        status: false,
+    const updatedTeacher =
+      await updateTeacherProfileService({
+        teacherId,
+        body: req.body,
       });
-    }
 
-    teacher.name = name || teacher.name;
-    teacher.email = email || teacher.email;
-    teacher.phone = phone || teacher.phone;
-    teacher.about = about || teacher.about;
-
-    // 3. Save the document
-    const updatedTeacher = await teacher.save();
-
-    // 4. Return success
     return res.status(200).json({
       message: "تم حفظ البيانات بنجاح",
       error: false,
@@ -394,17 +382,12 @@ export const teacherUpdateProfile = async (req, res) => {
         email: updatedTeacher.email,
         phone: updatedTeacher.phone,
         about: updatedTeacher.about,
+        vCash: updatedTeacher.vCash,
+        instaPay: updatedTeacher.instaPay,
       },
     });
-  } catch (error) {
-    console.error("Update Profile Error:", error);
-    return res.status(500).json({
-      message: "حدث خطأ في الخادم، حاول مرة أخرى",
-      error: true,
-      status: false,
-    });
   }
-};
+);
 
 export const teacherUpdateAvatar = async (req, res) => {
   try {
@@ -450,3 +433,17 @@ export const teacherUpdateAvatar = async (req, res) => {
     });
   } catch (error) { }
 };
+
+
+export const getTeacherInfo = asyncHandler(async (req, res) => {
+  const teacherId = req.userId; 
+
+  const teacher = await getTeacherInfoService(teacherId);
+
+  return res.status(200).json({
+    message: "تم جلب بيانات المعلم بنجاح",
+    error: false,
+    status: true,
+    data: teacher,
+  });
+});

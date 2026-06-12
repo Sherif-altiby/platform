@@ -1,17 +1,31 @@
 import { CourseAccess } from "../models/courseAccessModel.js";
 import { List } from "../models/listModel.js";
 import { Course } from "../models/model.js";
+import { getListsService } from "../services/payment/paymentServices.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-export const getList = async (req, res) => {
-  try {
-    const list = await List.find({})
-      .populate("user", "name email level")
-      .populate("course", "title image");
-    res.status(200).json(list);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+export const getList = asyncHandler(async (req, res) => {
+  
+  const page = Number(req.query.page) || 1;
+  const limit = Number(req.query.limit) || 10;
+  const method = req.query.method?.trim();
+
+  const teacherId = req.userId
+
+  const data = await getListsService({
+    page,
+    limit,
+    method,
+    teacherId
+  });
+
+  return res.status(200).json({
+    status: true,
+    error: false,
+    message: "Lists fetched successfully",
+    ...data,
+  });
+});
 
 export const addToList = async (req, res) => {
   const { courseId } = req.body;

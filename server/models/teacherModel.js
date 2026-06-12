@@ -45,7 +45,7 @@ const teacherScema = new mongoose.Schema({
     number: {
       type: Number,
       required: true,
-      unique: true,
+      unique: true, 
     },
     walletName: {
       type: String,
