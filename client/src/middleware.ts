@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ✅ Public paths (no auth required)
-  const publicPaths = ["/", "/login", "/register"];
+  const publicPaths = ["/", "/login", "/register", "/forgot-password", '/verification-code'];
 
   const isPublicPath = publicPaths.includes(pathname);
 

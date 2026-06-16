@@ -1,93 +1,154 @@
 "use client";
 
-import { Suspense, useState, useRef } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useRef, useState } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useAuthUser } from "@/store/authStore";
 
 function VerificationForm() {
   const searchParams = useSearchParams();
-  const email = searchParams.get("email"); // لو بتمرر الإيميل في الرابط
-  const [data, setData] = useState(Array(6).fill(""));
-  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
+  const router = useRouter();
+
+  const { setUser } = useAuthUser();
+
+  const email = searchParams.get("email");
+
+  const [data, setData] = useState<string[]>(Array(6).fill(""));
+
   const inputRef = useRef<HTMLInputElement[]>([]);
 
+  const verifyMutation = useMutation({
+    mutationFn: async ({ email, code }: { email: string; code: string }) => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}user/verify-code`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email,
+            code,
+          }),
+        },
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast.error("حدث خطأ");
+        throw new Error(result.message || "حدث خطأ");
+      }
+
+      return result;
+    },
+
+    onSuccess: (data) => {
+      setUser(data.user)
+      toast.success(data.message);
+
+      setTimeout(() => {
+        router.push("/");
+      }, 1000);
+    },
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
+
   const handleInputChange = (index: number, value: string) => {
-    if (!/^\d?$/.test(value)) return; // قبول رقم واحد فقط
+    if (!/^\d?$/.test(value)) return;
+
     const newData = [...data];
     newData[index] = value;
+
     setData(newData);
 
-    // التنقل التلقائي بين الحقول
-    if (value && index < data.length - 1) {
+    if (value && index < 5) {
       inputRef.current[index + 1]?.focus();
     }
   };
 
-  const handleKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
     if (e.key === "Backspace" && !data[index] && index > 0) {
       inputRef.current[index - 1]?.focus();
     }
   };
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const pastedData = e.clipboardData.getData("Text").slice(0, data.length).split("");
-    setData(pastedData);
-    pastedData.forEach((val, i) => {
-      if (inputRef.current[i]) inputRef.current[i].value = val;
+    e.preventDefault();
+
+    const pasted = e.clipboardData
+      .getData("text")
+      .replace(/\D/g, "")
+      .slice(0, 6)
+      .split("");
+
+    const newData = Array(6).fill("");
+
+    pasted.forEach((value, index) => {
+      newData[index] = value;
+    });
+
+    setData(newData);
+
+    const nextIndex = Math.min(pasted.length, 5);
+    inputRef.current[nextIndex]?.focus();
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const code = data.join("");
+
+    if (code.length !== 6) {
+      return;
+    }
+
+    if (!email) {
+      return;
+    }
+
+    verifyMutation.mutate({
+      email,
+      code,
     });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const code = data.join("");
-    if (code.length < 6) return alert("من فضلك أدخل الكود بالكامل");
-
-    setIsVerifyingCode(true);
-   
-
-    setTimeout(() => {
-      alert("تم التحقق بنجاح!");
-      setIsVerifyingCode(false);
-    }, 1500);
-  };
-
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center px-4">
       <form
-        className="w-[90%] shadow-lg max-w-[500px] mt-10 mb-10 p-6 rounded-lg bg-white"
         onSubmit={handleSubmit}
+        className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md"
       >
-        <h2 className="text-center text-xl text-[#5700FF] mb-4">يرجى إدخال كود التحقق</h2>
+        <h1 className="text-center text-2xl font-bold mb-6">
+          يرجى إدخال كود التحقق
+        </h1>
 
-        <div className="flex items-center justify-center gap-3 ltr-dir">
+        <div className="flex flex-row-reverse items-center justify-center gap-3 ltr">
           {data.map((item, index) => (
             <input
               key={index}
-              type="text"
-              className="border w-12 h-12 rounded-full text-center focus:border-[#5700FF] block"
               ref={(ref) => {
-                if (ref) inputRef.current[index] = ref;
+                if (ref) {
+                  inputRef.current[index] = ref;
+                }
               }}
+              type="text"
               maxLength={1}
               value={item}
-              onChange={(e) => handleInputChange(index, e.target.value)}
+              inputMode="numeric"
               onPaste={handlePaste}
               onKeyDown={(e) => handleKeyDown(index, e)}
-              inputMode="numeric"
-              aria-label={`Verification code digit ${index + 1}`}
+              onChange={(e) => handleInputChange(index, e.target.value)}
+              className="w-12 h-12 border rounded-full text-center text-lg font-semibold outline-none focus:border-[#5700FF]"
             />
           ))}
-        </div>
-
-        <div className="flex items-center justify-center mt-6">
-          <button
-            type="submit"
-            disabled={isVerifyingCode}
-            className={`px-6 py-2 rounded-full text-white font-semibold transition ${
-              isVerifyingCode ? "bg-gray-400" : "bg-[#5700FF] hover:opacity-90"
-            }`}
-          >
-            {isVerifyingCode ? "جارٍ الإرسال..." : "إرسال"}
-          </button>
         </div>
 
         {email && (
@@ -95,6 +156,18 @@ function VerificationForm() {
             تم إرسال الكود إلى <span className="font-semibold">{email}</span>
           </p>
         )}
+
+        <button
+          type="submit"
+          disabled={verifyMutation.isPending}
+          className={`w-full mt-6 py-3 rounded-xl text-white font-semibold transition ${
+            verifyMutation.isPending
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#5700FF] hover:opacity-90"
+          }`}
+        >
+          {verifyMutation.isPending ? "جارٍ التحقق..." : "إرسال"}
+        </button>
       </form>
     </div>
   );
@@ -102,7 +175,7 @@ function VerificationForm() {
 
 export default function VerificationCodePage() {
   return (
-    <Suspense fallback={<div className="text-center py-10">جارٍ تحميل الصفحة...</div>}>
+    <Suspense fallback={<div>جارٍ تحميل الصفحة...</div>}>
       <VerificationForm />
     </Suspense>
   );

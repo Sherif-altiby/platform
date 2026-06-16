@@ -9,6 +9,9 @@ import sendEmail from "../config/sendEmail.js";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
 import generateCode from "../utils/generateCode.js";
 import { Level } from "../models/levelModel.js";
+import { forgotPasswordService, verifyOtpService } from "../services/auth/authServices.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { AppError} from "../utils/appError.js"
 
 export const register = async (req, res) => {
   try {
@@ -233,175 +236,40 @@ export const logout = async (req, res) => {
   }
 };
 
-export const forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
+export const forgotPassword = asyncHandler(async (req, res) => {
+  const { email } = req.body;
 
-    if (!email) {
-      return res.status(400).json({
-        message: "Provide email",
-        error: true,
-        status: false,
-      });
-    }
+  if (!email) { throw new AppError("البريد الإلكتروني مطلوب", 400); }
 
-    const user = await User.findOne({ email: email });
+  const result = await forgotPasswordService(email);
 
-    if (!user) {
-      return res.status(400).json({
-        message: "هذا الحساب ليس موجودا",
-        error: true,
-        status: false,
-      });
-    }
+  res.status(200).json({ success: true, error: false, ...result, });
 
-    const code = generateCode();
-    const expireTime = new Date() + 60 * 60 * 1000; // 1hr
+});
 
-    const udateUser = await User.findByIdAndUpdate(user._id, {
-      code: code,
-      codeExpirt: new Date(expireTime).toISOString(),
-    });
 
-    await sendEmail({
-      sendTo: email,
-      subject: "منصة العبقري التعليمية",
-      html: forgotPasswordTemplate({
-        name: user.name,
-        code: code,
-      }),
-    });
+ 
+export const verifyForgotPasswordCode = asyncHandler(async (req, res) => {
+  const { email, code } = req.body;
 
-    return res.json({
-      message: "يرجي متابعة البريد الالكتروني",
-      error: false,
-      success: true,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-      error: true,
-      status: false,
-    });
-  }
-};
+  if (!email || !code) { throw new AppError("البريد الإلكتروني والكود مطلوبان", 400);}
 
-export async function verifyForgotPasswordCode(req, res) {
-  try {
-    const { email, code } = req.body;
+  const user = await verifyOtpService(email, code);
 
-    if (!email || !code) {
-      return res.status(400).json({
-        message: "Provide email and code",
-        error: true,
-        status: false,
-      });
-    }
+  const refreshToken = await generateRefreshToken(user._id, user.role);
 
-    const user = await User.findOne({ email });
-    const teacher = await Teacher.findOne({ email });
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
 
-    if (!user && !teacher) {
-      return res.status(400).json({
-        message: "These email not found",
-        error: true,
-        status: false,
-      });
-    }
+  return res.status(200).json({ success: true, error: false, message: "تم التحقق من الكود بنجاح", refreshToken , user});
+});
 
-    const currentTime = new Date().toISOString();
 
-    if (user) {
-      if (user.codeExpirt < currentTime) {
-        return res.status(400).json({
-          message: "code is expired",
-          error: true,
-          status: false,
-        });
-      }
-
-      if (code !== user.code) {
-        return res.status(400).json({
-          message: "Invalid code",
-          error: true,
-          status: false,
-        });
-      }
-
-      const updatedUser = await User.findByIdAndUpdate(user._id, {
-        codeExpirt: "",
-        code: "",
-      });
-
-      const refreshToken = await generateRefreshToken(user._id, user.role);
-
-      user.refreshToken = refreshToken;
-
-      await user.save();
-
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        path: "/",
-      });
-    }
-
-    if (teacher) {
-      if (teacher.codeExpirt < currentTime) {
-        return res.status(400).json({
-          message: "code is expired",
-          error: true,
-          status: false,
-        });
-      }
-
-      if (code !== teacher.code) {
-        return res.status(400).json({
-          message: "Invalid code",
-          error: true,
-          status: false,
-        });
-      }
-
-      const updatedTeacher = await Teacher.findByIdAndUpdate(user._id, {
-        codeExpirt: "",
-        code: "",
-      });
-
-      const refreshToken = await generateRefreshToken(
-        teacher._id,
-        teacher.role
-      );
-
-      teacher.refreshToken = refreshToken;
-
-      await teacher.save();
-
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "none",
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        path: "/",
-      });
-    }
-
-    return res.json({
-      message: "Verify code successfuly",
-      error: false,
-      status: true,
-      data: user,
-    });
-  } catch (err) {
-    return res.status(500).json({
-      message: err.message,
-      error: true,
-      status: false,
-    });
-  }
-}
 
 export const ressetPassword = async (req, res) => {
   try {

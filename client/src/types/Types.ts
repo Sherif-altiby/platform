@@ -151,7 +151,7 @@ export interface useAuthInterface {
     parentPhone: string,
   ) => Promise<CombinedType>;
   userForgotPassword: (email: string) => Promise<void>;
-  userVerifyCode: (email: string, code: number) => Promise<void>;
+  userVerifyCode: (email: string, code: string) => Promise<void>;
   setUser: (user: UserTypes | null) => void;
 }
 

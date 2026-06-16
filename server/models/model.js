@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { string } from "zod";
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -29,7 +30,7 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   code: {
-    type: Number,
+    type: string,
   },
   codeExpirt: {
     type: Date,
@@ -44,31 +45,10 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  notifications: [
-    {
-      message: {
-        type: String,
-      },
-    },
-  ],
   isBlocked: {
     type: Boolean,
     default: false,
   },
-  // accessedCourses: [
-  //   {
-  //     course: {
-  //       type: mongoose.Schema.Types.ObjectId,
-  //       ref: "Course",
-  //       required: true,
-  //     },
-  //     status: {
-  //       type: String,
-  //       enum: ["open", "close", "pending"],
-  //       default: "close",
-  //     },
-  //   },
-  // ],
 });
 
 const subjectSchema = new mongoose.Schema({

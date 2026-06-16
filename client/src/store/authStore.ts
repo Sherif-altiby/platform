@@ -87,12 +87,12 @@ export const useAuthUser = create<useAuthInterface>()(
         }
       },
 
-      userVerifyCode: async (email: string, code: number) => {
+      userVerifyCode: async (email: string, code: string) => {
         set(() => ({ isVerifingCode: true }));
         try {
           const res = await Axios.post("user/verify-code", { email, code });
           toast.success(res.data.message);
-          window.location.replace(`/`);
+          // window.location.replace(`/`);
         } catch {
           toast.error("حدث خطأ");
         } finally {
