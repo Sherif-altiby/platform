@@ -70,7 +70,7 @@ const CourseCard = ({ course }: { course: Course }) => {
           ${isClosed ? "bg-slate-500" : isPending ? "bg-amber-500" : "bg-[#0066FF]"}
         `}
         >
-          {currentLevelCourse}
+          {currentLevelCourse || "عام"}
         </div>
       </div>
 

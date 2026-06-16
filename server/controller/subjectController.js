@@ -1,4 +1,5 @@
 import { CourseAccess } from "../models/courseAccessModel.js";
+import { Level } from "../models/levelModel.js";
 import { Course, Subject, User } from "../models/model.js";
 import { Teacher } from "../models/teacherModel.js";
 import uploadImageClodinary from "../utils/uploadImages.js";
@@ -137,7 +138,7 @@ export const getSubjectCourses = async (req, res) => {
     // 3. جلب الكورسات التي تنتمي لهذه المادة "و" تطابق مستوى الطالب
     const courses = await Course.find({
       subject: subId,
-      level: user.level // الربط بمستوى الطالب
+      level: user.level  
     })
       .populate("subject")
       .lean();
@@ -197,6 +198,8 @@ export const getSubjectCourses = async (req, res) => {
     });
   }
 };
+
+
 export const getSubjectsByTeacher = async (req, res) => {
   try {
     const { teacherId } = req.body;
@@ -263,10 +266,17 @@ export const getStudentCoursesByTeacher = async (req, res) => {
       return res.status(404).json({ message: "الطالب غير موجود" });
     }
 
+    const generalLevel = await Level.findOne({
+      name: "عام",
+    }).select("_id");
+
     // 5. جلب الكورسات المتوافقة مع المادة والمستوى
     const courses = await Course.find({
       subject: subjectId,
-      level: student.level,
+      $or: [
+        { level: student.level },
+        { level: generalLevel._id },
+      ],
     })
       .populate("subject", "name")
       .sort({ createdAt: -1 });
