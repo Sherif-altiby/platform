@@ -4,6 +4,9 @@ import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { Dispatch, SetStateAction } from "react";
 import { useAuthUser } from "@/store/authStore";
+import { PiFigmaLogoDuotone } from "react-icons/pi";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "react-toastify";
 
 interface Props {
   show: boolean;
@@ -11,7 +14,40 @@ interface Props {
 }
 
 const ResponsiveMenu = ({ show, setShow }: Props) => {
-  const { user } = useAuthUser();
+  const { user, setUser } = useAuthUser();
+
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}user/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "فشل تسجيل الخروج");
+      }
+
+      return data;
+    },
+
+    onSuccess: (data) => {
+      toast.success(data.message || "تم تسجيل الخروج بنجاح");
+
+      setUser(null);
+
+      window.location.href = "/";
+    },
+
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
 
   return (
     <>
@@ -71,11 +107,23 @@ const ResponsiveMenu = ({ show, setShow }: Props) => {
         {/* Divider */}
         <div className="mx-5 my-4 h-px bg-slate-100" />
 
+
+        {user && (<div className="px-4 pb-8">
+          <button
+          type="button"
+          onClick={() => logoutMutation.mutate()}
+          className="flex items-center justify-center w-full h-[46px] rounded-xl bg-red-50 text-red-600 border border-red-200 text-sm font-semibold  hover:bg-red-600 hover:text-white transition-all duration-300"
+        >
+          <PiFigmaLogoDuotone size={18} />
+          تسجيل الخروج
+        </button>
+        </div>)}
+
         {/* Login CTA */}
         {!user && (
           <div className="px-4 pb-8">
             <Link
-              href="/register"
+              href="/login"
               onClick={() => setShow(false)}
               className="flex items-center justify-center w-full h-[46px] rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200"
             >

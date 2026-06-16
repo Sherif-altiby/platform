@@ -53,3 +53,20 @@ export const verifyOtpService = async (email, otp) => {
   
     return user;
   };
+
+
+  export const logoutService = async (userId) => {
+    const user = await User.findById(userId);
+  
+    if (!user) {
+      throw new AppError("المستخدم غير موجود", 404);
+    }
+  
+    user.refreshToken = null;
+  
+    await user.save();
+  
+    return {
+      message: "تم تسجيل الخروج بنجاح",
+    };
+  };

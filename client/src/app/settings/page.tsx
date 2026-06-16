@@ -10,12 +10,13 @@ import { FaUser, FaGraduationCap, FaPhone, FaEnvelope } from "react-icons/fa";
 import { useLevelStore } from "@/store/levelStore";
 import { useAuthUser } from "@/store/authStore";
 import { useMutation } from "@tanstack/react-query";
+import { PiFigmaLogoDuotone } from "react-icons/pi";
 
 const Page = () => {
   const user = useAuthUser((s) => s.user);
   const levels = useLevelStore((s) => s.levels);
 
-  const {setUser} = useAuthUser()
+  const { setUser } = useAuthUser();
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -58,7 +59,7 @@ const Page = () => {
             parentPhone,
             level,
           }),
-        }
+        },
       );
 
       const data = await response.json();
@@ -84,6 +85,38 @@ const Page = () => {
     e.preventDefault();
     mutate();
   };
+
+  const logoutMutation = useMutation({
+    mutationFn: async () => {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}user/logout`,
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "فشل تسجيل الخروج");
+      }
+
+      return data;
+    },
+
+    onSuccess: (data) => {
+      toast.success(data.message || "تم تسجيل الخروج بنجاح");
+
+      setUser(null);
+
+      window.location.href = "/";
+    },
+
+    onError: (error: Error) => {
+      toast.error(error.message);
+    },
+  });
 
   const inputClass =
     "border border-slate-200 bg-slate-50 rounded-2xl px-5 py-3 block w-full text-slate-800 text-sm transition-all duration-300 focus:outline-none focus:border-blue-400 focus:bg-white focus:ring-4 focus:ring-blue-50/50 placeholder:text-slate-300";
@@ -181,10 +214,7 @@ const Page = () => {
 
             <div className="pt-6 border-t border-slate-50 flex justify-end">
               <div className="w-full md:w-64">
-                <MainButton
-                  loading={isPending}
-                  text="حفظ التغييرات الجديدة"
-                />
+                <MainButton loading={isPending} text="حفظ التغييرات الجديدة" />
               </div>
             </div>
           </form>
@@ -194,6 +224,15 @@ const Page = () => {
           <ChangePassword />
           <AddComment />
         </div>
+
+        <button
+          type="button"
+          onClick={() => logoutMutation.mutate()}
+          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-50 text-red-600 border border-red-200 font-black hover:bg-red-600 hover:text-white transition-all duration-300"
+        >
+          <PiFigmaLogoDuotone size={18} />
+          تسجيل الخروج
+        </button>
       </div>
     </div>
   );

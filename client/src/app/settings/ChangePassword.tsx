@@ -36,7 +36,7 @@ const ChangePassword = () => {
   const labelClass = "block text-sm font-medium text-gray-600 mb-1.5"
 
   return (
-    <div className="w-full max-w-[700px] bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+    <div className="w-full bg-white rounded-3xl h-full shadow-sm border border-gray-100 overflow-hidden">
       {/* Card header */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
         <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
@@ -46,8 +46,8 @@ const ChangePassword = () => {
       </div>
 
       <form onSubmit={changePassword} className="p-6 flex flex-col gap-5">
-        <div className="flex items-start flex-col md:flex-row gap-5">
-          <div className="w-full md:w-1/2">
+        <div className="flex items-start flex-col  gap-5">
+          <div className="w-full ">
             <label className={labelClass} htmlFor="password">كلمة المرور الجديدة</label>
             <div className="relative">
               <input
@@ -67,7 +67,7 @@ const ChangePassword = () => {
             </div>
           </div>
 
-          <div className="w-full md:w-1/2">
+          <div className="w-full">
             <label className={labelClass} htmlFor="confirmPassword">تأكيد كلمة المرور</label>
             <div className="relative">
               <input

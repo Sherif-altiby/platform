@@ -9,7 +9,7 @@ import sendEmail from "../config/sendEmail.js";
 import forgotPasswordTemplate from "../utils/forgotPasswordTemplate.js";
 import generateCode from "../utils/generateCode.js";
 import { Level } from "../models/levelModel.js";
-import { forgotPasswordService, verifyOtpService } from "../services/auth/authServices.js";
+import { forgotPasswordService, logoutService, verifyOtpService } from "../services/auth/authServices.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError} from "../utils/appError.js"
 
@@ -200,41 +200,27 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = async (req, res) => {
-  try {
-    const userId = req.userId;
+export const logout = asyncHandler(async (req, res) => {
+  const userId = req.userId;
 
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({
-        message: "User not found",
-        error: true,
-        status: false,
-      });
-    }
+  const result = await logoutService(userId);
 
-    user.refreshToken = null;
-    await user.save();
+  res.clearCookie("refreshToken", {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite:
+      process.env.NODE_ENV === "production"
+        ? "none"
+        : "lax",
+    path: "/",
+  });
 
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "none",
-    });
-
-    return res.status(200).json({
-      message: "User logged out successfully",
-      error: false,
-      status: true,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message,
-      error: true,
-      status: false,
-    });
-  }
-};
+  return res.status(200).json({
+    success: true,
+    error: false,
+    ...result,
+  });
+});
 
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;

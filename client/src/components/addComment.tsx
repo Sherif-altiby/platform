@@ -31,7 +31,7 @@ const AddComment = () => {
   };
 
   return (
-    <div className="w-full max-w-[700px] bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-10">
+    <div className="w-full h-full max-w-[700px] bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden mb-10">
       {/* Card header */}
       <div className="flex items-center gap-3 px-6 py-5 border-b border-gray-100">
         <div className="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center shadow-md">
