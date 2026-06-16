@@ -7,8 +7,15 @@ import Tesmonils from "../components/Tesmonils";
 import { useEffect } from "react";
 import StatsSection from "@/components/StatsSection";
 import TeachersSection from "@/components/home/TeachersSection";
+import { useLevelStore } from "@/store/levelStore";
 
 export default function Home() {
+
+  const { fetchLevels } = useLevelStore()
+
+  useEffect(() => {
+    fetchLevels();
+  }, []);
 
   return (
      <div>

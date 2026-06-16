@@ -52,9 +52,6 @@ const Page = () => {
     }
   };
 
-  useEffect(() => {
-    fetchLevels();
-  }, []);
 
   const inputClass = (hasError: boolean) =>
     `w-full px-4 py-3 rounded-xl border text-sm bg-slate-50 text-slate-700 placeholder-slate-400
