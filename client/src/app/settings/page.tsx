@@ -228,7 +228,7 @@ const Page = () => {
         <button
           type="button"
           onClick={() => logoutMutation.mutate()}
-          className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-50 text-red-600 border border-red-200 font-black hover:bg-red-600 hover:text-white transition-all duration-300"
+          className="flex ml-auto items-center gap-2 px-6 py-3 rounded-2xl bg-red-50 text-red-600 border border-red-200 font-black hover:bg-red-600 hover:text-white transition-all duration-300"
         >
           <PiFigmaLogoDuotone size={18} />
           تسجيل الخروج
