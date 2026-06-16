@@ -176,6 +176,7 @@ const Page = () => {
                 className={inputClass(!!errors.level)}
                 {...register("level")}
               >
+                 <option value="">   </option>
                 {levels.map((l) => (
                   <option value={l._id} key={l._id}>
                     {l.name}

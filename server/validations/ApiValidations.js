@@ -17,9 +17,8 @@ export const validateRegistration = [
     .notEmpty()
     .withMessage("Password is required")
     .isLength({ min: 8 })
-    .withMessage("Password must be at least 8 characters long")
-    .matches(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/)
-    .withMessage("Password must contain at least one uppercase letter"),
+    .withMessage("Password must be at least 8 characters long"),
+     
 
   body("level").notEmpty().withMessage("Level is required"),
 

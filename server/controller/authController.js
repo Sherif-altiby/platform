@@ -60,11 +60,13 @@ export const register = async (req, res) => {
 
     await newUser.save();
 
-    await sendEmail({
+    const test = await sendEmail({
       sendTo: email,
       subject: "مرحبا بك في منصة العبقري",
       html: generateRegistrationEmail(newUser.name, process.env.FRONTEMD_URL),
     });
+
+    console.log("test:: ==>>", test)
 
     return res.status(201).json({
       message: "تم التسجيل بنجاح. رجاءا مراجعة البريد الالكتروني",

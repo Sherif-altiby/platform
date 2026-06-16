@@ -1,53 +1,48 @@
 export const generateRegistrationEmail = (userName, verificationLink) => {
-    return `
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Welcome to Our Platform</title>
-        <style>
-          body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-          }
-          .email-container {
-            max-width: 600px;
-            background: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            margin: auto;
-          }
-          .button {
-            display: inline-block;
-            background: #007bff;
-            color: #ffffff !important;
-            padding: 12px 20px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-          }
-          .footer {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #666;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="email-container">
-          <h2>Welcome, ${userName}!</h2>
-          <p>Thank you for registering with us. Please verify your email address by clicking the button below:</p>
-          <a href="${verificationLink}" class="button">Verify Email</a>
-          <p>If you did not sign up, please ignore this email.</p>
-          <div class="footer">© ${new Date().getFullYear()} BASIRA. All rights reserved.</div>
-        </div>
-      </body>
-      </html>
-    `;
-  };
-  
+  return `
+  <div style="max-width:600px; margin:40px auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.08); direction:rtl; text-align:right; font-family:Arial, sans-serif;">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#4f46e5,#2563eb); padding:30px; text-align:center;">
+      <h1 style="color:#fff; margin:0; font-size:22px;">
+        مرحبًا بك في منصة العبقري 🎓
+      </h1>
+    </div>
+
+    <!-- Body -->
+    <div style="padding:30px; color:#111827;">
+
+      <h2 style="margin-bottom:10px; font-size:20px;">
+        أهلاً، <span style="color:#2563eb;">${userName}</span> 👋
+      </h2>
+
+      <p style="color:#6b7280; font-size:14px; line-height:1.8;">
+        شكرًا لانضمامك إلى منصتنا. نحن سعداء بوجودك معنا ❤️
+        
+      </p>
+
+      <!-- Info Box -->
+      <div style="
+        background:#f1f5f9;
+        padding:14px;
+        border-radius:10px;
+        font-size:13px;
+        color:#475569;
+        line-height:1.8;
+        margin-top:20px;
+      ">
+        ⚠️ إذا لم تقم بإنشاء هذا الحساب، يمكنك تجاهل هذا البريد بأمان.
+      </div>
+
+   
+
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#f9fafb; text-align:center; padding:16px; font-size:12px; color:#9ca3af;">
+      © ${new Date().getFullYear()} منصة العبقري. جميع الحقوق محفوظة.
+    </div>
+
+  </div>
+  `;
+};

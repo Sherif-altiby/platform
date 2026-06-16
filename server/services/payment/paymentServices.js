@@ -80,13 +80,33 @@ export const requestCourseAccessService = async (userId, file, data) => {
   return newList;
 };
 
-export const getListsService = async ({ page = 1, limit = 10, method, teacherId}) => {
+export const getListsService = async ({
+  page = 1,
+  limit = 10,
+  method,
+  level,
+  search,
+  teacherId,
+}) => {
   const query = {
     teacher: teacherId,
   };
 
+  // filter by method
   if (method) {
     query.method = method;
+  }
+
+  // filter by level
+  if (level) {
+    query.level = level;
+  }
+
+  // search (example: user name or email)
+  if (search) {
+    query.$or = [
+      { "user.name": { $regex: search, $options: "i" } },
+    ];
   }
 
   const skip = (page - 1) * limit;
@@ -103,12 +123,13 @@ export const getListsService = async ({ page = 1, limit = 10, method, teacherId}
     List.countDocuments(query),
   ]);
 
-  if (!lists) {
-    throw new AppError("No lists found", 404);
-  }
-
   return {
     lists,
-    pagination: { total, page, limit, pages: Math.ceil(total / limit), },
+    pagination: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
   };
 };

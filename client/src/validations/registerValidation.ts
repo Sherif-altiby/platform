@@ -20,10 +20,7 @@ export const registerSchema = z
     password: z
       .string()
       .min(8, "يرجى ادخال كلمة مرور صحيحة")
-      .regex(
-        /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
-        "كلمة المرور يجب أن تحتوي على حروف وأرقام",
-      ),
+       ,
     confirmPassword: z.string().min(8, "يرجى تأكيد كلمة المرور"),
   })
   // التحقق من تطابق كلمة المرور

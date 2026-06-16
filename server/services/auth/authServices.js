@@ -19,7 +19,7 @@ export const forgotPasswordService = async (email) => {
  
   await user.save();
 
-  await sendEmail({
+  const test = await sendEmail({
     sendTo: user.email,
     subject: "منصة العبقري التعليمية",
     html: forgotPasswordTemplate({
@@ -27,6 +27,8 @@ export const forgotPasswordService = async (email) => {
       code: otp,
     }),
   });
+
+  console.log("test:: ==>>", test)
 
   return {
     message: "يرجى مراجعة البريد الإلكتروني",

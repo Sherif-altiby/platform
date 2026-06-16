@@ -5,18 +5,22 @@ import { getListsService } from "../services/payment/paymentServices.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getList = asyncHandler(async (req, res) => {
-  
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 10;
-  const method = req.query.method?.trim();
 
-  const teacherId = req.userId
+  const method = req.query.method?.trim();
+  const level = req.query.level?.trim();
+  const search = req.query.search?.trim();
+
+  const teacherId = req.userId;
 
   const data = await getListsService({
     page,
     limit,
     method,
-    teacherId
+    level,
+    search,
+    teacherId,
   });
 
   return res.status(200).json({
