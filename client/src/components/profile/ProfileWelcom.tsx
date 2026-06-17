@@ -40,6 +40,7 @@ const ProfileWelcome = () => {
       {/* زر أكشن عصري (CTA Button) */}
       <Link 
         href={'/subjects'} 
+        aria-label=' المواد الدراسية  '
         className="relative group/btn flex items-center justify-center gap-3 px-8 py-4 bg-slate-900 text-white rounded-2xl font-black text-sm md:text-base shadow-xl shadow-slate-200 hover:bg-blue-600 hover:shadow-blue-200 transition-all duration-300 active:scale-95 overflow-hidden"
       >
         <span className="relative z-10">اكتشف كورسات جديدة</span>

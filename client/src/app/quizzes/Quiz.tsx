@@ -108,6 +108,7 @@ const Quiz = ({ quiz }: QuizProps) => {
         {/* CTA Button */}
         <div>
           <Link
+          aria-label=' الرئيسية  '
             href={`/quizzes/view-quiz?quiz=${quiz._id}`}
             className="relative flex items-center justify-center gap-3 w-full py-3 rounded-2xl bg-emerald-600 text-white text-sm font-bold overflow-hidden transition-all duration-300 hover:bg-emerald-700 active:scale-95 shadow-lg shadow-emerald-200"
           >

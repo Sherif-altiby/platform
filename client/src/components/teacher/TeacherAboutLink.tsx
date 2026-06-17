@@ -47,6 +47,7 @@ const TeacherAboutLink = ({
           <Link
             key={idx}
             href={item.href}
+            aria-label={item.title}
             className={`group relative p-1 rounded-[2.5rem] transition-all duration-500 hover:scale-[1.03] active:scale-95 ${item.shadow}`}
           >
             {/* الخلفية المتدرجة للحواف (Animated Border) */}

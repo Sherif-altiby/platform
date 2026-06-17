@@ -9,6 +9,7 @@ import { BsPatchCheckFill } from "react-icons/bs";
 const TeacherCard = ({ teacher }: { teacher: TeacherTypes }) => {
   return (
     <Link
+      aria-label=' الذهاب الي المدرس  '
       href={`/get-teachers/${teacher._id}?name=${teacher.name}`}
       className="group relative flex flex-col bg-white rounded-[2.5rem] p-4 border border-slate-100 hover:border-blue-200 transition-all duration-500 hover:shadow-[0_20px_50px_rgba(15,23,42,0.08)] hover:-translate-y-3 overflow-hidden"
     >

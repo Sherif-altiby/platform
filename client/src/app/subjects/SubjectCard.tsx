@@ -16,7 +16,8 @@ const SubjectCard = ({ link, name, avatar }: SubjectCardProps) => {
     <Link
       href={link}
       className="group relative flex flex-col bg-white border border-slate-200/60 rounded-[2.5rem] p-2 transition-all duration-500 hover:border-blue-500/30 hover:shadow-[0_32px_64px_-16px_rgba(0,0,0,0.08)] overflow-hidden"
-    >
+      aria-label=' عرض المادة  '
+   >
       {/* 1. الخلفية الشبكية (Pattern Overlay) */}
       <div className="absolute inset-0 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity duration-500" 
            style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.826 10.558c1.026 1.312 1.594 2.977 1.594 4.747V44.7c0 1.77-.568 3.435-1.594 4.747m-3.08-31.542c-1.026-1.312-2.39-2.215-3.922-2.584M13.778 44.7c0 1.77.568 3.435 1.594 4.747m31.542-31.542c1.026 1.312 1.594 2.977 1.594 4.747v29.405c0 1.77-.568 3.435-1.594 4.747' fill='%232563eb' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")` }} />

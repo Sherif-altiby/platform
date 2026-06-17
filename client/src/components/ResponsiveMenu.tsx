@@ -72,7 +72,7 @@ const ResponsiveMenu = ({ show, setShow }: Props) => {
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 pt-7 pb-5 border-b border-slate-100">
-          <Link href="/" onClick={() => setShow(false)}>
+          <Link href="/" aria-label=' الرئيسية  ' onClick={() => setShow(false)}>
             <Image
               src="/main-logo.png"
               width={100}
@@ -96,6 +96,7 @@ const ResponsiveMenu = ({ show, setShow }: Props) => {
               key={link.path}
               href={link.path}
               onClick={() => setShow(false)}
+              aria-label={link.link}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 transition-all duration-200"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-indigo-200 shrink-0" />
@@ -125,6 +126,7 @@ const ResponsiveMenu = ({ show, setShow }: Props) => {
             <Link
               href="/login"
               onClick={() => setShow(false)}
+              aria-label=' تسجيل الدخول  '
               className="flex items-center justify-center w-full h-[46px] rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200"
             >
               تسجيل الدخول

@@ -9,6 +9,7 @@ const SubHeader = ({ currentTitle }: { currentTitle: string }) => {
           {/* Home */}
           <Link
             href="/"
+            aria-label=' الرئيسية  '
             className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-emerald-600 transition-colors duration-200"
           >
             <div className="w-6 h-6 rounded-md bg-white shadow-sm flex items-center justify-center">

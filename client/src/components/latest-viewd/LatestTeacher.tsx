@@ -4,7 +4,7 @@ import { FaChevronLeft } from "react-icons/fa6";
 
 const LatestTeacher = ({ teacher }: { teacher: any }) => {
   return (
-    <Link href={`/get-teachers/${teacher._id}`} className="flex items-center justify-between group bg-white rounded-xl p-4 my-4">
+    <Link href={`/get-teachers/${teacher._id}`} aria-label='  المدرس  ' className="flex items-center justify-between group bg-white rounded-xl p-4 my-4">
       <div className="flex items-center gap-3">
         <Image
         //   src={teacher.image}

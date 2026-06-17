@@ -9,7 +9,7 @@ export default function NotFoundPage() {
       <p className="text-gray-600 mb-6">
           لا يمكن العثور علي هذة الصفحة
        </p>
-      <Link href="/">
+      <Link href="/" aria-label=' الرئيسية  ' >
         <div className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition">
            الرئيسية  
         </div>

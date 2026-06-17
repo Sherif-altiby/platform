@@ -43,7 +43,7 @@ const Nav = () => {
             }`}
           >
             {/* Logo Section */}
-            <Link href="/" className="relative group shrink-0">
+            <Link href="/" aria-label=' الرئيسية  ' className="relative group shrink-0">
               <div className="relative transform transition-all duration-300 group-hover:scale-105">
                 <Image
                   src="/main-logo.png"
@@ -68,6 +68,7 @@ const Nav = () => {
                   <Link
                     key={link.link}
                     href={link.path}
+                    aria-label={link.link}
                     className={`relative px-6 py-2.5 rounded-xl text-sm font-bold transition-all duration-300 group
             ${isActive ? "text-blue-600" : "text-slate-700 hover:text-blue-600"}`}
                   >
@@ -112,6 +113,7 @@ const Nav = () => {
                   {/* Settings */}
                   <Link
                     href="/settings"
+                    aria-label=" الاعدادات  "
                     className="hidden md:flex w-10 h-10 items-center justify-center rounded-xl text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 transition-all duration-300 group"
                   >
                     <CiSettings className="text-[22px] group-hover:rotate-90 transition-transform duration-500" />
@@ -120,6 +122,7 @@ const Nav = () => {
                   {/* Profile */}
                   <Link
                     href="/profile"
+                    aria-label=" الحساب الشخصي  "
                     className="flex items-center gap-2.5 pr-1.5 pl-4 py-1.5 bg-gradient-to-br from-white to-slate-50 border border-slate-200 rounded-xl shadow-sm hover:shadow-md hover:border-blue-300/50 transition-all duration-300 group"
                   >
                     <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-blue-600 to-blue-700 flex items-center justify-center text-white shadow-sm group-hover:shadow-lg group-hover:scale-105 transition-all duration-300">
@@ -135,6 +138,7 @@ const Nav = () => {
                 <div className="hidden lg:flex items-center gap-3">
                   <Link
                     href="/login"
+                    aria-label=" تسجيل الدخول  "
                     className="relative px-5 py-2.5 text-sm font-bold text-slate-700 hover:text-blue-600 transition-all duration-300 group"
                   >
                     <span className="relative z-10">تسجيل دخول</span>
@@ -143,6 +147,7 @@ const Nav = () => {
 
                   <Link
                     href="/register"
+                    aria-label=" تسجيل الخول  "
                     className="relative overflow-hidden flex items-center justify-center text-sm font-bold h-11 rounded-xl px-7 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 text-white shadow-md hover:shadow-xl hover:shadow-blue-200/50 transition-all duration-300 group active:scale-95"
                   >
                     <span className="relative z-10">انضم إلينا مجاناً</span>

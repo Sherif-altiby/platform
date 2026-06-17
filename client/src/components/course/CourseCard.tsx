@@ -116,6 +116,7 @@ const CourseCard = ({ course }: { course: Course }) => {
           {isOpen ? (
             <Link
               href={`/lessons?course_id=${course._id}&teacher_id=${course.teacherId}`}
+              aria-label=' الكورس  '
               className="w-full bg-[#0066FF] text-white py-3 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-blue-700 transition-all"
             >
               <span>دخول الكورس</span>

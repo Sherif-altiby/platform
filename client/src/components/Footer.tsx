@@ -54,7 +54,7 @@ const Footer = () => {
           
           {/* 1. البراند والوصف */}
           <div className="md:col-span-1 space-y-6 text-right order-last md:order-first">
-            <Link href="/" className="inline-block transform hover:scale-105 transition-transform">
+            <Link href="/" aria-label=' الرئيسية  ' className="inline-block transform hover:scale-105 transition-transform">
               <Image src="/main-logo-footer.png" alt="Logo" width={140} height={60} className="brightness-125" />
             </Link>
             <p className="text-slate-400 leading-relaxed font-medium">
@@ -78,7 +78,7 @@ const Footer = () => {
             <ul className="space-y-4">
               {navLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-slate-400 hover:text-white transition-all flex items-center  gap-2 group">
+                  <Link href={link.href} aria-label={link.label} className="text-slate-400 hover:text-white transition-all flex items-center  gap-2 group">
                     <span className="group-hover:mr-2 transition-all">{link.label}</span>
                     <div className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-blue-500 transition-colors" />
                   </Link>
@@ -106,7 +106,7 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-2 text-sm text-slate-500">
               <span> تطوير  </span>
-              <Link href="https://www.linkedin.com/in/sherif-altiby-38b350229/" target="_blank" className="text-white font-bold hover:text-orange-500 transition-colors">
+              <Link aria-label=' Sherif Altiby  ' href="https://www.linkedin.com/in/sherif-altiby-38b350229/" target="_blank" className="text-white font-bold hover:text-orange-500 transition-colors">
                  Sherif Altiby
               </Link>
             </div>

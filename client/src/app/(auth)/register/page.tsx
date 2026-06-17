@@ -243,6 +243,7 @@ const Page = () => {
                 <Link
                   href="/login"
                   className="text-indigo-600 font-semibold hover:text-indigo-700 hover:underline transition-colors duration-150"
+                  aria-label=' تسجيل الدخول  '
                 >
                   تسجيل الدخول
                 </Link>

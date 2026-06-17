@@ -87,6 +87,7 @@ const Login = () => {
                   كلمة المرور
                 </label>
                 <Link
+                 aria-label=' نسيت كلمة المرور؟  '
                   href="/forgot-password"
                   className="text-xs text-indigo-500 hover:text-indigo-700 hover:underline transition-colors duration-150"
                 >

@@ -150,6 +150,7 @@ const ProfilePage = () => {
                     )}
 
                 <Link
+                aria-label=' عرض جميع المدرسين  '
                   href="/get-teachers"
                   className="w-full flex items-center justify-center py-3.5 bg-white text-slate-700 hover:text-blue-600 border border-slate-200/80 rounded-xl text-sm font-bold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
                 >

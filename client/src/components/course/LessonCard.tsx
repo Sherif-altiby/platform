@@ -71,6 +71,7 @@ const LessonCard = ({ lesson, teacherId }: {lesson: Lesson, teacherId: string}) 
         <div className="mt-auto pt-6">
           <Link 
              href={`/watch/${lesson._id}?teacherId=${teacherId}`}
+             aria-label=' مشاهدة الدرس  '
              className="w-full py-4 rounded-2xl bg-slate-50 text-slate-900 text-xs font-black flex items-center justify-center gap-2 group-hover:bg-[#0066FF] group-hover:text-white transition-all duration-300 shadow-sm"
           >
             بدء مشاهدة الحصة
