@@ -83,6 +83,7 @@ const ResponsiveMenu = ({ show, setShow }: Props) => {
           </Link>
           <button
             onClick={() => setShow(false)}
+            aria-label="close menue"
             className="flex items-center justify-center w-[34px] h-[34px] rounded-xl border border-slate-200 bg-slate-50 text-slate-400 hover:border-indigo-200 hover:text-indigo-500 hover:bg-indigo-50 transition-all duration-200"
           >
             <IoClose className="text-[17px]" />

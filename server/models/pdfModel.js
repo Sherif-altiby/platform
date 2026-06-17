@@ -16,6 +16,11 @@ const pdfSchema = new mongoose.Schema({
     ref: "Course",
     required: true,
   },
+  lesson: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Lesson",
+    required: false,
+  },
   title: {
     type: String,
     required: true,

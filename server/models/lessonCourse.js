@@ -7,6 +7,11 @@ const LessonSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    note: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "PdfModel",
+      required: false,
+    },
     title: {
       type: String,
       required: true,

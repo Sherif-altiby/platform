@@ -1,89 +1,18 @@
-import { Level } from "../models/levelModel.js";
-import { Course, Subject } from "../models/model.js";
+import { Course } from "../models/model.js";
 import { PdfModel } from "../models/pdfModel.js";
-import { Teacher } from "../models/teacherModel.js";
 import { v2 as cloudinary } from "cloudinary";
 import destroyPdfCloudinary from "../utils/destroyFile.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { createNoteService } from "../services/teacher/noteServices.js";
 
-export const createNote = async (req, res) => {
-  try {
-    const teacherId = req.userId;
-    const { title, levelId, subjectId, courseId } = req.body;
+export const createNote = asyncHandler(async (req, res) => {
+  const teacherId = req.userId;
+  const { title, levelId, subjectId, courseId , lessonId} = req.body;
 
-    if (!req.file) {
-      return res.status(400).json({
-        message: "يرجى رفع ملف المذكرة بصيغة PDF",
-        error: true,
-      });
-    }
+  const newPdf = await createNoteService({ teacherId, title, levelId, subjectId, courseId, lessonId ,  file: req.file, });
 
-    const [teacher, subject, course, foundLevel] = await Promise.all([
-      Teacher.findById(teacherId),
-      Subject.findById(subjectId),
-      Course.findById(courseId),
-      Level.findById(levelId),
-    ]);
-
-    if (!teacher || !subject || !course || !foundLevel) {
-      return res.status(404).json({
-        message: "عذراً، المعلم أو المادة أو الكورس غير موجود",
-        error: true,
-        status: false,
-      });
-    }
-
-    const isPdfExist = await PdfModel.findOne({ title });
-    if (isPdfExist) {
-      return res.status(400).json({
-        message: "اسم المذكرة موجود بالفعل، يرجى اختيار اسم آخر",
-        error: true,
-      });
-    }
-
-    const result = await new Promise((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "raw",
-          format: "pdf",
-          folder: "pdf_uploads",
-        },
-        (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        },
-      );
-      uploadStream.end(req.file.buffer);
-    });
-
-    const newPdf = new PdfModel({
-      title,
-      level: foundLevel._id,
-      subject: subjectId,
-      course: courseId,
-      teacher: teacherId,
-      pdf: result.secure_url,
-    });
-
-    await newPdf.save();
-
-    await Course.findByIdAndUpdate(courseId, {
-      $push: { notes: newPdf._id },
-    });
-
-    return res.status(201).json({
-      message: "تم رفع المذكرة بنجاح وربطها بالكورس",
-      error: false,
-      status: true,
-      data: newPdf,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "حدث خطأ في الخادم أثناء الرفع",
-      error: true,
-      status: false,
-    });
-  }
-};
+  return res.status(201).json({ message: "تم رفع المذكرة بنجاح وربطها بالكورس", error: false, status: true, data: newPdf, });
+});
 
 export const updateNote = async (req, res) => {
   try {
@@ -138,8 +67,6 @@ export const updateNote = async (req, res) => {
       newPdfUrl = uploadResult.secure_url;
     }
 
-
-    
     const updateData = {
       title: title || pdfRecord.title,
       level: levelId,

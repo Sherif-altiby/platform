@@ -44,9 +44,9 @@ const Hero = () => {
             <div className="w-full max-w-md p-6 bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-2xl shadow-2xl border border-slate-700/50 hover:border-blue-500 transition-all group">
               <div className="flex justify-between items-center direction-rtl">
                 <div>
-                  <h3 className="text-xl font-bold mb-1 group-hover:text-blue-400 transition-colors">
+                  <p className="text-xl font-bold mb-1 group-hover:text-blue-400 transition-colors">
                     ابدأ رحلة النجاح
-                  </h3>
+                  </p>
                   <p className="text-sm text-slate-400">
                     اكتشف الفرص المتاحة لك اليوم
                   </p>

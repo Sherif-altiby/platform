@@ -21,10 +21,10 @@ const Footer = () => {
 
   const socialLinks = useMemo(
     () => [
-      { icon: <FaLinkedinIn />, color: "hover:bg-blue-600" },
-      { icon: <FaInstagram />, color: "hover:bg-pink-600" },
-      { icon: <FaFacebookF />, color: "hover:bg-blue-700" },
-      { icon: <FaWhatsapp />, color: "hover:bg-green-600" },
+      { tittle: "linkedin", icon: <FaLinkedinIn />, color: "hover:bg-blue-600",  },
+      { tittle: "instagram", icon: <FaInstagram />, color: "hover:bg-pink-600" , },
+      { tittle: "facebook", icon: <FaFacebookF />, color: "hover:bg-blue-700" , },
+      { tittle: "whats app", icon: <FaWhatsapp />, color: "hover:bg-green-600" , },
     ],
     []
   );
@@ -62,9 +62,9 @@ const Footer = () => {
             </p>
             <div className="flex items-center gap-3 pt-2">
               {socialLinks.map((s, i) => (
-                <a key={i} href="#" className={`w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 transition-all ${s.color} hover:text-white hover:-translate-y-1`}>
+                <Link key={i} href="#" aria-label={s.tittle} className={`w-10 h-10 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-400 transition-all ${s.color} hover:text-white hover:-translate-y-1`}>
                   {s.icon}
-                </a>
+                </Link>
               ))}
             </div>
           </div>
