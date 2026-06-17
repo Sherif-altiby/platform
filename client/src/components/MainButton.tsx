@@ -1,6 +1,6 @@
 import ButtonLoader from "./ButtonLoader";
 
-const MainButton = ({ text, loading }: { text: string; loading?: boolean }) => {
+const MainButton = ({ text, loading, ariaLabel }: { text: string; loading?: boolean, ariaLabel: string }) => {
   if (loading) {
     return (
       <button
@@ -17,6 +17,7 @@ const MainButton = ({ text, loading }: { text: string; loading?: boolean }) => {
     <button
       className="flex items-center justify-center text-lg  h-[50px] rounded-xl w-full sm:w-[170px] bg-hoverLinkColor border border-hoverLinkColor text-white transition-all duration-500 hover:rounded-[50px] hover:bg-white hover:text-hoverLinkColor"
       type="submit"
+      aria-label={ariaLabel}
     >
       {text}
     </button>

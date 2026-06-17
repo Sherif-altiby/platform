@@ -64,9 +64,9 @@ const Page = () => {
 
             {/* Submit */}
             {isForgetting ? (
-              <MainButton text="ارسال الكود" loading />
+              <MainButton ariaLabel="ارسال الكود" text="ارسال الكود" loading />
             ) : (
-              <MainButton text="ارسال الكود" />
+              <MainButton ariaLabel="ارسال الكود" text="ارسال الكود" />
             )}
 
           </form>

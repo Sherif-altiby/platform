@@ -89,7 +89,7 @@ const ChangePassword = () => {
         </div>
 
         <div className="pt-1">
-          <MainButton loading={loading} text="حفظ كلمة المرور" />
+          <MainButton ariaLabel='حفظ كلمة المرور' loading={loading} text="حفظ كلمة المرور" />
         </div>
       </form>
     </div>

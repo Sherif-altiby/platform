@@ -214,7 +214,7 @@ const Page = () => {
 
             <div className="pt-6 border-t border-slate-50 flex justify-end">
               <div className="w-full md:w-64">
-                <MainButton loading={isPending} text="حفظ التغييرات الجديدة" />
+                <MainButton ariaLabel="حفظ" loading={isPending} text="حفظ التغييرات الجديدة" />
               </div>
             </div>
           </form>

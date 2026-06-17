@@ -165,6 +165,7 @@ function VerificationForm() {
               ? "bg-gray-400 cursor-not-allowed"
               : "bg-[#5700FF] hover:opacity-90"
           }`}
+           aria-label="  ارسال   "
         >
           {verifyMutation.isPending ? "جارٍ التحقق..." : "إرسال"}
         </button>

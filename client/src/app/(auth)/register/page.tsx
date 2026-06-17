@@ -251,6 +251,7 @@ const Page = () => {
               {isRegister ? (
                 <button
                   disabled
+                  aria-label=" تسجيل الدخول "
                   className="flex items-center justify-center gap-2 h-12 px-8 rounded-xl bg-indigo-600 text-white text-sm font-semibold opacity-75 cursor-not-allowed w-full sm:w-auto"
                 >
                   <span>جارٍ التسجيل</span>
@@ -259,8 +260,10 @@ const Page = () => {
               ) : (
                 <button
                   type="submit"
+                  aria-label=" تسجيل الدخول " 
                   className="h-12 px-8 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200 w-full sm:w-auto"
                 >
+                  
                   إنشاء الحساب
                 </button>
               )}

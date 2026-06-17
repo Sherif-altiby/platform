@@ -121,6 +121,7 @@ export default function PaymentContent() {
                       ? "bg-slate-50/80"
                       : "hover:bg-slate-50/50"
                   }`}
+                   aria-label=" انستا باي (InstaPay) "
                 >
                   <div className="flex items-center gap-4">
                     {/* Styled with native active pink shades */}

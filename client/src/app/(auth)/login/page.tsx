@@ -114,7 +114,8 @@ const Login = () => {
               <button
                 disabled
                 className="flex items-center justify-center gap-2 h-12 w-full rounded-xl bg-indigo-600 text-white text-sm font-semibold opacity-75 cursor-not-allowed"
-              >
+                aria-label="تسجيل الدخول"
+             >
                 <span>جارٍ تسجيل الدخول</span>
                 <ButtonLoader />
               </button>
@@ -122,7 +123,8 @@ const Login = () => {
               <button
                 type="submit"
                 className="h-12 w-full rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-200 transition-all duration-200"
-              >
+                aria-label="تسجيل الدخول"
+             >
                 تسجيل الدخول
               </button>
             )}

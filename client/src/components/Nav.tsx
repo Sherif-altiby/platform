@@ -158,6 +158,7 @@ const Nav = () => {
                     ? "from-blue-600 to-blue-700 text-white shadow-lg shadow-blue-200"
                     : "from-slate-50 to-slate-100 border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600"
                 }`}
+                aria-label="عرض القائمة"
                 onClick={() => setShowMenu(!showMenu)}
               >
                 {showMenu ? (

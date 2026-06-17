@@ -73,7 +73,7 @@ const AddComment = () => {
         </div>
 
         <div className="pt-1">
-          <MainButton loading={loading} text="إرسال التقييم" />
+          <MainButton ariaLabel='ارسال' loading={loading} text="إرسال التقييم" />
         </div>
       </form>
     </div>

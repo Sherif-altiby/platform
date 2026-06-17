@@ -72,6 +72,7 @@ const Note = ({ id, name, pdf, teacherId, courseId }: NoteProps) => {
             ? "bg-slate-400 cursor-not-allowed"
             : "bg-slate-900 hover:bg-indigo-600 shadow-lg shadow-slate-200 hover:shadow-indigo-200"
         }`}
+         aria-label=" تصفح المذكرة"
       >
         <span className="relative z-10">
             {isPending ? "جاري التحضير..." : "تصفح المذكرة الآن"}
