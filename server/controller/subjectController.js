@@ -135,10 +135,17 @@ export const getSubjectCourses = async (req, res) => {
       });
     }
 
+    const generalLevel = await Level.findOne({
+      name: "عام",
+    }).select("_id");
+
     // 3. جلب الكورسات التي تنتمي لهذه المادة "و" تطابق مستوى الطالب
     const courses = await Course.find({
       subject: subId,
-      level: user.level  
+      $or: [
+        { level: user.level },
+        { level: generalLevel._id },
+      ],
     })
       .populate("subject")
       .lean();

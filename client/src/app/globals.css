@@ -275,3 +275,8 @@ input[type="number"]::-webkit-outer-spin-button {
     animation: spin-slow 20s linear infinite; 
     transform-origin: center; 
 }
+
+img{
+  user-select: none;
+  object-fit: cover;
+}
