@@ -1,0 +1,19 @@
+User-agent: *
+Allow: /
+
+# Block private or non-SEO pages
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /teacher-dashboard/
+Disallow: /student-dashboard/
+Disallow: /profile/
+Disallow: /login/
+Disallow: /register/
+
+# Block Next.js internal files (optional but recommended)
+Disallow: /_next/
+Disallow: /private/
+
+# Sitemap (VERY IMPORTANT)
+Sitemap: https://platform-mu-steel.vercel.app/sitemap.xml
