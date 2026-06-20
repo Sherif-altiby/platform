@@ -24,7 +24,6 @@ export const getTeacherStats = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error fetching teacher stats:", error);
     return res.status(500).json({
       message: "حدث خطأ أثناء جلب الإحصائيات",
       error: error.message

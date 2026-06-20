@@ -66,7 +66,6 @@ export const register = async (req, res) => {
       html: generateRegistrationEmail(newUser.name, process.env.FRONTEMD_URL),
     });
 
-    console.log("test:: ==>>", test)
 
     return res.status(201).json({
       message: "تم التسجيل بنجاح. رجاءا مراجعة البريد الالكتروني",
@@ -193,7 +192,6 @@ export const login = async (req, res) => {
     }
 
   } catch (error) {
-    console.error("Login Error:", error);
     return res.status(500).json({
       message: error.message || "حدث خطأ داخلي في السيرفر",
       error: true,

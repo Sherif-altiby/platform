@@ -40,15 +40,16 @@ export const createNoteService = async ({ teacherId, title, levelId, subjectId, 
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          resource_type: "raw",
+          resource_type: "image",
           folder: "pdf_uploads",
+          format: "pdf",
         },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
         }
       );
-  
+    
       uploadStream.end(file.buffer);
     });
   

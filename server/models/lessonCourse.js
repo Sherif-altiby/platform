@@ -7,6 +7,16 @@ const LessonSchema = new mongoose.Schema(
       ref: "Course",
       required: true,
     },
+    subject: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Subject",
+      required: true,
+    },
+    level: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Level",
+      required: true,
+    },
     note: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "PdfModel",

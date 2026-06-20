@@ -150,7 +150,6 @@ export const teacherUploadQuiz = async (req, res) => {
       data: newQuiz,
     });
   } catch (error) {
-    console.error("Error uploading quiz:", error);
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,
@@ -362,7 +361,6 @@ export const checkQuiz = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error checking quiz:", error);
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,
@@ -407,7 +405,6 @@ export const getTeacherQuizResults = async (req, res) => {
       data: allResults,
     });
   } catch (error) {
-    console.error("Error fetching results:", error);
     return res.status(500).json({
       message: error.message || "حدث خطأ داخلي في السيرفر",
       error: true,
@@ -440,7 +437,6 @@ export const getTeacherQuizzesSummary = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error in quizzes summary:", error);
     return res.status(500).json({
       success: false,
       message: "حدث خطأ أثناء جلب البيانات",
@@ -615,7 +611,6 @@ export const teacherUpdateQuiz = async (req, res) => {
       data: existingQuiz,
     });
   } catch (error) {
-    console.error("Error updating quiz:", error);
     return res.status(500).json({
       message: error.message || "Internal Server Error",
       error: true,

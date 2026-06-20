@@ -28,7 +28,6 @@ export const forgotPasswordService = async (email) => {
     }),
   });
 
-  console.log("test:: ==>>", test)
 
   return {
     message: "يرجى مراجعة البريد الإلكتروني",

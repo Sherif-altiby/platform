@@ -36,8 +36,6 @@ export const updateWatchHistory = async (req, res) => {
         });
 
     } catch (error) {
-        // 6. التعامل مع الأخطاء
-        console.error("Error in updateWatchHistory Controller:", error.message);
         
         return res.status(500).json({
             success: false,
@@ -85,7 +83,6 @@ export const getWatchList = async (req, res) => {
       data: latestWatched,
     });
   } catch (error) {
-    console.error("getWatchList error:", error);
 
     return res.status(500).json({
       status: false,

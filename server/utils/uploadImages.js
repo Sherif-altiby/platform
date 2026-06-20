@@ -26,7 +26,6 @@ const uploadImageClodinary = async (arrayBuffer) => {
 
     return uploadImage;
   } catch (err) {
-    console.error("Upload failed:", err);
     throw err;
   }
 };

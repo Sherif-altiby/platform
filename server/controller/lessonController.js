@@ -2,6 +2,8 @@ import { CourseAccess } from "../models/courseAccessModel.js";
 import { Lesson } from "../models/lessonCourse.js";
 import { Course } from "../models/model.js";
 import { Teacher } from "../models/teacherModel.js";
+import { getTeacherCourseLessonsService } from "../services/lessons/index.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const addLesson = async (req, res) => {
   try {
@@ -48,6 +50,8 @@ export const addLesson = async (req, res) => {
       title,
       videoUrl,
       description,
+      level: course.level,
+      subject: course.subject
     });
 
     await newLesson.save();
@@ -165,7 +169,6 @@ export const getCourseLessons = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error fetching lessons:", error);
     res.status(500).json({
       success: false,
       message: "حدث خطأ في الخادم أثناء جلب الدروس"
@@ -174,34 +177,21 @@ export const getCourseLessons = async (req, res) => {
 };
 
 
-export const getTeacherCourseLessons = async (req, res) => {
-  try {
-    const { courseId } = req.params;
-    const teacherId = req.userId;
+export const getTeacherCourseLessons = asyncHandler(async (req, res) => {
 
-    if (!courseId) {
-      return res.status(400).json({ message: " Complete all data " });
-    }
+  const { courseId } = req.params;
 
-    const teacher = await Teacher.findById(teacherId);
+  const data = await getTeacherCourseLessonsService({
+    teacherId: req.userId,
+    courseId,
+  });
 
-    if (!teacher) {
-      return res.status(404).json({ message: "المستخدم غير موجود" });
-    }
+  return res.status(200).json({
+    success: true,
+    data,
+  });
 
-    const lessons = await Lesson.find({ course: courseId }).sort({
-      createdAt: 1,
-    });
-
-    return res.status(200).json({
-      success: true,
-      data: lessons,
-    });
-  } catch (error) {
-    console.error("Error fetching lessons:", error);
-    res.status(500).json({ message: "حدث خطأ في الخادم أثناء جلب الدروس" });
-  }
-}
+});
 
 
 export const teacherUpdateLesson = async (req, res) => {
@@ -231,7 +221,6 @@ export const teacherUpdateLesson = async (req, res) => {
       data: lesson,
     });
   } catch (error) {
-    console.error("Error updating lesson:", error);
     res.status(500).json({ message: "حدث خطأ في الخادم أثناء تحديث الدرس" });
   }
 };

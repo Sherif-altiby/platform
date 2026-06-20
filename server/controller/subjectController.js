@@ -197,7 +197,6 @@ export const getSubjectCourses = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error fetching student courses:", error);
     return res.status(500).json({
       success: false,
       message: "Internal server error",
@@ -322,7 +321,6 @@ export const getStudentCoursesByTeacher = async (req, res) => {
       data: results,
     });
   } catch (error) {
-    console.error("Error in getStudentCoursesByTeacher:", error);
     return res.status(500).json({ message: "حدث خطأ في الخادم" });
   }
 };

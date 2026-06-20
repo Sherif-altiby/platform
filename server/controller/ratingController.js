@@ -43,7 +43,6 @@ export const userRateTeacher = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error in userRateTeacher:", error);
 
     // معالجة خطأ الـ Validation (مثلاً لو كان التقييم أكبر من 5)
     if (error.name === "ValidationError") {
@@ -103,7 +102,6 @@ export const getTeacherRatings = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("Error fetching ratings:", error);
     return res.status(500).json({ message: "حدث خطأ أثناء جلب التقييمات" });
   }
 };

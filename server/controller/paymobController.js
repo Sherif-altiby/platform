@@ -77,7 +77,6 @@ export async function createPayment(req, res) {
         
         return res.status(200).json({ url: iframeUrl });
     } catch (error) {
-        console.error(error);
         res.status(500).json({ error: "Payment initiation failed" });
     }
 }

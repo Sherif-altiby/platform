@@ -34,7 +34,6 @@ export const addNoteToHistory = async (req, res) => {
       data: history,
     });
   } catch (error) {
-    console.error("Error in addNoteToHistory:", error.message);
     return res.status(500).json({
       success: false,
       message: "خطأ داخلي أثناء حفظ تاريخ المذكرة",

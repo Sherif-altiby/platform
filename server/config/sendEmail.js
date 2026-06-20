@@ -14,9 +14,6 @@ const sendEmail = async ({ sendTo, subject, html }) => {
       html: html,
     });
 
-    console.log("data:", data);
-    console.log("error:", error);
-
     if (error) {
       return console.error({ error });
     }

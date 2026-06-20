@@ -80,7 +80,6 @@ export const addToList = async (req, res) => {
     if (error.kind === "ObjectId") {
       return res.status(400).json({ message: "صيغة المعرف (ID) غير صحيحة" });
     }
-    console.error("AddToList Error:", error);
     res.status(500).json({ message: "حدث خطأ في السيرفر أثناء الإضافة" });
   }
 };
@@ -132,7 +131,6 @@ export const userAccessCourse = async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Activation Error:", error);
     res.status(500).json({ message: "حدث خطأ أثناء محاولة تفعيل الكورس" });
   }
 };

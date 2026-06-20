@@ -35,7 +35,6 @@ const destroyPdfCloudinary = async (pdfUrl) => {
 
     return result;
   } catch (error) {
-    console.error("Cloudinary PDF Delete Error:", error);
     return null;
   }
 };

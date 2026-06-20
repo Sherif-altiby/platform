@@ -211,8 +211,9 @@ export const getTeacherNotes = async (req, res) => {
       query.level = level;
     }
 
-    const quizzes = await PdfModel.find(query)
+    const notes = await PdfModel.find(query)
       .populate("subject", "name")
+      .populate("lesson", "title")
       .populate("course", "title")
       .sort({ createdAt: -1 });
 
@@ -220,8 +221,8 @@ export const getTeacherNotes = async (req, res) => {
       message: "تم جلب الاختبارات بنجاح",
       error: false,
       status: true,
-      count: quizzes.length,
-      data: quizzes,
+      count: notes.length,
+      data: notes,
     });
   } catch (error) {
     return res.status(500).json({
