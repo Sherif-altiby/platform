@@ -163,13 +163,24 @@ export const getNoteByLevel = async (req, res) => {
     const { level, teacherId } = req.body;
     if (!teacherId) {
       return res.status(400).json({
-        message: "Complete all data",
+        message: "Complete all data", 
         error: true,
         status: false,
-      });
+      });  
     }
 
-    const pdf = await PdfModel.find({ teacher: teacherId, level });
+    const generalLevel = await Level.findOne({
+      name: "عام",
+    }).select("_id");
+
+    const pdf = await PdfModel.find({ 
+      teacher: teacherId, 
+      $or: [
+        { level: level },
+        { level: generalLevel._id },
+      ],
+    });
+
     if (!pdf) {
       return res.status(404).json({
         message: "Pdf not found",
