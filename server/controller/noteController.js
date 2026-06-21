@@ -4,6 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 import destroyPdfCloudinary from "../utils/destroyFile.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { createNoteService } from "../services/teacher/noteServices.js";
+import { Level } from "../models/levelModel.js";
 
 export const createNote = asyncHandler(async (req, res) => {
   const teacherId = req.userId;
