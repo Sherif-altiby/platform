@@ -2,6 +2,9 @@ import { Level } from "../../models/levelModel.js";
 import { PdfModel } from "../../models/pdfModel.js";
 import { CourseAccess } from "../../models/courseAccessModel.js";
 import { AppError } from "../../utils/appError.js";
+import destroyPdfCloudinary from "../../utils/destroyFile.js";
+import { Course, Subject } from "../../models/model.js";
+import destroyImageCloudinary from "../../utils/destroyImage.js";
 
 export const getNoteByLevelService = async ({
   level,
@@ -28,7 +31,7 @@ export const getNoteByLevelService = async ({
   }).populate("course", "title status");
 
   if (pdfs.length === 0) {
-    throw new AppError("Pdf not found", 404);
+    return [];
   }
 
   const groupedCourses = new Map();
@@ -88,4 +91,53 @@ export const getNoteByLevelService = async ({
   }
 
   return data;
+};
+
+
+export const deleteCourseService = async ({ courseId }) => {
+  if (!courseId) {
+    throw new AppError("Course ID is required", 400);
+  }
+
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new AppError("Course not found", 404);
+  }
+
+  // 1. Remove course from subject
+  if (course.subject) {
+    await Subject.findByIdAndUpdate(course.subject, {
+      $pull: { courses: courseId },
+    });
+  }
+
+  // 2. Get all PDFs related to course
+  const pdfs = await PdfModel.find({ course: courseId });
+
+  // 3. Delete PDFs from Cloudinary
+  for (const pdfRecord of pdfs) {
+    if (pdfRecord.pdf) {
+      await destroyPdfCloudinary(pdfRecord.pdf);
+    }
+  }
+
+  // 4. Delete PDFs from DB
+  await PdfModel.deleteMany({ course: courseId });
+
+  // 5. Delete course image from Cloudinary
+  let deleteImgResult = null;
+
+  if (course.image) {
+    deleteImgResult = await destroyImageCloudinary(course.image);
+  }
+
+  // 6. Delete course
+  await Course.findByIdAndDelete(courseId);
+
+  return {
+    courseId,
+    deletedPdfsCount: pdfs.length,
+    deleteImgResult,
+  };
 };

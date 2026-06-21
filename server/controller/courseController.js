@@ -8,6 +8,7 @@ import { CourseAccess } from "../models/courseAccessModel.js";
 import { asyncHandler } from "../utils/asyncHandler.js"
 import { createCourseService, updateCourseService } from "../services/teacher/coursesServices.js";
 import { requestCourseAccessService } from "../services/payment/paymentServices.js";
+import { deleteCourseService } from "../services/note/noteServices.js";
 
 export const addCourse = asyncHandler( async (req, res) => {
     const course = await createCourseService( req.userId, req.body, req.file );
@@ -33,43 +34,18 @@ export const updateCourse = asyncHandler(async (req, res) => {
   });
 });
 
-export const deleteCourse = async (req, res) => {
-  try {
-    const { courseId } = req.params;
+export const deleteCourse = asyncHandler(async (req, res) => {
+  const { courseId } = req.params;
 
-    const course = await Course.findById(courseId);
-    if (!course) {
-      return res.status(404).json({
-        message: "Course not found",
-        error: true,
-        status: false,
-      });
-    }
+  const result = await deleteCourseService({ courseId });
 
-    if (course.subject) {
-      await Subject.findByIdAndUpdate(course.subject, {
-        $pull: { courses: courseId },
-      });
-    }
-
-    const deleteImg = await destroyImageCloudinary(course.image);
-
-    await Course.findByIdAndDelete(courseId);
-
-    return res.status(200).json({
-      message: "Course deleted successfully and removed from subject list",
-      error: false,
-      status: true,
-      deleteImg,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
+  return res.status(200).json({
+    message: "Course deleted successfully",
+    error: false,
+    status: true,
+    data: result,
+  });
+});
 
 export const getSubjectCourses = async (req, res) => {
   try {

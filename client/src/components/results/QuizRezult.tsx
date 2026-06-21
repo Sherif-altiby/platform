@@ -1,6 +1,5 @@
-import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
-import { FaTrophy } from "react-icons/fa6";
 import { HiPhotograph } from "react-icons/hi";
+import { LuCheck, LuX, LuTrophy, LuCircleCheck, LuCircleX } from "react-icons/lu";
 import Image from "next/image";
 
 export interface QuizResultData {
@@ -10,203 +9,174 @@ export interface QuizResultData {
   answers: Array<{
     questionTitle: string;
     questionImage?: string;
-    userAnswer: string | {
-      text?: string;
-      image?: string;
-    };
-    correctAnswer: string | {
-      text?: string;
-      image?: string;
-    };
+    userAnswer: string | { text?: string; image?: string };
+    correctAnswer: string | { text?: string; image?: string };
     isCorrect: boolean;
   }>;
 }
 
 const QuizResult = ({ result }: { result: QuizResultData }) => {
-  
-  // دالة لتحديد الاتجاه بناءً على النص
+  const passed = result.score >= 50;
+  const wrongCount = result.totalQuestions - result.correctAnswersCount;
+
   const getDirection = (text: string) => {
     if (!text) return "rtl";
-    const isEnglish = /^[a-zA-Z0-9\s!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|`~-]/.test(text.trim());
-    return isEnglish ? "ltr" : "rtl";
+    return /^[a-zA-Z0-9\s!@#$%^&*()_+={}\[\]:;"'<>,.?\/\\|`~-]/.test(text.trim())
+      ? "ltr"
+      : "rtl";
   };
 
-  // دالة لعرض الإجابة (نص و/أو صورة)
-  const renderAnswer = (answer: any, isCorrect: boolean = false) => {
-    // Handle old format (string)
-    if (typeof answer === 'string') {
+  const renderAnswer = (answer: any, isCorrect: boolean) => {
+    const color = isCorrect ? "text-teal-800" : "text-slate-700";
+
+    if (typeof answer === "string") {
       const dir = getDirection(answer);
       return (
-        <span 
-          style={{ direction: dir }}
-          className={`font-bold inline-block ${
-            isCorrect ? "text-emerald-600" : "text-red-600"
-          } ${dir === 'rtl' ? 'text-right' : 'text-left'}`}
-        >
+        <span style={{ direction: dir }} className={`font-medium text-sm ${color}`}>
           {answer}
         </span>
       );
     }
 
-    // Handle new format (object with text and/or image)
-    if (typeof answer === 'object' && answer !== null) {
+    if (typeof answer === "object" && answer !== null) {
       const hasText = Boolean(answer.text);
       const hasImage = Boolean(answer.image);
 
       return (
-        <div className="inline-flex flex-col gap-2 mt-1">
-          {/* Display text if exists */}
+        <div className="flex flex-col gap-2">
           {hasText && (
-            <span 
+            <span
               style={{ direction: getDirection(answer.text) }}
-              className={`font-bold ${
-                isCorrect ? "text-emerald-600" : "text-red-600"
-              } ${getDirection(answer.text) === 'rtl' ? 'text-right' : 'text-left'}`}
+              className={`font-medium text-sm ${color}`}
             >
               {answer.text}
             </span>
           )}
-
-          {/* Display image if exists */}
           {hasImage && (
-            <div className="relative w-32 h-32 rounded-lg overflow-hidden border-2 border-gray-200 bg-gray-50 group">
-              <Image
-                src={answer.image}
-                alt="إجابة"
-                fill
-                className="object-contain p-1"
-              />
-              <div className="absolute bottom-1 left-1 bg-black/60 backdrop-blur-sm text-white px-1.5 py-0.5 rounded text-[9px] font-medium flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                <HiPhotograph className="text-[10px]" />
-                صورة
+            <div className="relative w-28 h-28 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 group">
+              <Image src={answer.image} alt="إجابة" fill className="object-contain p-1" />
+              <div className="absolute bottom-1 left-1 bg-black/50 text-white px-1.5 py-0.5 rounded text-[9px] flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <HiPhotograph className="text-[10px]" /> صورة
               </div>
             </div>
           )}
-
-          {/* If neither text nor image */}
           {!hasText && !hasImage && (
-            <span className="text-gray-400 text-sm italic">
-              لا يوجد إجابة
-            </span>
+            <span className="text-slate-400 text-sm italic">لا يوجد إجابة</span>
           )}
         </div>
       );
     }
 
-    return <span className="text-gray-400 text-sm italic">لا يوجد إجابة</span>;
+    return <span className="text-slate-400 text-sm italic">لا يوجد إجابة</span>;
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4">
-      {/* Result Summary Card */}
-      <div className="bg-white rounded-[2.5rem] p-10 shadow-xl border border-gray-50 text-center relative overflow-hidden">
-        <div
-          className={`absolute top-0 left-0 w-full h-2 ${result.score >= 50 ? "bg-emerald-500" : "bg-red-500"}`}
-        />
-        <div className="inline-flex p-5 rounded-full bg-yellow-50 text-yellow-500 mb-4 text-4xl">
-          <FaTrophy />
-        </div>
-        <h2 className="text-3xl font-black text-gray-800 mb-2">
-          {result.score >= 50 ? "ممتاز!" : "حاول مجدداً"}
-        </h2>
-        <p className="text-gray-500 mb-8 font-bold text-xl">
-          درجتك: {result.score}%
-        </p>
+    <div className="flex flex-col gap-4">
 
-        <div className="grid grid-cols-2 gap-4 max-w-sm mx-auto">
-          <div className="bg-emerald-50 p-4 rounded-2xl">
-            <p className="text-emerald-600 text-2xl font-black">
-              {result.correctAnswersCount}
-            </p>
-            <p className="text-emerald-700 text-xs font-medium">صحيحة</p>
+      {/* Summary Card */}
+      <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
+        <div className={`h-0.5 w-full ${passed ? "bg-teal-400" : "bg-red-400"}`} />
+        <div className="flex flex-col items-center gap-4 p-6">
+
+          <div className="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
+            <LuTrophy className="text-amber-600 text-xl" />
           </div>
-          <div className="bg-red-50 p-4 rounded-2xl">
-            <p className="text-red-600 text-2xl font-black">
-              {result.totalQuestions - result.correctAnswersCount}
-            </p>
-            <p className="text-red-700 text-xs font-medium">خاطئة</p>
+
+          <div className="text-center">
+            <p className="text-4xl font-medium text-slate-800">{result.score}%</p>
+            <p className="text-sm text-slate-400 mt-1">درجتك النهائية</p>
           </div>
+
+          <div className={`flex items-center gap-1.5 text-sm font-medium ${passed ? "text-teal-800" : "text-red-700"}`}>
+            {passed
+              ? <><LuCircleCheck className="text-base" /> ممتاز! أنت اجتزت الاختبار</>
+              : <><LuCircleX className="text-base" /> لم تجتز الاختبار، حاول مجدداً</>
+            }
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 w-full max-w-xs">
+            <div className="bg-teal-50 rounded-lg p-3 text-center">
+              <p className="text-2xl font-medium text-teal-800">{result.correctAnswersCount}</p>
+              <p className="text-xs text-teal-700 mt-0.5">إجابات صحيحة</p>
+            </div>
+            <div className="bg-red-50 rounded-lg p-3 text-center">
+              <p className="text-2xl font-medium text-red-800">{wrongCount}</p>
+              <p className="text-xs text-red-700 mt-0.5">إجابات خاطئة</p>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      {/* Questions Review */}
-      <div className="space-y-4">
-        <h3 className="text-xl font-bold text-gray-700 px-2">مراجعة الأسئلة</h3>
+      {/* Section title */}
+      <p className="text-sm font-medium text-slate-500 px-1">مراجعة الأسئلة</p>
+
+      {/* Questions */}
+      <div className="flex flex-col gap-2.5">
         {result.answers.map((item, idx) => (
           <div
             key={idx}
-            className={`p-6 rounded-3xl border transition-all ${
-              item.isCorrect
-                ? "bg-white border-emerald-100 shadow-sm"
-                : "bg-red-50/50 border-red-100"
+            className={`bg-white rounded-xl border overflow-hidden ${
+              item.isCorrect ? "border-slate-200" : "border-red-200"
             }`}
           >
-            <div className="flex items-start gap-4">
-              {/* Check/Cross Icon */}
+            {/* Question header */}
+            <div className="flex items-start gap-3 px-4 py-3.5">
               <div
-                className={`mt-1 shrink-0 ${item.isCorrect ? "text-emerald-500" : "text-red-500"}`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+                  item.isCorrect
+                    ? "bg-teal-50 text-teal-700"
+                    : "bg-red-50 text-red-600"
+                }`}
               >
-                {item.isCorrect ? (
-                  <FaCheckCircle size={22} />
-                ) : (
-                  <FaTimesCircle size={22} />
+                {item.isCorrect
+                  ? <LuCheck className="text-sm" />
+                  : <LuX className="text-sm" />
+                }
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] text-slate-400 mb-1">السؤال {idx + 1}</p>
+                <p
+                  style={{ direction: getDirection(item.questionTitle) }}
+                  className="text-sm font-medium text-slate-800 leading-relaxed"
+                >
+                  {item.questionTitle}
+                </p>
+
+                {item.questionImage && (
+                  <div className="relative w-full h-40 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 mt-3">
+                    <Image
+                      src={item.questionImage}
+                      alt="صورة السؤال"
+                      fill
+                      className="object-contain p-2"
+                    />
+                    <div className="absolute top-2 right-2 bg-black/50 text-white px-2 py-0.5 rounded text-[10px] flex items-center gap-1">
+                      <HiPhotograph className="text-xs" /> صورة السؤال
+                    </div>
+                  </div>
                 )}
               </div>
+            </div>
 
-              <div className="flex-1 space-y-4">
-                {/* Question Title */}
-                <div>
-                  <p 
-                    style={{ direction: getDirection(item.questionTitle) }}
-                    className={`text-gray-800 font-bold mb-3 text-base md:text-lg ${
-                      getDirection(item.questionTitle) === 'rtl' ? 'text-right' : 'text-left'
-                    }`}
-                  >
-                    {item.questionTitle}
-                  </p>
-
-                  {/* Question Image if exists */}
-                  {item.questionImage && (
-                    <div className="relative w-full h-40 md:h-48 rounded-xl overflow-hidden border border-gray-200 bg-gray-50 mb-3">
-                      <Image
-                        src={item.questionImage}
-                        alt="صورة السؤال"
-                        fill
-                        className="object-contain p-2"
-                      />
-                      <div className="absolute top-2 right-2 bg-black/60 backdrop-blur-sm text-white px-2 py-1 rounded text-[10px] font-medium flex items-center gap-1">
-                        <HiPhotograph className="text-xs" />
-                        صورة السؤال
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Answers Section */}
-                <div className="space-y-3 text-sm">
-                  {/* User Answer */}
-                  <div className="bg-gray-50 p-4 rounded-xl">
-                    <p className="text-gray-600 mb-2 font-medium text-xs">
-                      إجابتك:
-                    </p>
-                    {renderAnswer(item.userAnswer, item.isCorrect)}
-                  </div>
-
-                  {/* Correct Answer (only show if user was wrong) */}
-                  {!item.isCorrect && (
-                    <div className="bg-emerald-50 p-4 rounded-xl">
-                      <p className="text-gray-600 mb-2 font-medium text-xs">
-                        الإجابة الصحيحة:
-                      </p>
-                      {renderAnswer(item.correctAnswer, true)}
-                    </div>
-                  )}
-                </div>
+            {/* Answers */}
+            <div className="flex flex-col gap-2 px-4 pb-4">
+              <div className="bg-slate-50 rounded-lg px-3 py-2.5">
+                <p className="text-[11px] text-slate-400 mb-1.5">إجابتك</p>
+                {renderAnswer(item.userAnswer, item.isCorrect)}
               </div>
+
+              {!item.isCorrect && (
+                <div className="bg-teal-50 rounded-lg px-3 py-2.5">
+                  <p className="text-[11px] text-slate-400 mb-1.5">الإجابة الصحيحة</p>
+                  {renderAnswer(item.correctAnswer, true)}
+                </div>
+              )}
             </div>
           </div>
         ))}
       </div>
+
     </div>
   );
 };

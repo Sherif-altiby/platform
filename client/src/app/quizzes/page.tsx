@@ -8,6 +8,7 @@ import Spiner from "@/components/Spiner";
 import { toast } from "react-toastify";
 import { CiSquareQuestion } from "react-icons/ci";
 import { useQuery } from "@tanstack/react-query";
+import QuizAccordion from "./NotesAccordion";
 
 function QuizzesContent() {
   const searchParams = useSearchParams();
@@ -63,11 +64,14 @@ function QuizzesContent() {
             <Spiner />
           </div>
         ) : quizzes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {quizzes.map((quiz: any) => (
-              <Quiz quiz={quiz}  key={quiz._id}/>
-            ))}
-          </div>
+          // <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          //   {quizzes.map((quiz: any) => (
+          //     <Quiz quiz={quiz}  key={quiz._id}/>
+          //   ))}
+          // </div>
+          <div className="p-6">
+          <QuizAccordion data={quizzes} />
+        </div>
         ) : (
           <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
             <CiSquareQuestion className="text-5xl opacity-30" />

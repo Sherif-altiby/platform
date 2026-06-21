@@ -8,6 +8,7 @@ import destroyImageCloudinary from "../utils/destroyImage.js";
 import { asyncHandler  } from "../utils/asyncHandler.js"
 import { getTeacherInfoService, updateTeacherProfileService } from "../services/teacher/teacherSettingsServices.js";
 import { Level } from "../models/levelModel.js";
+import { getQuizByIdService, getTeacherQuizzesByLevelService } from "../services/quiz/quizServices.js";
 
 export const getTeacherById = async (req, res) => {
   try {
@@ -177,90 +178,33 @@ export const teacherUpdateVideo = async (req, res) => {
   }
 };
 
-export const getTeacherQuizzesByLevel = async (req, res) => {
-  try {
-    const { teacherId, level } = req.body;
+export const getTeacherQuizzesByLevel = asyncHandler(async (req, res) => {
+  const { teacherId, level } = req.body;
 
-    if (!teacherId || !level) {
-      return res.status(400).json({
-        message: "Complete all data",
-        error: true,
-        status: false,
-      });
-    }
+  const data = await getTeacherQuizzesByLevelService({
+    teacherId,
+    level,
+    studentId: req.userId, // لو عندك auth
+  });
 
-    const generalLevel = await Level.findOne({
-      name: "عام",
-    }).select("_id");
+  return res.status(200).json({
+    error: false,
+    status: true,
+    data,
+  });
+});
 
-    const quizzes = await Quizz.find({ 
-      teacher: teacherId ,
-      $or: [
-        { level: level },
-        { level: generalLevel._id },
-      ],
-    })
-      .populate("course", "title _id")
-      .populate("subject", "name _id")
-      .populate("lessons", "title")
-      .lean();
+export const getQuizeById = asyncHandler(async (req, res) => {
+  const quizId = req.params.id;
 
+  const data = await getQuizByIdService({ quizId });
 
-    if (!quizzes) {
-      return res.status(404).json({
-        message: "No quizzes founded",
-        error: true,
-        status: false,
-      });
-    }
-
-    return res.status(200).json({
-      error: false,
-      status: true,
-      data: quizzes,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
-
-export const getQuizeById = async (req, res) => {
-  try {
-    const quizId = req.params.id;
-    if (!quizId) {
-      return res.status(400).json({
-        message: "Provide quize Id",
-        error: true,
-        status: false,
-      });
-    }
-
-    const quiz = await Quizz.findById(quizId);
-    if (!quiz) {
-      return res.status(500).json({
-        message: "Quiz not found",
-        error: true,
-        status: false,
-      });
-    }
-
-    return res.status(200).json({
-      error: false,
-      status: true,
-      data: quiz,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
+  return res.status(200).json({
+    error: false,
+    status: true,
+    data,
+  });
+});
 
 export const deleteQuize = async (req, res) => {
   try {
