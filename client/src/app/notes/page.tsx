@@ -9,6 +9,7 @@ import Spiner from "@/components/Spiner";
 import { PiNotepadThin } from "react-icons/pi";
 import { useQuery } from "@tanstack/react-query";
 import NoteSkeleton from "@/skeletons/NoteSkeleton";
+import NotesAccordion from "@/components/NotesAccordion";
 
 function NotesContent() {
   const searchParams = useSearchParams();
@@ -70,18 +71,19 @@ function NotesContent() {
             حدث خطأ أثناء تحميل البيانات
           </div>
         ) : notes && notes.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-            {notes.map((note: any) => (
-              <Note
-                key={note._id}
-                id={note._id}
-                name={note.title}
-                pdf={note.pdf}
-                teacherId={teacherId as string}
-                courseId={note.course}
-              />
-            ))}
-          </div>
+          // <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          //   {notes.map((note: any) => (
+          //     <Note
+          //       key={note._id}
+          //       id={note._id}
+          //       name={note.title}
+          //       pdf={note.pdf}
+          //       teacherId={teacherId as string}
+          //       courseId={note.course}
+          //     />
+          //   ))}
+          // </div>
+          <NotesAccordion data={notes} teacherId={teacherId as string} />
         ) : (
           <div className="flex flex-col items-center justify-center h-64 gap-3 text-gray-400">
             <PiNotepadThin className="text-5xl opacity-30" />

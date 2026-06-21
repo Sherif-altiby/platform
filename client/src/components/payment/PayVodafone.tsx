@@ -21,9 +21,7 @@ const PayVodafone = ({ phone, name, courseId, teacherId }: { phone: string; name
     onError: (error: any) => {
       toast.error(error.message || "حدث خطأ ما أثناء الإرسال");
     },
-    onSuccess: () => {
-      toast.success("تم إرسال إيصال الدفع للمراجعة بنجاح");
-    },
+     
   });
 
   return (

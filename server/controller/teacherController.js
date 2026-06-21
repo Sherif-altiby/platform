@@ -7,6 +7,7 @@ import uploadImageClodinary from "../utils/uploadImages.js";
 import destroyImageCloudinary from "../utils/destroyImage.js";
 import { asyncHandler  } from "../utils/asyncHandler.js"
 import { getTeacherInfoService, updateTeacherProfileService } from "../services/teacher/teacherSettingsServices.js";
+import { Level } from "../models/levelModel.js";
 
 export const getTeacherById = async (req, res) => {
   try {
@@ -188,7 +189,17 @@ export const getTeacherQuizzesByLevel = async (req, res) => {
       });
     }
 
-    const quizzes = await Quizz.find({ level, teacher: teacherId })
+    const generalLevel = await Level.findOne({
+      name: "عام",
+    }).select("_id");
+
+    const quizzes = await Quizz.find({ 
+      teacher: teacherId ,
+      $or: [
+        { level: level },
+        { level: generalLevel._id },
+      ],
+    })
       .populate("course", "title _id")
       .populate("subject", "name _id")
       .populate("lessons", "title")

@@ -5,6 +5,7 @@ import destroyPdfCloudinary from "../utils/destroyFile.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { createNoteService } from "../services/teacher/noteServices.js";
 import { Level } from "../models/levelModel.js";
+import { getNoteByLevelService } from "../services/note/noteServices.js";
 
 export const createNote = asyncHandler(async (req, res) => {
   const teacherId = req.userId;
@@ -159,51 +160,23 @@ export const deleteNote = async (req, res) => {
   }
 };
 
-export const getNoteByLevel = async (req, res) => {
-  try {
-    const { level, teacherId } = req.body;
-    if (!teacherId) {
-      return res.status(400).json({
-        message: "Complete all data", 
-        error: true,
-        status: false,
-      });  
-    }
+export const getNoteByLevel = asyncHandler(async (req, res) => {
+  const { level, teacherId } = req.body;
+  
+  const studentId = req.userId
 
-    const generalLevel = await Level.findOne({
-      name: "عام",
-    }).select("_id");
+  const pdf = await getNoteByLevelService({
+    level,
+    teacherId,
+    studentId
+  });
 
-    const pdf = await PdfModel.find({ 
-      teacher: teacherId, 
-      $or: [
-        { level: level },
-        { level: generalLevel._id },
-      ],
-    });
-
-    if (!pdf) {
-      return res.status(404).json({
-        message: "Pdf not found",
-        error: true,
-        status: false,
-      });
-    }
-
-    return res.status(200).json({
-      error: false,
-      status: true,
-      data: pdf,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
-
+  return res.status(200).json({
+    error: false,
+    status: true,
+    data: pdf,
+  });
+});
 export const getTeacherNotes = async (req, res) => {
   try {
     const teacherId = req.userId;
