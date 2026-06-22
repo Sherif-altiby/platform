@@ -1,23 +1,127 @@
-import SubHeader from "@/components/SubHeader"
-// import { IoCloseSharp } from "react-icons/io5";
-// import { MdNotificationsActive } from "react-icons/md";
+"use client";
 
-const Page = () => {
+import SubHeader from "@/components/SubHeader";
+import { useEffect } from "react";
+import { socket } from "@/lib/socket";
+import {
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { deleteNotification, fetchNotifications } from "../utils/notificationsFeatuers";
+import NotificationSkeleton from "@/skeletons/NotificationSkeleton";
+
+
+type Notification = {
+  _id: string;
+  message: string;
+  isRead: boolean;
+  createdAt: string;
+};
+
+export default function NotificationPage({
+  userId,
+}: {
+  userId: string;
+}) {
+  const queryClient = useQueryClient();
+
+  // React Query
+  const { data, isLoading } = useQuery({
+    queryKey: ["notifications"],
+    queryFn: fetchNotifications,
+  });
+
+  const notifications: Notification[] = data?.data || [];
+
+  // Socket
+  useEffect(() => {
+    if (!userId) return;
+
+    socket.emit("join", userId);
+
+    socket.on("notification", (newNotification: Notification) => {
+      queryClient.setQueryData(
+        ["notifications"],
+        (old: any) => {
+          if (!old) return old;
+
+          return {
+            ...old,
+            data: [newNotification, ...old.data],
+          };
+        }
+      );
+    });
+
+    return () => {
+      socket.off("notification");
+    };
+  }, [userId, queryClient]);
+
+  // Delete
+  const handleDelete = async (id: string) => {
+    await deleteNotification(id);
+
+    queryClient.setQueryData(["notifications"], (old: any) => {
+      if (!old) return old;
+
+      return {
+        ...old,
+        data: old.data.filter((n: Notification) => n._id !== id),
+      };
+    });
+  };
+
   return (
-    <div className="ctm-height" >
-          <SubHeader currentTitle="الاشعارات" />
+    <div className="ctm-height">
+      <SubHeader   currentTitle="الاشعارات" />
 
-          <div className="container pb-4 pt-4">
-                  {/* <div className="p-3  mb-2  rounded-md shadow-md flex items-start flex-col md:flex-row relative justify-between gap-4" >
-                          <div className="text-2xl text-blue-500" > <MdNotificationsActive /> </div>
-                          <p className="text-center text-lg text-gray-500" > Lorem ipsum dolor sit amet consectetur, adipisicing elit. Excepturi eaque, maxime dolores eligendi molestias accusantium totam ab consequuntur explicabo obcaecati, culpa odio minus? Praesentium qui iure, est ex quod doloremque. </p>
-                          <div className="text-2xl text-red-500 cursor-pointer absolute md:relative top-2 left-2  md:top-auto md:left-auto" > <IoCloseSharp /> </div>
-                  </div> */}
+      {isLoading ? (
+        <NotificationSkeleton />
+      ) : notifications.length === 0 ? (
+        <div className="text-center text-gray-500 mt-10">
+              لا يوجد اشعارت 
+        </div>
+      ) : (
+        <div className="container mx-auto px-4 lg:px-6 py-6 space-y-4">
+          {notifications.map((n) => (
+            <div
+              key={n._id}
+              className={`
+                relative group transition-all duration-200
+                border rounded-xl p-4 shadow-sm
+                hover:shadow-md hover:-translate-y-[2px]
+                ${
+                  n.isRead
+                    ? "bg-white"
+                    : "bg-blue-50 border-blue-200"
+                }
+              `}
+            >
+              {!n.isRead && (
+                <span className="absolute top-4 left-3 w-2.5 h-2.5 bg-blue-500 rounded-full"></span>
+              )}
 
-                  <p className="text-center text-xl text-gray-600" > لا يوجد اشعارات حاليا </p>
-          </div>
+              <div className="pl-6 pr-10">
+                <p className="text-gray-800 font-medium">
+                  {n.message}
+                </p>
+
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(n.createdAt).toLocaleString()}
+                </p>
+              </div>
+
+              <button
+                onClick={() => handleDelete(n._id)}
+                className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition text-red-500 hover:text-red-700 text-sm"
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
-  )
+  );
 }
-
-export default Page

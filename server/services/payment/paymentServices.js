@@ -2,6 +2,7 @@ import { CourseAccess } from "../../models/courseAccessModel.js";
 import { List } from "../../models/listModel.js";
 import { Course } from "../../models/model.js";
 import { AppError } from "../../utils/appError.js";
+import { sendNotificationUtils } from "../../utils/notifications/sendNotifications.js";
 import uploadImageClodinary from "../../utils/uploadImages.js";
 
 export const getPaymentInfoService = async (courseId) => {
@@ -76,6 +77,15 @@ export const requestCourseAccessService = async (userId, file, data) => {
   const newAccessRequest = await CourseAccess.create({ student: userId, course: courseId, status: "pending", teacher: teacherId , receiptImage: uploaded.secure_url, });
 
   const newList = await List.create({ user: userId, course: courseId, method, image: uploaded.secure_url, teacher: teacherId });
+
+   await sendNotificationUtils({
+    message: `طلب انضمام جديد للكورس ${course.title}`,
+    sender: userId,
+    senderModel: "User",
+
+    recipient: teacherId,
+    recipientModel: "Teacher",
+  });
 
   return newList;
 };

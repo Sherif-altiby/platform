@@ -3,6 +3,7 @@ import { List } from "../models/listModel.js";
 import { Course } from "../models/model.js";
 import { getListsService } from "../services/payment/paymentServices.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { sendNotificationUtils } from "../utils/notifications/sendNotifications.js";
 
 export const getList = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
@@ -86,7 +87,9 @@ export const addToList = async (req, res) => {
 
 export const userAccessCourse = async (req, res) => {
   // استقبال معرف الطالب ومعرف الكورس من الـ body
+
   const { userId, courseId } = req.body;
+  const teacherId = req.userId
 
   if (!userId || !courseId) {
     return res.status(400).json({
@@ -119,6 +122,16 @@ export const userAccessCourse = async (req, res) => {
       user: userId,
       course: courseId,
     });
+
+    await sendNotificationUtils({
+      message: `يمكنك الان الوصول اليه ${updatedAccess.course.title} تم تفعيل الكورس`,
+      sender: teacherId,
+      senderModel: "Teacher",
+  
+      recipient: userId,
+      recipientModel: "User",
+    });
+
 
     // 3. النجاح
     res.status(200).json({

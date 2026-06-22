@@ -12,10 +12,15 @@ import rateLimit from 'express-rate-limit';
 import paymentRouter from "./routes/paymentRoutes.js";
 import { errorHandler } from "./middlewares/errorHandler.js";
 
+import http from "http";
+import { initSocket } from "./socket.js";
+import notificationRouter from "./routes/notificationsRoutes.js";
+
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
 
 
 app.use(
@@ -65,6 +70,7 @@ app.use('/api/user', userRouter)
 app.use('/api/admin', adminRouter)
 app.use('/api/teacher', teacherRouter)
 app.use('/api/payment', paymentRouter)
+app.use('/api/notifications', notificationRouter)
 
 app.use(errorHandler);
 
@@ -72,8 +78,10 @@ const PORT = 8081;
 
 connectDB().then(() => {
 
-  app.listen(PORT, () => {
-    console.log('The server is running in port : ', PORT)
-  })
+  initSocket(server);
 
-})
+  server.listen(PORT, () => {
+    console.log("Server running on port", PORT);
+  });
+
+});
