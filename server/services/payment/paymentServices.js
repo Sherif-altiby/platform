@@ -1,6 +1,6 @@
 import { CourseAccess } from "../../models/courseAccessModel.js";
 import { List } from "../../models/listModel.js";
-import { Course } from "../../models/model.js";
+import { Course, User } from "../../models/model.js";
 import { AppError } from "../../utils/appError.js";
 import { sendNotificationUtils } from "../../utils/notifications/sendNotifications.js";
 import uploadImageClodinary from "../../utils/uploadImages.js";
@@ -52,6 +52,8 @@ export const requestCourseAccessService = async (userId, file, data) => {
 
   const course = await Course.findById(courseId);
 
+  const user = await User.findById(userId);
+
   if (!course) {throw new AppError("الكورس غير موجود", 404);}
 
   const alreadyRequested = await CourseAccess.findOne({ student: userId, course: courseId, });
@@ -78,8 +80,9 @@ export const requestCourseAccessService = async (userId, file, data) => {
 
   const newList = await List.create({ user: userId, course: courseId, method, image: uploaded.secure_url, teacher: teacherId });
 
+ 
    await sendNotificationUtils({
-    message: `طلب انضمام جديد للكورس ${course.title}`,
+    message: `قام الطالب ${user.name} باجراء طلب للوصول الي الكورس ${course.title}`,
     sender: userId,
     senderModel: "User",
 
