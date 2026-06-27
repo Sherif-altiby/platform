@@ -7,18 +7,7 @@ import uploadImageClodinary from "../../utils/uploadImages.js";
 
 
 export const createTeacherService = async (data, file) => {
-  const {
-    name,
-    email,
-    password,
-    phone,
-    subId,
-    about,
-    instaPayNumber,
-    instaPayName,
-    vCashNumber,
-    vCashName,
-  } = data;
+  const {name,email,password,phone,subId,about,instaPayNumber,instaPayName,vCashNumber,vCashName,} = data;
 
   const subject = await Subject.findById(subId);
 
@@ -67,4 +56,43 @@ export const createTeacherService = async (data, file) => {
   await subject.save();
 
   return teacher;
+};
+
+
+export const getAllTeachersService = async ({
+    page = 1,
+    limit = 10,
+    search = "",
+}) => {
+    const skip = (page - 1) * limit;
+
+    const query = {};
+
+   
+    if (search) {
+        query.name = { $regex: search, $options: "i" };
+        
+    }
+
+
+    const [teachers, total] = await Promise.all([
+        Teacher.find(query)
+            .select("name email phone about avatar vCash instaPay subjects")
+            .populate("subjects", "name")
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(Number(limit)),
+
+        Teacher.countDocuments(query),
+    ]);
+
+    return {
+        teachers,
+        pagination: {
+            total,
+            page: Number(page),
+            limit: Number(limit),
+            totalPages: Math.ceil(total / limit),
+        },
+    };
 };

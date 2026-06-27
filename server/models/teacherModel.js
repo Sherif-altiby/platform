@@ -73,13 +73,7 @@ const teacherScema = new mongoose.Schema({
       ref: "Subject",
     },
   ],
-  notifications: [
-    {
-      message: {
-        type: String,
-      },
-    },
-  ],
+   
   isBlocked: {
     type: Boolean,
     default: false,

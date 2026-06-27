@@ -2,6 +2,8 @@ import { CourseAccess } from "../models/courseAccessModel.js";
 import { Level } from "../models/levelModel.js";
 import { Course, Subject, User } from "../models/model.js";
 import { Teacher } from "../models/teacherModel.js";
+import { createSubjectService } from "../services/admin/getSubjectsServices.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import uploadImageClodinary from "../utils/uploadImages.js";
 
 export const removeSubject = async (req, res) => {
@@ -49,49 +51,8 @@ export const removeSubject = async (req, res) => {
   }
 };
 
-export const createSubject = async (req, res) => {
-  try {
-    const { subjectName } = req.body;
 
-    if (!subjectName) {
-      return res.status(500).json({
-        message: "Complete data",
-        error: true,
-        status: false,
-      });
-    }
 
-    const isSubjectExist = await Subject.findOne({ name: subjectName });
-    if (isSubjectExist) {
-      return res.status(400).json({
-        message: "The subjict is exist",
-        error: true,
-        status: false,
-      });
-    }
-
-    const uploaded = await uploadImageClodinary(req.file.buffer);
-
-    const newUbject = new Subject({
-      name: subjectName,
-      image: uploaded.secure_url,
-    });
-    await newUbject.save();
-
-    return res.json({
-      message: "Subject created successfully",
-      error: false,
-      status: true,
-      data: newUbject,
-    });
-  } catch (error) {
-    return res.status(500).json({
-      message: error.message || "Internal Server Error",
-      error: true,
-      status: false,
-    });
-  }
-};
 
 export const getAllSubjects = async (req, res) => {
   try {

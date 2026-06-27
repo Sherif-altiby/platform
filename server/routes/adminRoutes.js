@@ -13,15 +13,30 @@ import {
 import isAdmin from "../middlewares/isAdmin.js";
 import upload from "../middlewares/multer.js";
 import { deleteComment, getComments, showComment } from "../controller/commentController.js";
-import { createSubject, removeSubject } from "../controller/subjectController.js";
+import { getAllSubjects, removeSubject } from "../controller/subjectController.js";
 import { createLevel } from "../controller/levelController.js";
 import { createTeacherValidations } from "../validations/teacherValidations.js";
 import { validate } from "../validations/validate.js";
+import { getDashboardStats } from "../controller/admin/dashboardStatcicsController.js";
+import { getAllTeachers, getAllUsers } from "../controller/admin/getUsersController.js";
+import { createSubject, getAllSubjectsController } from "../controller/admin/getSubjectsController.js";
+import { getAllLevels } from "../controller/admin/levelsControllers.js";
+import { createSubjectService } from "../services/admin/getSubjectsServices.js";
 
 
 const adminRouter = Router();
 
+
+
+adminRouter.get('/users', auth, isAdmin, getAllUsers);
+adminRouter.get('/teachers', auth, isAdmin, getAllTeachers);
+adminRouter.get('/subjects', auth, isAdmin, getAllSubjectsController);
+adminRouter.get('/levels', auth, isAdmin, getAllLevels);
+
+adminRouter.get('/statics', auth, isAdmin, getDashboardStats);
+
 adminRouter.post('/add-subject', auth, isAdmin, upload.single('avatar'), createSubject);
+
 adminRouter.put('/change-subject-name', auth, isAdmin, updateSubjectName);
 
 adminRouter.post('/add-teacher', auth, isAdmin,   upload.single('avatar'), validate(createTeacherValidations) , createTeacher);

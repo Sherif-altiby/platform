@@ -20,8 +20,8 @@ const userSchema = new mongoose.Schema({
     default: "student",
   },
   level: {
-    type: String,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Level",
   },
   subscribedTeachers: [
     { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" },
@@ -75,8 +75,8 @@ const subjectSchema = new mongoose.Schema({
 
 const courseSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject" , required: true},
-  teacher: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher" , required: true},
+  subject: { type: mongoose.Schema.Types.ObjectId, ref: "Subject", required: true },
+  teacher: { type: mongoose.Schema.Types.ObjectId, ref: "Teacher", required: true },
   image: {
     type: String,
   },
@@ -100,9 +100,9 @@ const courseSchema = new mongoose.Schema({
     required: true,
   },
   quizzes: {
-     type: mongoose.Schema.Types.ObjectId, ref: "Quizz"
+    type: mongoose.Schema.Types.ObjectId, ref: "Quizz"
   }
-},  { timestamps: true });
+}, { timestamps: true });
 
 export const User = mongoose.model("User", userSchema);
 export const Subject = mongoose.model("Subject", subjectSchema);
