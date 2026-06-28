@@ -3,57 +3,57 @@ import { Teacher } from "../models/teacherModel.js";
 import { hashPassword } from "../utils/hashPassword.js";
 import mongoose from "mongoose";
 import uploadImageClodinary from "../utils/uploadImages.js";
-import { createTeacherService } from "../services/admin/teacherServices.js";
+import { createTeacherService, updateTeacherPasswordService, updateTeacherService } from "../services/admin/teacherServices.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 
-export const updateSubjectName = async (req, res) => {
-    try {
+// export const updateSubjectName = async (req, res) => {
+//     try {
 
-        const {subId, name} = req.body;
+//         const {subId, name} = req.body;
 
-        if (!mongoose.Types.ObjectId.isValid(subId)) {
-            return res.status(400).json({
-              message: "Invalid Subject ID format",
-              error: true,
-              status: false,
-            });
-        }
+//         if (!mongoose.Types.ObjectId.isValid(subId)) {
+//             return res.status(400).json({
+//               message: "Invalid Subject ID format",
+//               error: true,
+//               status: false,
+//             });
+//         }
 
-        if(!name){
-            return res.status(400).json({
-                message: "the name is required",
-                error: true,
-                status: false,
-              });
-        }
+//         if(!name){
+//             return res.status(400).json({
+//                 message: "the name is required",
+//                 error: true,
+//                 status: false,
+//               });
+//         }
 
-        const subject = await Subject.findById(subId);
-        if(!subject){
-            return res.status(400).json({
-                message: "the subject not found",
-                error: true,
-                status: false,
-              });
-        }
+//         const subject = await Subject.findById(subId);
+//         if(!subject){
+//             return res.status(400).json({
+//                 message: "the subject not found",
+//                 error: true,
+//                 status: false,
+//               });
+//         }
 
-        subject.name = name;
-        await subject.save()
+//         subject.name = name;
+//         await subject.save()
 
-        return res.json({
-            message: "the subject name is updated",
-            error: false,
-            status: true,
-          });
+//         return res.json({
+//             message: "the subject name is updated",
+//             error: false,
+//             status: true,
+//           });
         
-    } catch (error) {
-        return res.status(500).json({
-            message: error.message || "Internal Server Error",
-            error: true,
-            status: false,
-        });
-    }
-}
+//     } catch (error) {
+//         return res.status(500).json({
+//             message: error.message || "Internal Server Error",
+//             error: true,
+//             status: false,
+//         });
+//     }
+// }
 
 export const addTeacherToSubject = async (req, res) => {
     try {
@@ -191,6 +191,28 @@ export const createTeacher = asyncHandler(async (req, res) => {
   
     res.status(201).json({ message: "Teacher created successfully", error: false, status: true, data: teacher,});
 });
+
+export const updateTeacher = asyncHandler(async (req, res) => {
+    const teacher = await updateTeacherService( req.params.id, req.body, req.file );
+  
+    res.status(200).json({ message: "Teacher updated successfully", error: false, status: true, data: teacher, }); 
+});
+
+
+export const updateTeacherPassword = asyncHandler(async (req, res) => {
+    const teacher = await updateTeacherPasswordService(
+      req.params.id,
+      req.body.password
+    );
+  
+    res.status(200).json({
+      message: "Teacher password updated successfully",
+      error: false,
+      status: true,
+      data: teacher,
+    });
+  });
+
 
 export const blockUser = async (req, res) => {
     try {

@@ -31,8 +31,9 @@ export const createSubject = asyncHandler(async (req, res) => {
 
 
 export const updateSubject = asyncHandler(async (req, res) => {
+  console.log("BODY: ", req.body )
   const subject = await updateSubjectService({
-    subId: req.body.subId,
+    subId: req.params.subId,
     name: req.body.name,
     file: req.file,
   });

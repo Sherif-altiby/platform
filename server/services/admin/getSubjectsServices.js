@@ -2,6 +2,7 @@ import { Subject } from "../../models/model.js";
 import { AppError } from "../../utils/appError.js";
 import uploadImageClodinary from "../../utils/uploadImages.js";
 import destroyImageCloudinary from "../../utils/destroyImage.js"
+import mongoose from "mongoose";
 
 export const getAllSubjectsService = async ({
     page = 1,
@@ -67,6 +68,8 @@ export const createSubjectService = async ({ subjectName, file }) => {
 
 
 export const updateSubjectService = async ({ subId, name, file }) => {
+
+ 
   if (!mongoose.Types.ObjectId.isValid(subId)) {
     throw new AppError("Invalid Subject ID format", 400);
   }

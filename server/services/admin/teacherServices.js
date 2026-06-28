@@ -58,6 +58,103 @@ export const createTeacherService = async (data, file) => {
   return teacher;
 };
 
+export const updateTeacherService = async (teacherId, data, file) => {
+  const {
+    name,
+    email,
+    password,
+    phone,
+    subId,
+    about,
+    instaPayNumber,
+    instaPayName,
+    vCashNumber,
+    vCashName,
+  } = data;
+
+  const teacher = await Teacher.findById(teacherId);
+
+  if (!teacher) {
+    throw new AppError("Teacher not found", 404);
+  }
+
+  // Update subject if changed
+  if (subId) {
+    const subject = await Subject.findById(subId);
+
+    if (!subject) {
+      throw new AppError("Subject not found", 404);
+    }
+
+    const oldSubjectId = teacher.subjects[0]?.toString();
+
+    if (oldSubjectId !== subId) {
+      // Remove teacher from old subject
+      if (oldSubjectId) {
+        await Subject.findByIdAndUpdate(oldSubjectId, {
+          $pull: { teachers: teacher._id },
+        });
+      }
+
+      // Add teacher to new subject
+      await Subject.findByIdAndUpdate(subId, {
+        $addToSet: { teachers: teacher._id },
+      });
+
+      teacher.subjects = [subId];
+    }
+  }
+
+  if (name) teacher.name = name;
+  if (phone) teacher.phone = phone;
+  if (about) teacher.about = about;
+
+  // Update password if provided
+  if (password) {
+    teacher.password = await hashPassword(password);
+  }
+
+  // Update image if uploaded
+  if (file) {
+    const uploaded = await uploadImageClodinary(file.buffer);
+    teacher.avatar = uploaded.secure_url;
+  }
+
+  // Update VCash
+  teacher.vCash = {
+    number: vCashNumber ?? teacher.vCash?.number,
+    walletName: vCashName ?? teacher.vCash?.walletName,
+  };
+
+  // Update InstaPay
+  teacher.instaPay = {
+    number: instaPayNumber ?? teacher.instaPay?.number,
+    instaPayName: instaPayName ?? teacher.instaPay?.instaPayName,
+  };
+
+  await teacher.save();
+
+  return teacher;
+};
+
+
+export const updateTeacherPasswordService = async (teacherId, password) => {
+  if (!password) {
+    throw new AppError("Password is required", 400);
+  }
+
+  const teacher = await Teacher.findById(teacherId);
+
+  if (!teacher) {
+    throw new AppError("Teacher not found", 404);
+  }
+
+  teacher.password = await hashPassword(password);
+
+  await teacher.save();
+
+  return teacher;
+};
 
 export const getAllTeachersService = async ({
     page = 1,
