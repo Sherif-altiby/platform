@@ -22,9 +22,12 @@ import { deleteQuiz, getTeacherQuizResults, getTeacherQuizzes, getTeacherQuizzes
 import { createNote, deleteNote, getNoteByLevel, getTeacherNotes, updateNote } from "../controller/noteController.js";
 import { validate } from "../validations/validate.js";
 import { createCourseSchema } from "../validations/courseValidation.js";
+import { loginTeacher } from "../controller/authController.js";
 
 
 const teacherRouter = Router();
+
+teacherRouter.post('/login', loginTeacher);
 
 teacherRouter.get('/get-teacher/:teacherId', auth, getTeacherById);
 teacherRouter.post('/upload-quiz', auth, isTeacher, upload.any(), teacherUploadQuiz);

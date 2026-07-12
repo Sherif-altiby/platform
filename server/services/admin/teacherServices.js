@@ -149,6 +149,8 @@ export const updateTeacherPasswordService = async (teacherId, password) => {
     throw new AppError("Teacher not found", 404);
   }
 
+  console.log(password)
+
   teacher.password = await hashPassword(password);
 
   await teacher.save();

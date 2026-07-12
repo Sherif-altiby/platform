@@ -12,6 +12,7 @@ import { Level } from "../models/levelModel.js";
 import { forgotPasswordService, logoutService, verifyOtpService } from "../services/auth/authServices.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { AppError} from "../utils/appError.js"
+import { loginTeacherService } from "../services/teacher/loginService.js";
 
 export const register = async (req, res) => {
   try {
@@ -84,7 +85,7 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   const { email, password } = req.body;
-
+ 
   try {
     // 1. التحقق من وجود البيانات المرسلة
     if (!email || !password) {
@@ -151,6 +152,8 @@ export const login = async (req, res) => {
 
     // --- حالة تسجيل دخول المدرس (Teacher) ---
     if (teacher) {
+
+     
       const isMatch = await comparePassword(password, teacher.password);
       if (!isMatch) {
         return res.status(400).json({
@@ -199,6 +202,28 @@ export const login = async (req, res) => {
     });
   }
 };
+
+export const loginTeacher = asyncHandler(async (req, res) => {
+  const { refreshToken, teacher } = await loginTeacherService(req.body);
+
+  res.cookie("refreshToken", refreshToken, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    path: "/",
+  });
+
+  res.status(200).json({
+    message: "تم تسجيل دخول المدرس بنجاح",
+    error: false,
+    status: true,
+    data: {
+      refreshToken,
+      teacher,
+    },
+  });
+});
 
 export const logout = asyncHandler(async (req, res) => {
   const userId = req.userId;

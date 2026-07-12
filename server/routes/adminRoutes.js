@@ -21,17 +21,20 @@ import { validate } from "../validations/validate.js";
 import { getDashboardStats } from "../controller/admin/dashboardStatcicsController.js";
 import { getAllTeachers, getAllUsers } from "../controller/admin/getUsersController.js";
 import { createSubject, getAllSubjectsController, updateSubject } from "../controller/admin/getSubjectsController.js";
-import { getAllLevels } from "../controller/admin/levelsControllers.js";
+import { getAllLevels, updateLevel } from "../controller/admin/levelsControllers.js";
 
 
 const adminRouter = Router();
-
+ 
 
 
 adminRouter.get('/users', auth, isAdmin, getAllUsers);
 adminRouter.get('/teachers', auth, isAdmin, getAllTeachers);
 adminRouter.get('/subjects', auth, isAdmin, getAllSubjectsController);
+
 adminRouter.get('/levels', auth, isAdmin, getAllLevels);
+adminRouter.post('/create-level', auth, isAdmin, createLevel);
+adminRouter.put('/update-level/:id', auth, isAdmin, updateLevel);
 
 adminRouter.get('/statics', auth, isAdmin, getDashboardStats);
 
@@ -42,7 +45,7 @@ adminRouter.put('/update-subject/:subId', auth, isAdmin, upload.single('avatar')
 
 adminRouter.post('/add-teacher', auth, isAdmin,   upload.single('avatar'), validate(createTeacherValidations) , createTeacher);
 // adminRouter.post('/update-teacher', auth, isAdmin,   upload.single('avatar'), validate(createTeacherValidations) , updateTeacher);
-adminRouter.post('/update-teacher-password/:id', auth, isAdmin , updateTeacherPassword);
+adminRouter.put('/update-teacher-password/:id', auth, isAdmin , updateTeacherPassword);
 
 adminRouter.post('/block-user', auth, isAdmin, blockUser);
 adminRouter.post('/unblock-user', auth, isAdmin, unBlockUser);

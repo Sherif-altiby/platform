@@ -19,7 +19,7 @@ export const getAllUsersService = async ({
     //  Filter by level
     if (levelId) {
         query.level = levelId;
-    }
+     }
 
     const [users, total] = await Promise.all([
         User.find(query)
