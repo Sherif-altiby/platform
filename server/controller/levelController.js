@@ -2,9 +2,13 @@ import { createLevelService, getAllLevelsService } from "../services/level/level
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const getLevels = asyncHandler(async (req, res) => {
-  const { q } = req.query;
+  let { q } = req.query;
 
-  const levels = await getAllLevelsService(q);
+  if(!q){
+    q=false;
+  }
+
+  const levels = await getAllLevelsService({ q });
 
   res.status(200).json({
     success: true,

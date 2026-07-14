@@ -3,70 +3,42 @@ import { Level } from "../../models/levelModel.js";
 import { User } from "../../models/model.js";
 import { AppError } from "../../utils/appError.js";
 
- export const getAllLevelsService = async ({
-    page = 1,
-    limit = 10,
-    search = "",
-}) => {
-    const skip = (page - 1) * limit;
-    const parsedPage = Number(page);
-    const parsedLimit = Number(limit);
-
+export const getAllLevelsService = async ({ q = false }) => {
     const query = {};
 
-    if (search) {
-        query.name = { $regex: search, $options: "i" };
+    if (!q) {
+        query.name = { $ne: "عام" };
     }
- 
-    const [levels, total] = await Promise.all([
-        Level.find(query)
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(parsedLimit),
 
-        Level.countDocuments(query),
+    const [levels, userCounts] = await Promise.all([
+        Level.find(query).sort({ createdAt: -1 }),
+
+        User.aggregate([
+            {
+                $match: {
+                    level: { $exists: true, $ne: null },
+                },
+            },
+            {
+                $group: {
+                    _id: { $toString: "$level" },
+                    count: { $sum: 1 },
+                },
+            },
+        ]),
     ]);
 
-    const userCounts = await User.aggregate([
-    {
-        $match: {
-            level: { $exists: true, $ne: null },
-        },
-    },
-    {
-        $group: {
-            _id: { $toString: "$level" }, // normalize to string
-            count: { $sum: 1 },
-        },
-    },
-]);
+    const countMap = Object.fromEntries(
+        userCounts.map(({ _id, count }) => [_id, count])
+    );
 
-// countMap keys are already strings now
-const countMap = Object.fromEntries(
-    userCounts.map(({ _id, count }) => [_id, count])
-);
+    const levelsWithCount = levels.map((level) => ({
+        ...level.toObject(),
+        userCount: countMap[level._id.toString()] ?? 0,
+    }));
 
-const levelsWithCount = levels.map((level) => ({
-    ...level.toObject(),
-    userCount: countMap[level._id.toString()] ?? 0,
-}));
-
-    const totalPages = Math.ceil(total / parsedLimit);
-    const hasNextPage = parsedPage < totalPages;
-
-    return {
-        levels: levelsWithCount,
-        pagination: {
-            total,
-            page: parsedPage,
-            limit: parsedLimit,
-            totalPages,
-            nextPage: hasNextPage ? parsedPage + 1 : null,
-            hasNextPage,
-        },
-    };
+    return levelsWithCount;
 };
-
 
 export const createLevelService = async (data) => {
     const { name } = data;

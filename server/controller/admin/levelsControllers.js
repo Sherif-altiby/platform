@@ -3,9 +3,8 @@ import { AppError } from "../../utils/appError.js"
 import { createLevelService, getAllLevelsService, updateLevelService } from "../../services/level/levelsServices.js";
  
 export const getAllLevels = asyncHandler(async (req, res) => {
-  const { page, limit, search } = req.query;
-
-  const result = await getAllLevelsService({ page, limit, search, });
+  const { q } = req.query;
+  const result = await getAllLevelsService({ q });
 
   if (!result) {
     throw new AppError("Failed to fetch users", 500);
